@@ -5,7 +5,7 @@ import { Mail, Phone, Users } from 'lucide-react';
 const Footer = () => {
   return (
     <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-[#1A2B49] text-[#F9F6EF]">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
           {/* About */}
           <div>
@@ -81,7 +81,7 @@ const Footer = () => {
 
         {/* Newsletter Section */}
         <div className="border-t border-[#9DB89D]/30 pt-12 mb-12">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-2xl mx-auto text-center w-full">
             <h3 className="text-2xl font-serif font-bold mb-4 text-[#F9F6EF]">
               Stay Informed
             </h3>

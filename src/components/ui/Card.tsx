@@ -51,7 +51,7 @@ interface CardContentProps {
 
 export function CardContent({ children, className }: CardContentProps) {
   return (
-    <div className={cn("p-6", className)}>
+    <div className={cn("p-6 flex-1 flex flex-col", className)}>
       {children}
     </div>
   );
@@ -67,7 +67,7 @@ export function CardTitle({ children, className, as: Component = "h3" }: CardTit
   return (
     <Component
       className={cn(
-        "font-serif font-bold text-[#1A2B49] mb-2 text-xl break-words",
+        "font-serif font-bold text-[#1A2B49] mb-2 text-xl md:text-2xl break-words",
         className
       )}
     >
@@ -83,7 +83,7 @@ interface CardDescriptionProps {
 
 export function CardDescription({ children, className }: CardDescriptionProps) {
   return (
-    <p className={cn("text-gray-600 text-sm leading-relaxed break-words", className)}>
+    <p className={cn("text-gray-600 text-sm md:text-base leading-relaxed break-words", className)}>
       {children}
     </p>
   );

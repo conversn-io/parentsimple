@@ -137,14 +137,14 @@ export default function HomePage() {
       />
 
       {/* Content Pillars Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4 text-balance">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-6 text-balance">
               Your Parenting Journey, Supported
             </h2>
-            <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-6"></div>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-8"></div>
+            <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto text-balance leading-relaxed">
               From early childhood through college admissions, we provide expert guidance at every stage
             </p>
           </div>
@@ -153,17 +153,17 @@ export default function HomePage() {
             {contentPillars.map((pillar, index) => {
               const IconComponent = pillar.icon
               return (
-                <Link key={index} href={pillar.href} className="h-full">
+                <Link key={index} href={pillar.href} className="h-full block">
                   <Card hover className="h-full flex flex-col">
                     <CardImage src={pillar.image} alt={pillar.description} />
-                    <CardContent className="flex-1 flex flex-col">
-                      <div className="flex items-start gap-3 flex-1">
+                    <CardContent>
+                      <div className="flex items-start gap-4">
                         <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white flex-shrink-0`}>
                           <IconComponent className="w-6 h-6" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <CardTitle as="h3" className="text-balance">{pillar.title}</CardTitle>
-                          <CardDescription className="text-xs mt-1 text-balance">
+                          <CardTitle as="h3" className="text-balance mb-2">{pillar.title}</CardTitle>
+                          <CardDescription className="text-balance">
                             {pillar.description}
                           </CardDescription>
                         </div>
@@ -178,14 +178,14 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F9F6EF]">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4 text-balance">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#F9F6EF]">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-6 text-balance">
               Why Choose ParentSimple?
             </h2>
-            <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-6"></div>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-8"></div>
+            <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto text-balance leading-relaxed">
               Everything you need to navigate your child's educational and financial future
             </p>
           </div>
@@ -201,10 +201,10 @@ export default function HomePage() {
                   <div className="w-16 h-16 bg-[#9DB89D] rounded-lg flex items-center justify-center text-[#1A2B49] mb-6 flex-shrink-0">
                     <IconComponent className="w-8 h-8" />
                   </div>
-                  <h3 className="text-xl font-serif font-bold text-[#1A2B49] mb-3 text-balance">
+                  <h3 className="text-xl md:text-2xl font-serif font-bold text-[#1A2B49] mb-4 text-balance">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-700 leading-relaxed text-balance flex-1">
+                  <p className="text-gray-700 text-base md:text-lg leading-relaxed text-balance flex-1">
                     {feature.description}
                   </p>
                 </div>
@@ -215,19 +215,19 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#1A2B49] to-[#152238] text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mb-6 text-balance">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#1A2B49] to-[#152238] text-white">
+        <div className="max-w-4xl mx-auto text-center w-full">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-8 text-balance">
             Ready to Plan Your Child's Future?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
+          <p className="text-xl md:text-2xl mb-10 opacity-90 text-balance leading-relaxed">
             Get your free college planning guide and connect with expert consultants
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button variant="primary" size="lg" href="/college-planning" className="w-full sm:w-auto">
+            <Button variant="primary" size="lg" href="/college-planning" className="w-full sm:w-auto min-w-[200px]">
               Get Free Guide
             </Button>
-            <Button variant="outline" size="lg" href="/consultation" className="bg-transparent border-white text-white hover:bg-white hover:text-[#1A2B49] w-full sm:w-auto">
+            <Button variant="outline" size="lg" href="/consultation" className="bg-transparent border-white text-white hover:bg-white hover:text-[#1A2B49] w-full sm:w-auto min-w-[200px]">
               Find a Consultant
             </Button>
           </div>
