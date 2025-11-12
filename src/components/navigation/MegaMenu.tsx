@@ -366,15 +366,10 @@ export function MegaMenu() {
       <NavigationMenuList>
         {menuItems.map((item) => (
           <NavigationMenuItem key={item.title}>
-            <div className="relative group">
-              <div className="flex items-center">
-                <NavigationMenuTrigger className="h-8 px-4 py-2 text-sm font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors data-[state=open]:text-[#152238] data-[state=open]:underline decoration-[#9DB89D] decoration-2 underline-offset-4">
-                  <Link href={item.href} className="hover:text-[#152238]">
-                    {item.title}
-                  </Link>
-                </NavigationMenuTrigger>
-              </div>
-              <NavigationMenuContent>
+            <NavigationMenuTrigger className="h-8 px-4 py-2 text-sm font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors data-[state=open]:text-[#152238] data-[state=open]:underline decoration-[#9DB89D] decoration-2 underline-offset-4">
+              {item.title}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
                 <div className="w-[900px] p-6 bg-white rounded-lg shadow-xl border border-gray-100 z-50" style={{ backgroundColor: '#ffffff' }}>
                   {/* Header Section */}
                   <div className="mb-6 pb-4 border-b border-[#9DB89D]">
@@ -423,8 +418,7 @@ export function MegaMenu() {
                     ))}
                   </div>
                 </div>
-              </NavigationMenuContent>
-            </div>
+            </NavigationMenuContent>
           </NavigationMenuItem>
         ))}
       </NavigationMenuList>
