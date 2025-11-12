@@ -1,0 +1,39 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="400" fill="#f8fafc"/>
+  
+  <!-- Professional advisor headshot -->
+  <!-- Head -->
+  <circle cx="200" cy="160" r="70" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+  
+  <!-- Hair (salt and pepper) -->
+  <path d="M140 120 Q200 100 260 120 Q240 90 200 100 Q160 90 140 120" fill="#6b7280"/>
+  <path d="M150 110 Q200 95 250 110 Q235 85 200 95 Q165 85 150 110" fill="#9ca3af"/>
+  
+  <!-- Eyes -->
+  <circle cx="185" cy="150" r="4" fill="#1f2937"/>
+  <circle cx="215" cy="150" r="4" fill="#1f2937"/>
+  
+  <!-- Nose -->
+  <path d="M200 160 L195 170 L205 170 Z" fill="#d1d5db" stroke="#9ca3af"/>
+  
+  <!-- Mouth -->
+  <path d="M185 180 Q200 185 215 180" stroke="#1f2937" stroke-width="2" fill="none"/>
+  
+  <!-- Suit jacket -->
+  <rect x="130" y="230" width="140" height="120" fill="#1f2937" stroke="#374151" stroke-width="2"/>
+  
+  <!-- Shirt collar -->
+  <rect x="180" y="230" width="40" height="30" fill="#ffffff" stroke="#e5e7eb"/>
+  
+  <!-- Tie -->
+  <rect x="190" y="250" width="20" height="80" fill="#dc2626" stroke="#b91c1c"/>
+  
+  <!-- Suit lapels -->
+  <path d="M160 230 L180 250 L160 270" fill="#1f2937" stroke="#374151"/>
+  <path d="M240 230 L220 250 L240 270" fill="#1f2937" stroke="#374151"/>
+  
+  <!-- Professional text -->
+  <text x="200" y="380" text-anchor="middle" fill="#374151" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Senior Retirement Specialist</text>
+</svg>
+

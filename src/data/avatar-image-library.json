@@ -1,0 +1,305 @@
+{
+  "avatar_profile": {
+    "demographics": {
+      "age_range": "58-76",
+      "generation": "Baby Boomers",
+      "location": "Middle America (Midwest, South, Mountain States)",
+      "income": "$75K-150K annually",
+      "net_worth": "$500K-2M",
+      "education": "High school to college educated",
+      "employment": "Retired or nearing retirement",
+      "marital_status": "Married, widowed, or divorced"
+    },
+    "psychographics": {
+      "values": [
+        "Financial security",
+        "Family legacy",
+        "Independence",
+        "Traditional values",
+        "Hard work and self-reliance",
+        "Community connection"
+      ],
+      "concerns": [
+        "Outliving their money",
+        "Healthcare costs",
+        "Market volatility",
+        "Estate planning",
+        "Long-term care",
+        "Inflation impact"
+      ],
+      "aspirations": [
+        "Comfortable retirement",
+        "Leaving inheritance",
+        "Travel and leisure",
+        "Staying in their home",
+        "Helping family financially"
+      ]
+    },
+    "lifestyle": {
+      "home_ownership": "Owns home (often paid off or nearly paid off)",
+      "living_situation": "Suburban or rural, single-family home",
+      "technology_comfort": "Basic to moderate (smartphone, tablet, basic computer)",
+      "media_consumption": "Traditional TV, local news, conservative talk radio",
+      "social_circles": "Church, community groups, family gatherings"
+    }
+  },
+  "image_categories": {
+    "financial_planning": {
+      "description": "Images showing financial security, planning, and wealth management",
+      "situations": [
+        {
+          "title": "Kitchen Table Planning Session",
+          "description": "Senior couple (early 60s) sitting at their kitchen table with financial documents, calculator, and laptop. Warm, homey lighting. Papers spread out showing statements, tax forms, and handwritten notes.",
+          "emotional_tone": "Serious but hopeful, taking control of their future",
+          "context": "Reviewing retirement accounts, planning for next phase",
+          "visual_elements": ["Reading glasses", "Coffee mugs", "Family photos on fridge", "Comfortable home setting"],
+          "use_cases": ["Retirement planning articles", "Financial advice content", "Estate planning guides"]
+        },
+        {
+          "title": "Meeting with Financial Advisor",
+          "description": "Professional meeting in advisor's office. Senior couple (mid-60s) in business casual attire, advisor in suit. Documents on desk, charts on wall. Comfortable, trustworthy atmosphere.",
+          "emotional_tone": "Professional, trustworthy, seeking expert guidance",
+          "context": "Annual review, major financial decisions",
+          "visual_elements": ["Professional office", "Financial charts", "Handshake", "Confident body language"],
+          "use_cases": ["Advisor services", "Financial planning content", "Investment guidance"]
+        },
+        {
+          "title": "Home Office Financial Review",
+          "description": "Senior man (late 60s) in home office, reviewing investment statements on computer. Bookshelf with financial books, family photos, comfortable chair. Natural lighting.",
+          "emotional_tone": "Independent, self-reliant, staying informed",
+          "context": "Regular portfolio monitoring, staying engaged with finances",
+          "visual_elements": ["Home office setup", "Financial books", "Computer screen", "Comfortable environment"],
+          "use_cases": ["Self-directed investing", "Financial education", "Retirement planning"]
+        }
+      ]
+    },
+    "home_and_housing": {
+      "description": "Images related to home ownership, downsizing, and housing decisions",
+      "situations": [
+        {
+          "title": "Empty Nest Home Tour",
+          "description": "Senior couple walking through their large family home, pointing to empty bedrooms. House is well-maintained but feels too big. They're discussing next steps.",
+          "emotional_tone": "Nostalgic but practical, considering change",
+          "context": "Children moved out, house feels too large",
+          "visual_elements": ["Large family home", "Empty rooms", "Family photos on walls", "Well-maintained property"],
+          "use_cases": ["Downsizing articles", "Housing options", "Reverse mortgage content"]
+        },
+        {
+          "title": "Reverse Mortgage Consultation",
+          "description": "Senior couple meeting with reverse mortgage specialist in their living room. Documents on coffee table, home equity information displayed. Comfortable, familiar setting.",
+          "emotional_tone": "Cautious but interested, exploring options",
+          "context": "Considering accessing home equity for retirement income",
+          "visual_elements": ["Living room setting", "Home equity documents", "Professional consultation", "Comfortable home"],
+          "use_cases": ["Reverse mortgage education", "Home equity content", "Retirement income solutions"]
+        },
+        {
+          "title": "Active Adult Community Tour",
+          "description": "Senior couple walking through a well-maintained 55+ community. Single-story homes, community amenities visible. They're meeting with a real estate agent.",
+          "emotional_tone": "Excited about possibilities, considering lifestyle change",
+          "context": "Exploring downsizing to maintenance-free living",
+          "visual_elements": ["55+ community", "Single-story homes", "Community amenities", "Real estate agent"],
+          "use_cases": ["Housing options", "Downsizing guides", "Active adult communities"]
+        }
+      ]
+    },
+    "health_and_wellness": {
+      "description": "Images showing active, healthy aging and medical considerations",
+      "situations": [
+        {
+          "title": "Active Senior Fitness Class",
+          "description": "Group of seniors (60-75) in a community center fitness class. Low-impact exercises, supportive environment. Instructor is also a senior. Everyone is smiling and engaged.",
+          "emotional_tone": "Active, social, health-conscious",
+          "context": "Staying healthy and active in retirement",
+          "visual_elements": ["Community center", "Low-impact exercises", "Supportive group", "Professional instructor"],
+          "use_cases": ["Health and wellness", "Active aging", "Community programs"]
+        },
+        {
+          "title": "Medical Consultation",
+          "description": "Senior couple in doctor's office, discussing health concerns. Doctor is middle-aged, professional. Medical charts visible, comfortable consultation room.",
+          "emotional_tone": "Concerned but proactive, seeking medical guidance",
+          "context": "Regular health checkup, discussing age-related concerns",
+          "visual_elements": ["Medical office", "Professional doctor", "Health charts", "Comfortable consultation"],
+          "use_cases": ["Healthcare planning", "Medical costs", "Long-term care planning"]
+        },
+        {
+          "title": "Regenerative Medicine Consultation",
+          "description": "Senior man (early 70s) meeting with regenerative medicine specialist. Modern medical office, before/after photos on wall, treatment options displayed.",
+          "emotional_tone": "Hopeful, exploring new treatment options",
+          "context": "Considering alternative treatments for age-related conditions",
+          "visual_elements": ["Modern medical office", "Treatment photos", "Professional specialist", "Hope and optimism"],
+          "use_cases": ["Regenerative medicine", "Alternative treatments", "Pain management"]
+        }
+      ]
+    },
+    "family_and_legacy": {
+      "description": "Images showing family connections, legacy planning, and intergenerational relationships",
+      "situations": [
+        {
+          "title": "Multi-Generational Family Gathering",
+          "description": "Large family gathering in senior couple's home. Grandchildren playing, adult children helping with dinner, grandparents watching with pride. Warm, loving atmosphere.",
+          "emotional_tone": "Proud, loving, family-focused",
+          "context": "Holiday gathering, family traditions",
+          "visual_elements": ["Family home", "Multiple generations", "Children playing", "Warm lighting"],
+          "use_cases": ["Estate planning", "Family legacy", "Inheritance planning"]
+        },
+        {
+          "title": "Estate Planning Meeting",
+          "description": "Senior couple meeting with estate planning attorney in their home. Legal documents on dining room table, family photos visible. Serious but comfortable discussion.",
+          "emotional_tone": "Thoughtful, planning for family's future",
+          "context": "Creating or updating estate plan",
+          "visual_elements": ["Home setting", "Legal documents", "Family photos", "Professional consultation"],
+          "use_cases": ["Estate planning", "Will and trust content", "Legacy planning"]
+        },
+        {
+          "title": "Helping Adult Children",
+          "description": "Senior couple writing a check or discussing financial help with their adult child (40s). Kitchen table setting, supportive conversation. Adult child looks grateful.",
+          "emotional_tone": "Supportive, generous, family-oriented",
+          "context": "Providing financial assistance to adult children",
+          "visual_elements": ["Kitchen table", "Checkbook", "Supportive conversation", "Family connection"],
+          "use_cases": ["Family financial support", "Intergenerational wealth", "Helping adult children"]
+        }
+      ]
+    },
+    "retirement_lifestyle": {
+      "description": "Images showing retirement activities, travel, and leisure pursuits",
+      "situations": [
+        {
+          "title": "Retirement Travel Planning",
+          "description": "Senior couple at travel agency or on computer, planning a trip. Brochures, maps, and travel guides spread out. They're excited about upcoming adventure.",
+          "emotional_tone": "Excited, adventurous, enjoying retirement freedom",
+          "context": "Planning bucket list trip, using retirement savings",
+          "visual_elements": ["Travel materials", "Computer/tablet", "Maps and brochures", "Excited expressions"],
+          "use_cases": ["Retirement planning", "Travel and leisure", "Bucket list content"]
+        },
+        {
+          "title": "Hobby and Craft Room",
+          "description": "Senior woman in her craft room or workshop, working on a project. Well-organized space, tools and materials, completed projects visible. Focused and content.",
+          "emotional_tone": "Creative, fulfilled, enjoying personal time",
+          "context": "Pursuing hobbies in retirement, personal fulfillment",
+          "visual_elements": ["Organized workspace", "Tools and materials", "Completed projects", "Personal satisfaction"],
+          "use_cases": ["Retirement lifestyle", "Hobbies and interests", "Personal fulfillment"]
+        },
+        {
+          "title": "Volunteer Work",
+          "description": "Senior couple volunteering at local food bank or community center. Helping others, wearing volunteer badges, working alongside other volunteers.",
+          "emotional_tone": "Giving back, community-minded, purposeful",
+          "context": "Using retirement time to help community",
+          "visual_elements": ["Volunteer setting", "Helping others", "Community service", "Purposeful activity"],
+          "use_cases": ["Community involvement", "Retirement purpose", "Volunteer opportunities"]
+        }
+      ]
+    },
+    "technology_and_modern_life": {
+      "description": "Images showing seniors adapting to modern technology and digital tools",
+      "situations": [
+        {
+          "title": "Learning New Technology",
+          "description": "Senior couple taking a computer or tablet class at community center. Instructor (younger adult) helping them, patient and encouraging. Other seniors in class.",
+          "emotional_tone": "Curious, learning, adapting to change",
+          "context": "Learning to use technology for banking, shopping, communication",
+          "visual_elements": ["Community center", "Computer/tablet", "Patient instructor", "Learning environment"],
+          "use_cases": ["Technology education", "Digital banking", "Online shopping"]
+        },
+        {
+          "title": "Video Chat with Family",
+          "description": "Senior couple on video call with grandchildren. Tablet or computer screen showing happy children, grandparents smiling and waving. Comfortable home setting.",
+          "emotional_tone": "Connected, loving, staying in touch",
+          "context": "Using technology to maintain family connections",
+          "visual_elements": ["Video call", "Family connection", "Technology in use", "Warm home setting"],
+          "use_cases": ["Family connection", "Technology adoption", "Staying connected"]
+        },
+        {
+          "title": "Online Banking and Bill Pay",
+          "description": "Senior man at computer, reviewing bank statements and paying bills online. Reading glasses, organized desk, financial documents nearby.",
+          "emotional_tone": "Independent, organized, managing finances digitally",
+          "context": "Using online banking for convenience and control",
+          "visual_elements": ["Computer screen", "Banking website", "Organized desk", "Financial documents"],
+          "use_cases": ["Online banking", "Digital financial management", "Convenience and control"]
+        }
+      ]
+    },
+    "concerns_and_challenges": {
+      "description": "Images addressing common retirement concerns and financial challenges",
+      "situations": [
+        {
+          "title": "Healthcare Cost Worry",
+          "description": "Senior couple looking at medical bills and insurance statements. Concerned expressions, calculator nearby, health insurance cards on table.",
+          "emotional_tone": "Concerned, overwhelmed, seeking solutions",
+          "context": "Facing unexpected medical expenses, insurance coverage gaps",
+          "visual_elements": ["Medical bills", "Insurance documents", "Calculator", "Concerned expressions"],
+          "use_cases": ["Healthcare planning", "Medical cost concerns", "Insurance coverage"]
+        },
+        {
+          "title": "Market Volatility Concern",
+          "description": "Senior man watching financial news on TV, looking at investment statements. Concerned expression, market charts visible, retirement accounts displayed.",
+          "emotional_tone": "Worried, uncertain, seeking stability",
+          "context": "Market downturn affecting retirement savings",
+          "visual_elements": ["Financial news", "Investment statements", "Market charts", "Concerned expression"],
+          "use_cases": ["Market volatility", "Investment protection", "Retirement security"]
+        },
+        {
+          "title": "Long-term Care Planning",
+          "description": "Senior couple visiting assisted living facility or meeting with long-term care specialist. Brochures and information packets, serious discussion.",
+          "emotional_tone": "Thoughtful, planning ahead, considering future needs",
+          "context": "Planning for potential long-term care needs",
+          "visual_elements": ["Care facility", "Information packets", "Professional consultation", "Future planning"],
+          "use_cases": ["Long-term care planning", "Aging in place", "Care options"]
+        }
+      ]
+    }
+  },
+  "visual_style_guidelines": {
+    "photography_style": {
+      "lighting": "Natural, warm lighting - avoid harsh or clinical lighting",
+      "color_palette": "Warm, earthy tones - browns, golds, soft blues, muted greens",
+      "composition": "Comfortable, lived-in settings - avoid sterile or overly modern environments",
+      "authenticity": "Real people, genuine expressions - avoid stock photo clichés"
+    },
+    "avoid_elements": [
+      "Overly modern or trendy settings",
+      "Harsh lighting or clinical environments",
+      "Unrealistic wealth displays",
+      "Stereotypical 'senior' imagery",
+      "Outdated technology or clothing",
+      "Isolated or lonely situations"
+    ],
+    "preferred_elements": [
+      "Comfortable, familiar home settings",
+      "Natural, warm lighting",
+      "Realistic financial situations",
+      "Active, engaged expressions",
+      "Family and community connections",
+      "Professional but approachable settings"
+    ]
+  },
+  "content_application": {
+    "homepage_hero": "Kitchen Table Planning Session - shows approachable, relatable financial planning",
+    "service_pages": "Meeting with Financial Advisor - professional, trustworthy consultation",
+    "blog_articles": "Home Office Financial Review - independent, self-directed approach",
+    "social_media": "Multi-Generational Family Gathering - emotional connection, family values",
+    "email_campaigns": "Active Senior Fitness Class - positive, active aging message",
+    "landing_pages": "Reverse Mortgage Consultation - specific solution, home-based setting"
+  },
+  "regional_considerations": {
+    "middle_america_characteristics": [
+      "Suburban and rural settings preferred over urban",
+      "Traditional family values and community connections",
+      "Conservative financial approach",
+      "Home ownership as primary asset",
+      "Church and community group involvement",
+      "Practical, no-nonsense approach to money"
+    ],
+    "avoid_regional_stereotypes": [
+      "Overly rural or farm settings",
+      "Excessive traditionalism",
+      "Outdated technology or methods",
+      "Isolation or lack of sophistication"
+    ]
+  }
+}
+
+
+
+
+
+
