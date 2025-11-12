@@ -375,7 +375,7 @@ export function MegaMenu() {
                 </NavigationMenuTrigger>
               </div>
               <NavigationMenuContent>
-                <div className="w-[900px] p-6 bg-white rounded-lg shadow-xl border border-gray-100">
+                <div className="w-[900px] p-6 bg-white rounded-lg shadow-xl border border-gray-100 z-50">
                   {/* Header Section */}
                   <div className="mb-6 pb-4 border-b border-[#9DB89D]">
                     <Link

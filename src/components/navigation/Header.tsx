@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Logo } from "../brand/Logo"
+import Image from "next/image"
 import { MegaMenu } from "./MegaMenu"
 import { MobileMenu } from "./MobileMenu"
 import { Button } from "../ui/Button"
@@ -26,9 +26,18 @@ export function Header() {
     >
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
-          {/* Logo - Wordmark only for header */}
+          {/* Logo - Header logo image */}
           <div className="flex-shrink-0">
-            <Logo variant="wordmark" size="md" />
+            <Link href="/" className="inline-flex items-center">
+              <Image
+                src="/images/logos/ParentSimple-header-logo.png"
+                alt="ParentSimple"
+                width={180}
+                height={32}
+                className="h-8 md:h-10 w-auto"
+                priority
+              />
+            </Link>
           </div>
 
           {/* Navigation - Desktop */}
@@ -37,12 +46,12 @@ export function Header() {
           </nav>
 
           {/* CTA Button & Mobile Menu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button
               variant="primary"
               size="sm"
               href="/college-planning"
-              className="hidden sm:inline-flex"
+              className="hidden sm:inline-flex whitespace-nowrap"
             >
               Get Free Guide
             </Button>
