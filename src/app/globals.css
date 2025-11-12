@@ -101,6 +101,18 @@ body {
   width: 100% !important;
 }
 
+/* Mega Menu Visibility Fixes */
+[data-radix-navigation-menu-viewport],
+[data-radix-navigation-menu-content] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+[data-radix-navigation-menu-viewport] > * {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
 /* Typography Scale - Headings */
 h1, .h1 {
   font-family: var(--font-serif), Georgia, serif;
