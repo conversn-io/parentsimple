@@ -140,7 +140,7 @@ export default function HomePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4 text-balance">
               Your Parenting Journey, Supported
             </h2>
             <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-6"></div>
@@ -149,21 +149,21 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {contentPillars.map((pillar, index) => {
               const IconComponent = pillar.icon
               return (
-                <Link key={index} href={pillar.href}>
-                  <Card hover>
+                <Link key={index} href={pillar.href} className="h-full">
+                  <Card hover className="h-full flex flex-col">
                     <CardImage src={pillar.image} alt={pillar.description} />
-                    <CardContent>
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white`}>
+                    <CardContent className="flex-1 flex flex-col">
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white flex-shrink-0`}>
                           <IconComponent className="w-6 h-6" />
                         </div>
-                        <div>
-                          <CardTitle as="h3">{pillar.title}</CardTitle>
-                          <CardDescription className="text-xs mt-1">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle as="h3" className="text-balance">{pillar.title}</CardTitle>
+                          <CardDescription className="text-xs mt-1 text-balance">
                             {pillar.description}
                           </CardDescription>
                         </div>
@@ -181,7 +181,7 @@ export default function HomePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F9F6EF]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4 text-balance">
               Why Choose ParentSimple?
             </h2>
             <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-6"></div>
@@ -190,21 +190,21 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const IconComponent = feature.icon
               return (
                 <div
                   key={index}
-                  className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300"
+                  className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 h-full flex flex-col"
                 >
-                  <div className="w-16 h-16 bg-[#9DB89D] rounded-lg flex items-center justify-center text-[#1A2B49] mb-6">
+                  <div className="w-16 h-16 bg-[#9DB89D] rounded-lg flex items-center justify-center text-[#1A2B49] mb-6 flex-shrink-0">
                     <IconComponent className="w-8 h-8" />
                   </div>
-                  <h3 className="text-xl font-serif font-bold text-[#1A2B49] mb-3">
+                  <h3 className="text-xl font-serif font-bold text-[#1A2B49] mb-3 text-balance">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed text-balance flex-1">
                     {feature.description}
                   </p>
                 </div>
@@ -217,17 +217,17 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#1A2B49] to-[#152238] text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mb-6 text-balance">
             Ready to Plan Your Child's Future?
           </h2>
           <p className="text-xl mb-8 opacity-90">
             Get your free college planning guide and connect with expert consultants
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="primary" size="lg" href="/college-planning">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button variant="primary" size="lg" href="/college-planning" className="w-full sm:w-auto">
               Get Free Guide
             </Button>
-            <Button variant="outline" size="lg" href="/consultation" className="bg-transparent border-white text-white hover:bg-white hover:text-[#1A2B49]">
+            <Button variant="outline" size="lg" href="/consultation" className="bg-transparent border-white text-white hover:bg-white hover:text-[#1A2B49] w-full sm:w-auto">
               Find a Consultant
             </Button>
           </div>

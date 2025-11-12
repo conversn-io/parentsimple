@@ -39,17 +39,17 @@ export function ParentSimpleHero({
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Content Side - Left */}
-          <div className="order-2 lg:order-1 space-y-8 max-w-2xl">
+          <div className="order-2 lg:order-1 space-y-6 md:space-y-8 max-w-2xl">
             {/* Logo - Full version for homepage */}
             <div className="mb-4">
               <Logo variant="full" size="lg" />
             </div>
             
-            <h1 className="font-serif font-bold text-[#1A2B49] text-4xl md:text-5xl lg:text-6xl leading-tight">
+            <h1 className="font-serif font-bold text-[#1A2B49] text-4xl md:text-5xl lg:text-6xl leading-tight text-balance">
               {headline}
             </h1>
             
-            <p className="text-lg md:text-xl text-gray-700 leading-relaxed max-w-xl">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed max-w-xl text-balance">
               {subheadline}
             </p>
             
@@ -89,7 +89,7 @@ export function ParentSimpleHero({
           </div>
           
           {/* Image Side - Right */}
-          <div className="order-1 lg:order-2 relative h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
+          <div className="order-1 lg:order-2 relative h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl w-full">
             {/* Gradient Overlay for better text readability if needed */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#1A2B49]/10 z-10 pointer-events-none" />
             

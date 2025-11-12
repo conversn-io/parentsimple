@@ -67,7 +67,7 @@ export function CardTitle({ children, className, as: Component = "h3" }: CardTit
   return (
     <Component
       className={cn(
-        "font-serif font-bold text-[#1A2B49] mb-2 text-xl",
+        "font-serif font-bold text-[#1A2B49] mb-2 text-xl break-words",
         className
       )}
     >
@@ -83,7 +83,7 @@ interface CardDescriptionProps {
 
 export function CardDescription({ children, className }: CardDescriptionProps) {
   return (
-    <p className={cn("text-gray-600 text-sm leading-relaxed", className)}>
+    <p className={cn("text-gray-600 text-sm leading-relaxed break-words", className)}>
       {children}
     </p>
   );
