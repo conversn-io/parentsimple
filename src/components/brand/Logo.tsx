@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -15,46 +16,35 @@ export function Logo({ variant = "wordmark", size = "md", className, href = "/" 
     lg: "text-4xl md:text-5xl",
   };
 
-  const shieldSizes = {
+  const imageSizes = {
+    sm: { width: 24, height: 24 },
+    md: { width: 32, height: 32 },
+    lg: { width: 48, height: 48 },
+  };
+
+  const headerLogoHeights = {
     sm: 24,
     md: 32,
     lg: 48,
   };
 
-  const ShieldIcon = ({ size }: { size: number }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="flex-shrink-0"
-    >
-      <path
-        d="M32 4C20 4 8 13 8 24c0 16.3 24 36 24 36s24-19.7 24-36C56 13 44 4 32 4z"
-        fill="#1A2B49"
-      />
-      <text
-        x="22"
-        y="42"
-        fontFamily="Playfair Display"
-        fontSize="20"
-        fill="#F9F6EF"
-        fontWeight="700"
-      >
-        P
-      </text>
-    </svg>
-  );
-
+  // Shield mark only
   if (variant === "shield") {
     return (
       <Link href={href} className={cn("inline-flex items-center", className)}>
-        <ShieldIcon size={shieldSizes[size]} />
+        <Image
+          src="/images/logos/ParentSimple-logo-mark.png"
+          alt="ParentSimple Shield Logo"
+          width={imageSizes[size].width}
+          height={imageSizes[size].height}
+          className="flex-shrink-0 object-contain"
+          priority={size === "lg"}
+        />
       </Link>
     );
   }
 
+  // Wordmark only (text)
   if (variant === "wordmark") {
     return (
       <Link
@@ -70,18 +60,24 @@ export function Logo({ variant = "wordmark", size = "md", className, href = "/" 
     );
   }
 
-  // Full logo (shield + wordmark)
+  // Full logo (shield + wordmark from header logo image)
   return (
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-3 font-serif font-bold text-[#1A2B49] hover:text-[#152238] transition-colors",
-        sizeClasses[size],
+        "inline-flex items-center",
         className
       )}
     >
-      <ShieldIcon size={shieldSizes[size]} />
-      <span>ParentSimple</span>
+      <Image
+        src="/images/logos/ParentSimple-header-logo.png"
+        alt="ParentSimple Logo"
+        width={200} // Base width, will scale with height
+        height={headerLogoHeights[size]}
+        className="h-auto w-auto object-contain"
+        style={{ height: `${headerLogoHeights[size]}px`, width: 'auto' }}
+        priority={size === "lg"}
+      />
     </Link>
   );
 }
