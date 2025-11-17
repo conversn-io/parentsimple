@@ -4,7 +4,7 @@ import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatPhoneForGHL, formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
 
-const GHL_WEBHOOK_URL = process.env.annuity_GHL_webhook || "https://services.leadconnectorhq.com/hooks/vTM82D7FNpIlnPgw6XNC/webhook-trigger/28ef726d-7ead-4cd2-aa85-dfc6192adfb6";
+const GHL_WEBHOOK_URL = process.env.PARENT_SIMPLE_GHL_WEBHOOK || process.env.PARENTSIMPLE_GHL_WEBHOOK || "";
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -70,7 +70,7 @@ async function upsertContact(email: string, firstName: string | null, lastName: 
     email: emailLower,
     first_name: firstName,
     last_name: lastName,
-    source: 'seniorsimple_quiz',
+    source: 'parentsimple_quiz',
   };
   
   if (normalizedPhone) {
@@ -192,8 +192,8 @@ async function upsertLead(
   const leadData: any = {
     contact_id: contactId,
     session_id: sessionId,
-    site_key: 'seniorsimple.org',
-    funnel_type: funnelType || 'insurance',
+    site_key: 'parentsimple.org',
+    funnel_type: funnelType || 'college_consulting',
     status: isVerified ? 'verified' : 'email_captured',
     is_verified: isVerified,
     verified_at: verifiedAt,
@@ -457,12 +457,12 @@ export async function POST(request: NextRequest) {
       zipCode: zipCode || lead.zip_code,
       state: state || lead.state,
       stateName: stateName || lead.state_name,
-      source: 'SeniorSimple Quiz',
-      funnelType: funnelType || lead.funnel_type || 'insurance',
+      source: 'ParentSimple Quiz',
+      funnelType: funnelType || lead.funnel_type || 'college_consulting',
       quizAnswers: lead.quiz_answers || quizAnswers,
       calculatedResults: calculatedResults,
       licensingInfo: licensingInfo,
-      leadScore: 75, // Default lead score
+      leadScore: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0, // Use calculated readiness score
       timestamp: new Date().toISOString(),
       utmParams: utmParams || lead.quiz_answers?.utm_parameters || {} // Include UTM parameters in GHL webhook
     };
@@ -535,7 +535,7 @@ export async function POST(request: NextRequest) {
       user_agent: request.headers.get('user-agent'),
       ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
       properties: {
-        site_key: 'seniorsimple.org',
+        site_key: 'parentsimple.org',
         lead_id: lead.id,
         contact_id: contact.id,
         webhook_url: GHL_WEBHOOK_URL,

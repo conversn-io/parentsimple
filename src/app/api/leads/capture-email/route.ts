@@ -68,7 +68,7 @@ async function upsertContact(email: string, firstName: string | null, lastName: 
     email: emailLower,
     first_name: firstName,
     last_name: lastName,
-    source: 'seniorsimple_quiz',
+    source: 'parentsimple_quiz',
   };
   
   if (normalizedPhone) {
@@ -190,8 +190,8 @@ export async function POST(request: NextRequest) {
     const leadData: any = {
       contact_id: contactId,
       session_id: sessionId,
-      site_key: 'seniorsimple.org',
-      funnel_type: funnelType || 'insurance',
+      site_key: 'parentsimple.org',
+      funnel_type: funnelType || 'college_consulting',
       status: phoneNumber ? 'phone_captured' : 'email_captured',
       is_verified: false, // Will be set to true when OTP is verified
       zip_code: zipCode,
@@ -341,14 +341,14 @@ export async function POST(request: NextRequest) {
         user_agent: request.headers.get('user-agent'),
         ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
         properties: {
-          site_key: 'seniorsimple.org',
+          site_key: 'parentsimple.org',
           email,
           first_name: firstName,
           last_name: lastName,
           phone: phoneNumber || null,
           quiz_answers: quizAnswers,
           calculated_results: calculatedResults,
-          funnel_type: funnelType,
+          funnel_type: funnelType || 'college_consulting',
           zip_code: zipCode,
           state: state,
           state_name: stateName,

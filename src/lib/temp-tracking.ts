@@ -203,6 +203,29 @@ export function trackQuizComplete(
   // Only track GA4 events, Meta events handled by Lead event only
 }
 
+export function trackGraduationYearSelected(sessionId: string, graduationYear: string): void {
+  console.log('📊 Tracking graduation year selected:', graduationYear);
+  
+  trackGA4Event('quiz_graduation_year_selected', {
+    session_id: sessionId,
+    graduation_year: graduationYear,
+    event_category: 'quiz_interaction',
+    event_label: 'elite_university_readiness'
+  });
+}
+
+export function trackScoreCalculated(sessionId: string, score: number, category: string): void {
+  console.log('📊 Tracking score calculated:', score, category);
+  
+  trackGA4Event('quiz_score_calculated', {
+    session_id: sessionId,
+    readiness_score: score,
+    readiness_category: category,
+    event_category: 'quiz_interaction',
+    event_label: 'elite_university_readiness'
+  });
+}
+
 export function trackLeadFormSubmit(leadData: LeadData): void {
   console.log('📊 Tracking lead form submit:', leadData);
   

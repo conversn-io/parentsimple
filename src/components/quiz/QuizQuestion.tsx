@@ -9,14 +9,16 @@ interface QuizQuestionProps {
     id: string;
     title: string;
     subtitle?: string;
-    type: 'multiple-choice' | 'multi-select' | 'slider' | 'input' | 'personal-info' | 'location-info' | 'address-info' | 'phone-consent';
-    options?: string[];
+    type: 'multiple-choice' | 'multi-select' | 'slider' | 'input' | 'personal-info' | 'location-info' | 'address-info' | 'phone-consent' | 'dropdown' | 'text';
+    options?: string[] | Array<{ value: string; label: string }>;
     min?: number;
     max?: number;
     step?: number;
     defaultValue?: number | string;
     placeholder?: string;
     isQualifying?: boolean;
+    required?: boolean;
+    helpText?: string;
   };
   onAnswer: (answer: any) => void;
   currentAnswer?: any;
@@ -528,6 +530,68 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
               Continue
             </button>
           </form>
+        );
+
+      case 'dropdown':
+        return (
+          <div className="space-y-4">
+            <select
+              value={selectedAnswer || ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedAnswer(value);
+                onAnswer(value);
+              }}
+              className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#1A2B49]/20 focus:border-[#1A2B49] transition-all bg-white"
+              required={question.required}
+              disabled={isLoading}
+              style={{ minHeight: '56px' }}
+            >
+              {question.options?.map((option, index) => {
+                const optionValue = typeof option === 'string' ? option : option.value;
+                const optionLabel = typeof option === 'string' ? option : option.label;
+                return (
+                  <option key={index} value={optionValue} disabled={optionValue === ''}>
+                    {optionLabel}
+                  </option>
+                );
+              })}
+            </select>
+            {question.helpText && (
+              <p className="text-sm text-gray-600">{question.helpText}</p>
+            )}
+          </div>
+        );
+
+      case 'text':
+        return (
+          <div className="space-y-4">
+            <input
+              type="text"
+              value={selectedAnswer || ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedAnswer(value);
+                // Auto-submit for text inputs (like business name, zip)
+                if (question.id === 'zip_code' || question.id === 'business_name') {
+                  onAnswer(value);
+                }
+              }}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  onAnswer(selectedAnswer);
+                }
+              }}
+              placeholder={question.placeholder}
+              className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#1A2B49]/20 focus:border-[#1A2B49] transition-all"
+              required={question.required}
+              disabled={isLoading}
+              style={{ minHeight: '56px' }}
+            />
+            {question.helpText && (
+              <p className="text-sm text-gray-600">{question.helpText}</p>
+            )}
+          </div>
         );
 
       default:
