@@ -102,18 +102,18 @@ export const OTPInput = ({
       </div>
       
       {hasError && (
-        <p className="mt-1 text-sm text-red-600 text-center">
+        <p className="mt-2 text-sm text-red-600 text-center">
           {error || 'Please enter a valid 6-digit code'}
         </p>
       )}
       
       {isValid && displayValue.length === maxLength && (
-        <p className="mt-1 text-sm text-green-600 text-center">
+        <p className="mt-2 text-sm text-green-600 text-center">
           ✓ Valid code format
         </p>
       )}
       
-      <div className="mt-1 text-sm text-gray-500 text-center">
+      <div className="mt-2 text-sm text-gray-500 text-center">
         Enter the {maxLength}-digit code sent to your phone
       </div>
     </div>

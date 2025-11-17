@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { QuizProgress } from './QuizProgress';
 import { QuizQuestion } from './QuizQuestion';
-import { OTPVerification } from './OTPVerification';
 import { ProcessingState } from './ProcessingState';
 import { 
   initializeTracking, 
@@ -31,7 +30,6 @@ export const EliteUniversityReadinessQuiz = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
   const [calculatedResults, setCalculatedResults] = useState<any>(null);
-  const [showOTP, setShowOTP] = useState(false);
   const [showProcessing, setShowProcessing] = useState(false);
   const [quizSessionId, setQuizSessionId] = useState<string | null>(null);
   const [utmParams, setUtmParams] = useState<UTMParameters | null>(null);
@@ -227,14 +225,26 @@ export const EliteUniversityReadinessQuiz = () => {
         console.error('💥 Email Capture Exception:', error);
       }
       
-      // Show OTP verification
-      console.log('📱 Personal Info Complete - Initiating OTP Flow:', {
+      // Store quiz data in sessionStorage before routing to OTP page
+      console.log('📱 Personal Info Complete - Routing to OTP Page:', {
         sessionId: quizSessionId || 'unknown',
         phoneNumber: answer.phone,
         timestamp: new Date().toISOString()
       });
       
-      setShowOTP(true);
+      // Store all necessary data for OTP page
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('elite_university_quiz_data', JSON.stringify({
+          answers: updatedAnswers,
+          calculatedResults: calculatedResults,
+          quizSessionId: quizSessionId,
+          utmParams: utmParams,
+          quizStartTime: quizStartTime
+        }));
+      }
+      
+      // Route to separate OTP verification page
+      router.push('/quiz/elite-university-readiness/verify-otp');
       return;
     }
 
@@ -249,76 +259,6 @@ export const EliteUniversityReadinessQuiz = () => {
     }
   };
 
-  const handleOTPVerification = async () => {
-    console.log('🔐 OTP Verification Complete - Sending to GHL:', {
-      sessionId: quizSessionId || 'unknown',
-      timestamp: new Date().toISOString()
-    });
-
-    setShowProcessing(true);
-
-    const readinessScore = calculatedResults?.totalScore || 0;
-    const personalInfo = answers.contact_info;
-
-    try {
-      const response = await fetch('/api/leads/verify-otp-and-send-to-ghl', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumber: personalInfo.phone,
-          email: personalInfo.email,
-          firstName: personalInfo.firstName,
-          lastName: personalInfo.lastName,
-          quizAnswers: answers,
-          sessionId: quizSessionId || 'unknown',
-          funnelType: 'college_consulting',
-          zipCode: null,
-          state: null,
-          stateName: null,
-          licensingInfo: null,
-          calculatedResults: calculatedResults,
-          utmParams: utmParams
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        console.log('✅ Lead Processed and Sent to GHL Successfully:', {
-          leadId: data.leadId,
-          readinessScore: readinessScore,
-          category: calculatedResults?.category,
-          sessionId: quizSessionId || 'unknown',
-          timestamp: new Date().toISOString()
-        });
-
-        // Track quiz completion
-        const completionTime = Math.round((Date.now() - quizStartTime) / 1000);
-        trackQuizComplete('elite_university_readiness', quizSessionId || 'unknown', 'elite_university_readiness', completionTime);
-
-        // Store results in session storage for results page
-        if (typeof sessionStorage !== 'undefined' && calculatedResults) {
-          sessionStorage.setItem('elite_university_readiness_results', JSON.stringify({
-            ...calculatedResults,
-            graduationYear: answers.graduation_year
-          }));
-        }
-
-        // Redirect to results page
-        setTimeout(() => {
-          router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(calculatedResults?.category || '')}`);
-        }, 2000);
-      } else {
-        console.error('❌ Lead Processing Failed:', data);
-        setShowProcessing(false);
-        alert('There was an error processing your request. Please try again.');
-      }
-    } catch (error: any) {
-      console.error('💥 Lead Processing Exception:', error);
-      setShowProcessing(false);
-      alert('There was an error processing your request. Please try again.');
-    }
-  };
 
   if (showProcessing) {
     return (
@@ -329,15 +269,6 @@ export const EliteUniversityReadinessQuiz = () => {
     );
   }
 
-  if (showOTP) {
-    return (
-      <OTPVerification
-        phoneNumber={answers.contact_info?.phone || ''}
-        onVerificationComplete={handleOTPVerification}
-        onBack={() => setShowOTP(false)}
-      />
-    );
-  }
 
   const currentQuestion = questions[currentStep];
 

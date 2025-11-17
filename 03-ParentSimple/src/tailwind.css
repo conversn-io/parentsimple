@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-primary-50: #F9F6EF;
+  --color-primary-100: #9DB89D;
+  --color-primary-500: #1A2B49;
+  --color-primary-600: #152238;
+  --color-primary-700: #101927;
+  --color-primary-800: #0B1016;
+  --color-primary-900: #06080B;
+  
+  --color-accent-50: #F5F8F5;
+  --color-accent-100: #E8F0E8;
+  --color-accent-500: #9DB89D;
+  --color-accent-600: #7FA07F;
+  --color-accent-700: #618861;
+  
+  --font-family-sans: Inter, system-ui, sans-serif;
+  --font-family-serif: "Playfair Display", Georgia, serif;
+}
