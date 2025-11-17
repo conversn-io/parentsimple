@@ -22,7 +22,7 @@ export const OTPVerification = ({ phoneNumber, onVerificationComplete, onBack }:
           onVerificationComplete={onVerificationComplete}
           showPhoneNumber={true}
           showResendButton={true}
-          autoSendOTP={false}
+          autoSendOTP={true}
           debugMode={process.env.NODE_ENV === 'development'}
           className="quiz-otp w-full"
           onVerificationFailed={(error) => {

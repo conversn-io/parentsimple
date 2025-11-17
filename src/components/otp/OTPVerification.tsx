@@ -31,6 +31,7 @@ export const OTPVerification = ({
   onBack
 }: OTPVerificationProps) => {
   const [step, setStep] = useState<'phone' | 'otp'>('otp');
+  const [initialOTPSent, setInitialOTPSent] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(initialPhone);
 
   const {
@@ -57,10 +58,26 @@ export const OTPVerification = ({
 
   // Auto-send OTP when phone is valid
   useEffect(() => {
-    if (autoSendOTP && isValidPhone && step === 'phone') {
-      handleSendOTP();
+    if (!autoSendOTP || !isValidPhone || initialOTPSent) return;
+    
+    if (step === 'phone') {
+      handleSendOTP().then((sent) => {
+        if (sent) setInitialOTPSent(true);
+      });
+    } else if (step === 'otp') {
+      sendOTP().then((sent) => {
+        if (sent) {
+          setInitialOTPSent(true);
+        }
+      });
     }
-  }, [autoSendOTP, isValidPhone, step]);
+  }, [autoSendOTP, isValidPhone, step, initialOTPSent, sendOTP]);
+
+  useEffect(() => {
+    if (step === 'phone') {
+      setInitialOTPSent(false);
+    }
+  }, [step]);
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +90,9 @@ export const OTPVerification = ({
     const success = await sendOTP();
     if (success) {
       setStep('otp');
+      setInitialOTPSent(true);
     }
+    return success;
   };
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
