@@ -113,7 +113,7 @@ export const OTPInput = ({
         </p>
       )}
       
-      <div className="mt-3 text-sm sm:text-base text-gray-500 text-center leading-relaxed">
+      <div className="mt-2 text-sm text-gray-500 text-center">
         Enter the {maxLength}-digit code sent to your phone
       </div>
     </div>

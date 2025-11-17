@@ -130,19 +130,19 @@ export const OTPVerification = ({
       )}
 
       {step === 'otp' && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">
               Enter Verification Code
             </h2>
             {showPhoneNumber && (
-              <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-2">
                 We sent a 6-digit code to <span className="font-semibold">{displayPhone}</span>
               </p>
             )}
           </div>
 
-          <form onSubmit={handleOTPSubmit} className="space-y-5">
+          <form onSubmit={handleOTPSubmit} className="space-y-4">
             <OTPInput
               value={otp}
               onChange={setOTP}
@@ -160,7 +160,7 @@ export const OTPVerification = ({
             </button>
 
             {showResendButton && (
-              <div className="text-center pt-2">
+              <div className="text-center pt-1">
                 {canResend ? (
                   <button
                     type="button"
@@ -179,12 +179,12 @@ export const OTPVerification = ({
             )}
 
             {state.attempts > 0 && (
-              <div className="text-center text-sm text-gray-500 pt-1">
+              <div className="text-center text-sm text-gray-500">
                 Attempts: {state.attempts}/{maxAttempts}
               </div>
             )}
 
-            <div className="text-center pt-2 space-y-2">
+            <div className="text-center pt-1 space-y-1">
               {onBack && (
                 <button
                   type="button"
