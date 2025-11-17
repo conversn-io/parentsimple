@@ -1,13 +1,12 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { OTPVerification } from '@/components/quiz/OTPVerification';
 import { ProcessingState } from '@/components/quiz/ProcessingState';
 
 function VerifyOTPContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [quizData, setQuizData] = useState<any>(null);
   const [showProcessing, setShowProcessing] = useState(false);
