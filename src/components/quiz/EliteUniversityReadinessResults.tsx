@@ -144,6 +144,38 @@ export function EliteUniversityReadinessResults({
             </div>
             <p className="text-gray-600 mt-4 text-lg">{badge.message}</p>
           </div>
+
+          {/* Top Empowerly CTA */}
+          <div className="bg-gradient-to-r from-[#1A2B49] to-[#152238] rounded-2xl shadow-xl p-6 sm:p-8 text-white">
+            <div className="text-center mb-6">
+              <h2 className="text-3xl font-serif font-bold mb-4">{empowerlyCTA.title}</h2>
+              <p className="text-lg text-gray-100 leading-relaxed max-w-2xl mx-auto">
+                {empowerlyCTA.message}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button
+                variant="primary"
+                size="lg"
+                href={empowerlyCTA.href}
+                className="bg-white text-[#1A2B49] hover:bg-gray-100 min-w-[250px]"
+              >
+                {empowerlyCTA.cta}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                href="https://empowerly.com/resources"
+                className="border-white text-white hover:bg-white/10 min-w-[250px]"
+              >
+                Access Resource Library
+              </Button>
+            </div>
+            <p className="text-center text-sm text-gray-300 mt-6">
+              Empowerly's counselors have admissions office experience at top universities including Harvard, Yale, MIT, and more.
+            </p>
+          </div>
         </div>
 
         {/* Category Breakdown */}
