@@ -389,10 +389,10 @@ export function calculateEliteUniversityReadinessScore(
   
   // Calculate scores for each category
   const academics = calculateAcademicScore(answers.academic_performance || '');
-  const testScores = calculateTestScore(answers.test_scores || '', modifiers);
-  const extracurriculars = calculateExtracurricularScore(answers.extracurriculars || '', modifiers);
+  const testScores = calculateTestScore(answers.test_scores || '', modifiers.testScores);
+  const extracurriculars = calculateExtracurricularScore(answers.extracurriculars || '', modifiers.extracurriculars);
   const achievements = calculateAchievementsScore(answers.achievements || '');
-  const essays = calculateEssaysScore(answers.essays || '', modifiers);
+  const essays = calculateEssaysScore(answers.essays || '', modifiers.essays);
   const recommendations = calculateRecommendationsScore(answers.recommendations || '');
   const strategy = calculateStrategyScore(answers.application_strategy || '');
   const research = calculateResearchScore(answers.research_internships || '');
