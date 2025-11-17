@@ -12,6 +12,7 @@ interface OTPVerificationProps extends OTPConfig, OTPCallbacks {
   showResendButton?: boolean;
   autoSendOTP?: boolean;
   debugMode?: boolean;
+  onBack?: () => void;
 }
 
 export const OTPVerification = ({
