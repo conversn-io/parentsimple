@@ -184,6 +184,17 @@ export const OTPVerification = ({
               </div>
             )}
 
+            {onBack && (
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="text-gray-500 hover:text-gray-700 text-sm"
+                >
+                  ← Back
+                </button>
+              </div>
+            )}
             <div className="text-center">
               <button
                 type="button"
