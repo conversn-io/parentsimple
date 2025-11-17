@@ -197,8 +197,8 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                   onClick={() => handleMultipleChoice(optionValue)}
                   className={`quiz-button w-full p-6 text-left border-3 rounded-xl transition-all duration-200 transform active:scale-95 ${
                     selectedAnswer === optionValue
-                      ? 'border-[#36596A] bg-white text-[#36596A] shadow-lg'
-                      : 'border-gray-200 bg-white hover:border-[#36596A] hover:shadow-lg text-gray-700'
+                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-lg'
+                      : 'border-gray-200 bg-white hover:border-[#1A2B49] hover:shadow-lg text-gray-700'
                   }`}
                   disabled={isLoading}
                   style={{ minHeight: '64px' }}
@@ -206,7 +206,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-lg leading-relaxed">{optionLabel}</span>
                     {selectedAnswer === optionValue && (
-                      <div className="w-6 h-6 bg-[#36596A] rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 bg-[#1A2B49] rounded-full flex items-center justify-center flex-shrink-0">
                         <div className="w-3 h-3 bg-white rounded-full"></div>
                       </div>
                     )}
@@ -230,8 +230,8 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                     onClick={() => handleMultiSelect(optionValue)}
                     className={`quiz-button w-full p-6 text-left border-3 rounded-xl transition-all duration-200 transform active:scale-95 ${
                       selectedAnswers.includes(optionValue)
-                        ? 'border-[#36596A] bg-white text-[#36596A] shadow-lg'
-                        : 'border-gray-200 bg-white hover:border-[#36596A] hover:shadow-lg text-gray-700'
+                        ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-lg'
+                        : 'border-gray-200 bg-white hover:border-[#1A2B49] hover:shadow-lg text-gray-700'
                     }`}
                     disabled={isLoading}
                     style={{ minHeight: '64px' }}
@@ -240,7 +240,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                       <span className="font-semibold text-lg leading-relaxed">{optionLabel}</span>
                       <div className={`w-6 h-6 border-3 rounded flex items-center justify-center flex-shrink-0 ${
                         selectedAnswers.includes(optionValue)
-                          ? 'border-[#36596A] bg-[#36596A]'
+                          ? 'border-[#1A2B49] bg-[#1A2B49]'
                           : 'border-gray-300'
                       }`}>
                         {selectedAnswers.includes(optionValue) && (

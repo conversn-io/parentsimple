@@ -238,8 +238,8 @@ export const EliteUniversityReadinessQuiz = () => {
       return;
     }
 
-    // Auto-advance for dropdowns
-    if (currentQuestion.type === 'dropdown' && answer) {
+    // Auto-advance for multiple-choice questions (tap to continue)
+    if (currentQuestion.type === 'multiple-choice' && answer) {
       setTimeout(() => {
         if (currentStep < questions.length - 1) {
           setCurrentStep(currentStep + 1);

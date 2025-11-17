@@ -6,6 +6,8 @@
  * 
  * Based on 2025 admissions research and trends
  * Source: ELITE-UNIVERSITY-READINESS-ASSESSMENT-RESEARCH-2025.md
+ * 
+ * All questions use 'multiple-choice' type for fast tap-to-continue UX
  */
 
 export const ELITE_UNIVERSITY_QUESTIONS = [
@@ -13,9 +15,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'graduation_year',
     title: 'What year will your child graduate from high school?',
     subtitle: 'This helps us provide timeline-specific recommendations',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select Graduation Year --' },
       { value: '2027', label: '2027 (Current Senior)' },
       { value: '2028', label: '2028 (Current Junior)' },
       { value: '2029', label: '2029 (Current Sophomore)' },
@@ -29,9 +30,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'academic_performance',
     title: 'What is your child\'s current GPA, and how many Advanced Placement (AP) or International Baccalaureate (IB) courses have they completed or are currently enrolled in?',
     subtitle: 'Academic excellence is the foundation of elite admissions',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'gpa_3.9_4.0_ap_8plus', label: 'GPA 3.9-4.0, 8+ AP/IB courses' },
       { value: 'gpa_3.7_3.89_ap_5_7', label: 'GPA 3.7-3.89, 5-7 AP/IB courses' },
       { value: 'gpa_3.5_3.69_ap_3_4', label: 'GPA 3.5-3.69, 3-4 AP/IB courses' },
@@ -45,9 +45,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'test_scores',
     title: 'Has your child taken the SAT or ACT, and what were their scores?',
     subtitle: 'Many elite universities have reinstated test requirements (Harvard, Yale, MIT, Brown, Dartmouth)',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select Test Score Range --' },
       { value: 'sat_1500plus_act_34plus', label: 'SAT 1500+ / ACT 34+ (75th percentile+ for elite universities)' },
       { value: 'sat_1400_1499_act_32_33', label: 'SAT 1400-1499 / ACT 32-33 (50th-75th percentile)' },
       { value: 'sat_1300_1399_act_30_31', label: 'SAT 1300-1399 / ACT 30-31 (25th-50th percentile)' },
@@ -62,9 +61,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'extracurriculars',
     title: 'How would you describe your child\'s extracurricular involvement?',
     subtitle: 'Elite universities value depth over breadth',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'deep_commitment_1_2_activities', label: 'Deep commitment (2+ years) to 1-2 activities with leadership roles and notable achievements' },
       { value: 'sustained_involvement_2_3_activities', label: 'Sustained involvement (1+ years) in 2-3 activities, some leadership' },
       { value: 'active_participation_3_4_activities', label: 'Active participation in 3-4 activities, minimal leadership' },
@@ -78,9 +76,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'achievements',
     title: 'Has your child received any notable recognition, awards, or achievements?',
     subtitle: 'Examples: national competitions, published research, artistic recognition, athletic achievements',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'national_international', label: 'National or international recognition/awards' },
       { value: 'regional_state', label: 'Regional or state-level recognition/awards' },
       { value: 'local_school', label: 'Local or school-level recognition/awards' },
@@ -94,9 +91,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'essays',
     title: 'How would you rate your child\'s progress on personal essays and application components?',
     subtitle: 'Authentic, well-crafted essays are crucial in holistic review',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'completed_reviewed', label: 'Completed strong personal statement and supplements, reviewed by experts' },
       { value: 'drafted_seeking_feedback', label: 'Drafted personal statement and some supplements, seeking feedback' },
       { value: 'started_early_stages', label: 'Started personal statement, early stages' },
@@ -110,9 +106,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'recommendations',
     title: 'How would you describe the strength of your child\'s relationships with teachers and mentors who could write recommendations?',
     subtitle: 'Strong recommendations provide context and validation',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'strong_3plus_recommenders', label: 'Strong relationships with 3+ teachers/mentors who know child well and can write compelling recommendations' },
       { value: 'good_2_3_recommenders', label: 'Good relationships with 2-3 teachers/mentors who can write solid recommendations' },
       { value: 'adequate_1_2_recommenders', label: 'Adequate relationships with 1-2 teachers who can write basic recommendations' },
@@ -126,9 +121,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'application_strategy',
     title: 'Is your child considering applying through Early Decision (ED) or Early Action (EA) to their top-choice elite university?',
     subtitle: 'Early Decision can significantly increase acceptance odds (e.g., Brown: 17.95% ED vs. 5.65% overall)',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'early_decision_planned', label: 'Yes, planning Early Decision to top-choice school (binding commitment)' },
       { value: 'early_action_planned', label: 'Yes, planning Early Action to top-choice school (non-binding)' },
       { value: 'considering_undecided', label: 'Considering early application, but undecided' },
@@ -142,9 +136,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'research_internships',
     title: 'Has your child engaged in research projects, internships, or meaningful work experiences related to their academic interests?',
     subtitle: 'Research and internship experience demonstrates intellectual curiosity',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'significant_with_outcomes', label: 'Yes, significant research/internship experience with tangible outcomes or publications' },
       { value: 'some_experience', label: 'Yes, some research/internship experience with good engagement' },
       { value: 'limited_interested', label: 'Limited research/internship experience, but interested' },
@@ -158,9 +151,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'diversity_factors',
     title: 'Which of the following best describes your child\'s background?',
     subtitle: 'Post-affirmative action, universities emphasize socioeconomic diversity and unique perspectives',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'first_generation', label: 'First-generation college student' },
       { value: 'low_middle_income', label: 'Low-income or middle-income family (eligible for financial aid)' },
       { value: 'underrepresented_minority', label: 'Underrepresented minority background' },
@@ -174,9 +166,8 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     id: 'financial_planning',
     title: 'How prepared is your family for the financial aspects of elite university education?',
     subtitle: 'Financial planning doesn\'t affect admissions but is important for family readiness',
-    type: 'dropdown' as const,
+    type: 'multiple-choice' as const,
     options: [
-      { value: '', label: '-- Select --' },
       { value: 'fully_prepared', label: 'Fully prepared, have financial plan and understand aid options' },
       { value: 'somewhat_prepared', label: 'Somewhat prepared, researching financial aid and scholarships' },
       { value: 'beginning_to_explore', label: 'Beginning to explore financial planning and aid options' },
@@ -195,4 +186,3 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     helpText: 'We\'ll send your detailed readiness report here',
   },
 ];
-
