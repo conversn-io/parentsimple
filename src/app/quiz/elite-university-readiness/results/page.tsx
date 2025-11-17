@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { EliteUniversityReadinessResults } from '@/components/quiz/EliteUniversityReadinessResults'
 import { initializeTracking } from '@/lib/temp-tracking'
@@ -26,7 +26,7 @@ const defaultResults = {
   graduationYear: undefined,
 }
 
-export default function EliteUniversityReadinessResultsPage() {
+function ResultsContent() {
   const searchParams = useSearchParams()
   const [results, setResults] = useState(defaultResults)
   const [isLoading, setIsLoading] = useState(true)
@@ -104,6 +104,21 @@ export default function EliteUniversityReadinessResultsPage() {
         graduationYear={results.graduationYear}
       />
     </div>
+  )
+}
+
+export default function EliteUniversityReadinessResultsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A2B49] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your results...</p>
+        </div>
+      </div>
+    }>
+      <ResultsContent />
+    </Suspense>
   )
 }
 
