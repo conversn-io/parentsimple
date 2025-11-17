@@ -238,16 +238,6 @@ export const EliteUniversityReadinessQuiz = () => {
       return;
     }
 
-    // Auto-advance for text inputs
-    if (currentQuestion.type === 'text' && currentQuestion.id !== 'contact_info') {
-      setTimeout(() => {
-        if (currentStep < questions.length - 1) {
-          setCurrentStep(currentStep + 1);
-        }
-      }, 300);
-      return;
-    }
-
     // Auto-advance for dropdowns
     if (currentQuestion.type === 'dropdown' && answer) {
       setTimeout(() => {
