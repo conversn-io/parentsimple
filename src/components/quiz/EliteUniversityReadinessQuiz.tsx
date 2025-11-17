@@ -331,11 +331,13 @@ export const EliteUniversityReadinessQuiz = () => {
 
   if (showOTP) {
     return (
-      <OTPVerification
-        phoneNumber={answers.contact_info?.phone || ''}
-        onVerificationComplete={handleOTPVerification}
-        onBack={() => setShowOTP(false)}
-      />
+      <div className="min-h-screen bg-[#F9F6EF] flex items-center">
+        <OTPVerification
+          phoneNumber={answers.contact_info?.phone || ''}
+          onVerificationComplete={handleOTPVerification}
+          onBack={() => setShowOTP(false)}
+        />
+      </div>
     );
   }
 
