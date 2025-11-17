@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import ConditionalHeader from "../components/navigation/ConditionalHeader";
-import ConditionalFooter from "../components/ConditionalFooter";
-import { LayoutProvider } from "../contexts/FooterContext";
+import ConditionalHeader from "@/components/navigation/ConditionalHeader";
+import ConditionalFooter from "@/components/ConditionalFooter";
+import { LayoutProvider } from "@/contexts/FooterContext";
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
