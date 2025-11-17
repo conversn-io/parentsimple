@@ -9,23 +9,23 @@ interface ProcessingStateProps {
 
 export const ProcessingState = ({ message, isComplete = false }: ProcessingStateProps) => {
   return (
-    <div className="max-w-md mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-        <div className="mb-6">
+    <div className="w-full max-w-xl mx-auto px-4 py-10">
+      <div className="w-full bg-white rounded-2xl shadow-2xl border border-[#E3E0D5] p-6 sm:p-8 text-center space-y-4">
+        <div>
           {isComplete ? (
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+            <CheckCircle className="w-14 h-14 text-green-500 mx-auto" />
           ) : (
-            <Loader2 className="w-16 h-16 text-[#36596A] mx-auto animate-spin" />
+            <Loader2 className="w-14 h-14 text-[#1A2B49] mx-auto animate-spin" />
           )}
         </div>
-        
-        <h2 className="text-xl font-semibold text-[#36596A] mb-2">
-          {isComplete ? 'Complete!' : 'Processing...'}
-        </h2>
-        
-        <p className="text-gray-600">
-          {message}
-        </p>
+        <div>
+          <h2 className="text-2xl font-bold text-[#1A2B49] mb-2">
+            {isComplete ? 'Complete!' : 'Processing...'}
+          </h2>
+          <p className="text-gray-600 leading-relaxed">
+            {message}
+          </p>
+        </div>
       </div>
     </div>
   );
