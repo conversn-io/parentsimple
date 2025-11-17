@@ -86,8 +86,8 @@ export const OTPInput = ({
           placeholder="000000"
           maxLength={maxLength}
           className={`
-            w-full px-4 py-3 text-center text-2xl sm:text-3xl font-mono border-2 rounded-lg
-            focus:ring-2 focus:ring-[#1A2B49] focus:border-[#1A2B49]
+            w-full px-4 py-3 text-center text-2xl font-mono border-2 rounded-lg
+            focus:ring-2 focus:ring-blue-500 focus:border-blue-500
             transition-colors duration-200
             ${hasError 
               ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500' 

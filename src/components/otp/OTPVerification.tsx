@@ -130,19 +130,19 @@ export const OTPVerification = ({
       )}
 
       {step === 'otp' && (
-        <div className="space-y-3">
+        <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 leading-tight">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Enter Verification Code
             </h2>
             {showPhoneNumber && (
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-1">
+              <p className="text-gray-600">
                 We sent a 6-digit code to <span className="font-semibold">{displayPhone}</span>
               </p>
             )}
           </div>
 
-          <form onSubmit={handleOTPSubmit} className="space-y-3">
+          <form onSubmit={handleOTPSubmit} className="space-y-4">
             <OTPInput
               value={otp}
               onChange={setOTP}
@@ -154,7 +154,7 @@ export const OTPVerification = ({
             <button
               type="submit"
               disabled={!canVerify}
-              className="w-full bg-[#1A2B49] text-white py-2.5 px-6 rounded-lg font-semibold hover:bg-[#152238] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-base sm:text-lg"
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               {state.isVerifying ? 'Verifying...' : 'Verify Code'}
             </button>
@@ -166,12 +166,12 @@ export const OTPVerification = ({
                     type="button"
                     onClick={handleResendOTP}
                     disabled={state.isResending}
-                    className="text-[#1A2B49] hover:text-[#152238] font-medium disabled:text-gray-400 text-sm sm:text-base"
+                    className="text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
                   >
                     {state.isResending ? 'Sending...' : 'Resend Code'}
                   </button>
                 ) : (
-                  <p className="text-gray-500 text-sm sm:text-base">
+                  <p className="text-gray-500 text-sm">
                     Resend code in {formatTimeRemaining(state.resendTimer)}
                   </p>
                 )}
@@ -184,20 +184,11 @@ export const OTPVerification = ({
               </div>
             )}
 
-            <div className="text-center space-y-1">
-              {onBack && (
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="text-[#1A2B49] hover:text-[#152238] text-sm sm:text-base font-medium block w-full"
-                >
-                  ← Back
-                </button>
-              )}
+            <div className="text-center">
               <button
                 type="button"
                 onClick={() => setStep('phone')}
-                className="text-[#1A2B49] hover:text-[#152238] text-sm sm:text-base font-medium"
+                className="text-gray-500 hover:text-gray-700 text-sm"
               >
                 ← Change phone number
               </button>
