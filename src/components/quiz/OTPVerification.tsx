@@ -15,8 +15,8 @@ export const OTPVerification = ({ phoneNumber, onVerificationComplete, onBack }:
   });
   
   return (
-    <div className="max-w-md mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+    <div className="w-full max-w-xl mx-auto px-4 py-10">
+      <div className="w-full bg-white rounded-2xl shadow-2xl border border-[#E3E0D5] p-6 sm:p-8">
         <ReusableOTP
           phoneNumber={phoneNumber}
           onVerificationComplete={onVerificationComplete}
@@ -24,7 +24,7 @@ export const OTPVerification = ({ phoneNumber, onVerificationComplete, onBack }:
           showResendButton={true}
           autoSendOTP={false}
           debugMode={process.env.NODE_ENV === 'development'}
-          className="quiz-otp"
+          className="quiz-otp w-full"
           onVerificationFailed={(error) => {
             console.error('❌ OTP Verification Failed:', error);
           }}
