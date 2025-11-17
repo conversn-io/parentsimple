@@ -188,41 +188,15 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
       case 'multiple-choice':
         return (
           <div className="space-y-4">
-            {question.options?.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleMultipleChoice(option)}
-                className={`quiz-button w-full p-6 text-left border-3 rounded-xl transition-all duration-200 transform active:scale-95 ${
-                  selectedAnswer === option
-                    ? 'border-[#36596A] bg-white text-[#36596A] shadow-lg'
-                    : 'border-gray-200 bg-white hover:border-[#36596A] hover:shadow-lg text-gray-700'
-                }`}
-                disabled={isLoading}
-                style={{ minHeight: '64px' }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-lg leading-relaxed">{option}</span>
-                  {selectedAnswer === option && (
-                    <div className="w-6 h-6 bg-[#36596A] rounded-full flex items-center justify-center flex-shrink-0">
-                      <div className="w-3 h-3 bg-white rounded-full"></div>
-                    </div>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        );
-
-      case 'multi-select':
-        return (
-          <div className="space-y-6">
-            <div className="space-y-4">
-              {question.options?.map((option, index) => (
+            {question.options?.map((option, index) => {
+              const optionValue = typeof option === 'string' ? option : option.value;
+              const optionLabel = typeof option === 'string' ? option : option.label;
+              return (
                 <button
                   key={index}
-                  onClick={() => handleMultiSelect(option)}
+                  onClick={() => handleMultipleChoice(optionValue)}
                   className={`quiz-button w-full p-6 text-left border-3 rounded-xl transition-all duration-200 transform active:scale-95 ${
-                    selectedAnswers.includes(option)
+                    selectedAnswer === optionValue
                       ? 'border-[#36596A] bg-white text-[#36596A] shadow-lg'
                       : 'border-gray-200 bg-white hover:border-[#36596A] hover:shadow-lg text-gray-700'
                   }`}
@@ -230,21 +204,55 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                   style={{ minHeight: '64px' }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-lg leading-relaxed">{option}</span>
-                    <div className={`w-6 h-6 border-3 rounded flex items-center justify-center flex-shrink-0 ${
-                      selectedAnswers.includes(option)
-                        ? 'border-[#36596A] bg-[#36596A]'
-                        : 'border-gray-300'
-                    }`}>
-                      {selectedAnswers.includes(option) && (
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
+                    <span className="font-semibold text-lg leading-relaxed">{optionLabel}</span>
+                    {selectedAnswer === optionValue && (
+                      <div className="w-6 h-6 bg-[#36596A] rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                      </div>
+                    )}
                   </div>
                 </button>
-              ))}
+              );
+            })}
+          </div>
+        );
+
+      case 'multi-select':
+        return (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              {question.options?.map((option, index) => {
+                const optionValue = typeof option === 'string' ? option : option.value;
+                const optionLabel = typeof option === 'string' ? option : option.label;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleMultiSelect(optionValue)}
+                    className={`quiz-button w-full p-6 text-left border-3 rounded-xl transition-all duration-200 transform active:scale-95 ${
+                      selectedAnswers.includes(optionValue)
+                        ? 'border-[#36596A] bg-white text-[#36596A] shadow-lg'
+                        : 'border-gray-200 bg-white hover:border-[#36596A] hover:shadow-lg text-gray-700'
+                    }`}
+                    disabled={isLoading}
+                    style={{ minHeight: '64px' }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-lg leading-relaxed">{optionLabel}</span>
+                      <div className={`w-6 h-6 border-3 rounded flex items-center justify-center flex-shrink-0 ${
+                        selectedAnswers.includes(optionValue)
+                          ? 'border-[#36596A] bg-[#36596A]'
+                          : 'border-gray-300'
+                      }`}>
+                        {selectedAnswers.includes(optionValue) && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
             
             {/* Continue button for multi-select */}
