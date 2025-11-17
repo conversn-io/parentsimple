@@ -130,19 +130,19 @@ export const OTPVerification = ({
       )}
 
       {step === 'otp' && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 leading-tight">
               Enter Verification Code
             </h2>
             {showPhoneNumber && (
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-2">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-1">
                 We sent a 6-digit code to <span className="font-semibold">{displayPhone}</span>
               </p>
             )}
           </div>
 
-          <form onSubmit={handleOTPSubmit} className="space-y-4">
+          <form onSubmit={handleOTPSubmit} className="space-y-3">
             <OTPInput
               value={otp}
               onChange={setOTP}
@@ -154,13 +154,13 @@ export const OTPVerification = ({
             <button
               type="submit"
               disabled={!canVerify}
-              className="w-full bg-[#1A2B49] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#152238] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-base sm:text-lg"
+              className="w-full bg-[#1A2B49] text-white py-2.5 px-6 rounded-lg font-semibold hover:bg-[#152238] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-base sm:text-lg"
             >
               {state.isVerifying ? 'Verifying...' : 'Verify Code'}
             </button>
 
             {showResendButton && (
-              <div className="text-center pt-1">
+              <div className="text-center">
                 {canResend ? (
                   <button
                     type="button"
@@ -184,7 +184,7 @@ export const OTPVerification = ({
               </div>
             )}
 
-            <div className="text-center pt-1 space-y-1">
+            <div className="text-center space-y-1">
               {onBack && (
                 <button
                   type="button"

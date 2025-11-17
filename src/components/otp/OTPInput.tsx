@@ -86,7 +86,7 @@ export const OTPInput = ({
           placeholder="000000"
           maxLength={maxLength}
           className={`
-            w-full px-4 py-4 text-center text-2xl sm:text-3xl font-mono border-2 rounded-lg
+            w-full px-4 py-3 text-center text-2xl sm:text-3xl font-mono border-2 rounded-lg
             focus:ring-2 focus:ring-[#1A2B49] focus:border-[#1A2B49]
             transition-colors duration-200
             ${hasError 
@@ -102,18 +102,18 @@ export const OTPInput = ({
       </div>
       
       {hasError && (
-        <p className="mt-2 text-sm text-red-600 text-center">
+        <p className="mt-1 text-sm text-red-600 text-center">
           {error || 'Please enter a valid 6-digit code'}
         </p>
       )}
       
       {isValid && displayValue.length === maxLength && (
-        <p className="mt-2 text-sm text-green-600 text-center">
+        <p className="mt-1 text-sm text-green-600 text-center">
           ✓ Valid code format
         </p>
       )}
       
-      <div className="mt-2 text-sm text-gray-500 text-center">
+      <div className="mt-1 text-sm text-gray-500 text-center">
         Enter the {maxLength}-digit code sent to your phone
       </div>
     </div>
