@@ -349,6 +349,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
             </div>
             <div className="pt-2">
               <button
+                type="button"
                 onClick={handleSliderContinue}
                 className="quiz-button w-full bg-[#36596A] text-white py-4 px-8 rounded-xl font-bold text-xl hover:bg-[#2a4a5a] transition-all duration-200 transform active:scale-95 shadow-lg hover:shadow-xl"
                 style={{ minHeight: '56px' }}

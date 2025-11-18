@@ -257,6 +257,19 @@ export const EliteUniversityReadinessQuiz = () => {
       }, 300);
       return;
     }
+
+    // Auto-advance for slider and multi-select after explicit continue
+    if (
+      (currentQuestion.type === 'slider' || currentQuestion.type === 'multi-select') &&
+      typeof answer !== 'undefined'
+    ) {
+      setTimeout(() => {
+        if (currentStep < questions.length - 1) {
+          setCurrentStep(currentStep + 1);
+        }
+      }, 150);
+      return;
+    }
   };
 
 
