@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { 
   GraduationCap, 
   DollarSign, 
-  Shield, 
+  Shield,
   BookOpen,
   Calculator,
   Users,
@@ -148,7 +148,7 @@ export default function HomePage() {
               From early childhood through college admissions, we provide expert guidance at every stage
             </p>
           </div>
-
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {contentPillars.map((pillar, index) => {
               const IconComponent = pillar.icon
@@ -157,17 +157,17 @@ export default function HomePage() {
                   <Card hover className="h-full flex flex-col">
                     <CardImage src={pillar.image} alt={pillar.description} />
                     <CardContent>
-                      <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4">
                         <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white flex-shrink-0`}>
                           <IconComponent className="w-6 h-6" />
-                        </div>
+                  </div>
                         <div className="flex-1 min-w-0">
                           <CardTitle as="h3" className="text-balance mb-2">{pillar.title}</CardTitle>
                           <CardDescription className="text-balance">
                             {pillar.description}
                           </CardDescription>
-                        </div>
-                      </div>
+                  </div>
+                </div>
                     </CardContent>
                   </Card>
                 </Link>
@@ -189,7 +189,7 @@ export default function HomePage() {
               Everything you need to navigate your child's educational and financial future
             </p>
           </div>
-
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const IconComponent = feature.icon
@@ -217,9 +217,9 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#1A2B49] to-[#152238] text-white">
         <div className="max-w-4xl mx-auto text-center w-full">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-8 text-balance">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-8 text-white text-balance">
             Ready to Plan Your Child's Future?
-          </h2>
+            </h2>
           <p className="text-xl md:text-2xl mb-10 opacity-90 text-balance leading-relaxed">
             Get your free college planning guide and connect with expert consultants
           </p>
@@ -233,6 +233,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
   )
 }

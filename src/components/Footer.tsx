@@ -20,7 +20,7 @@ const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h3 className="text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Resources</h3>
+            <h3 className="text-lg font-serif font-bold mb-4 text-white">Resources</h3>
             <div className="space-y-3 text-sm">
               <Link href="/early-years" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Early Years (0-10)
@@ -108,7 +108,7 @@ const Footer = () => {
             </div>
             <p className="text-xs text-[#F9F6EF]/60">
               © 2024 ParentSimple. All rights reserved.
-            </p>
+          </p>
           </div>
         </div>
       </div>
