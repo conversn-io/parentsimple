@@ -74,6 +74,14 @@ body {
   max-width: 80rem !important; /* 1280px */
 }
 
+.max-w-6xl {
+  max-width: 72rem !important; /* 1152px */
+}
+
+.max-w-5xl {
+  max-width: 64rem !important; /* 1024px */
+}
+
 .max-w-4xl {
   max-width: 56rem !important; /* 896px */
 }
