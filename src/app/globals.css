@@ -86,6 +86,16 @@ body {
   max-width: 56rem !important; /* 896px */
 }
 
+/* Utility helpers for dark sections */
+.cta-headline {
+  color: #ffffff !important;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.footer-heading {
+  color: #ffffff !important;
+}
+
 .max-w-3xl {
   max-width: 48rem !important; /* 768px */
 }

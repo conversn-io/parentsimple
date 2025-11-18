@@ -217,7 +217,7 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#1A2B49] to-[#152238] text-white">
         <div className="max-w-4xl mx-auto text-center w-full">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-8 text-white text-balance">
+          <h2 className="cta-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-8 text-white text-balance">
             Ready to Plan Your Child's Future?
             </h2>
           <p className="text-xl md:text-2xl mb-10 opacity-90 text-balance leading-relaxed">

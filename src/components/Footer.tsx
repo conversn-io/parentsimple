@@ -20,7 +20,7 @@ const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h3 className="text-lg font-serif font-bold mb-4 text-white">Resources</h3>
+            <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-white">Resources</h3>
             <div className="space-y-3 text-sm">
               <Link href="/early-years" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Early Years (0-10)
@@ -42,7 +42,7 @@ const Footer = () => {
 
           {/* Tools */}
           <div>
-            <h3 className="text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Tools & Calculators</h3>
+            <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Tools & Calculators</h3>
             <div className="space-y-3 text-sm">
               <Link href="/calculators/college-savings" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 529 Plan Calculator
@@ -61,7 +61,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Get in Touch</h3>
+            <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Get in Touch</h3>
             <div className="space-y-3 text-sm">
               <Link href="/contact" className="flex items-center gap-2 text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 <Users className="w-4 h-4" />
@@ -82,7 +82,7 @@ const Footer = () => {
         {/* Newsletter Section */}
         <div className="border-t border-[#9DB89D]/30 pt-12 mb-12">
           <div className="max-w-2xl mx-auto text-center w-full">
-            <h3 className="text-2xl font-serif font-bold mb-4 text-[#F9F6EF]">
+            <h3 className="footer-heading text-2xl font-serif font-bold mb-4 text-[#F9F6EF]">
               Stay Informed
             </h3>
             <p className="text-[#F9F6EF]/80 mb-6">
