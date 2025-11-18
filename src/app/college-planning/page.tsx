@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "College Planning Paths | ParentSimple",
@@ -45,7 +46,8 @@ const quizOptions = [
 export default function CollegePlanningPage() {
   return (
     <div className="bg-[#F9F6EF] min-h-screen w-full">
-      <section className="max-w-5xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <section className="py-16">
+        <PageContainer className="max-w-5xl">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-6">
           <p className="text-sm font-semibold tracking-[0.2em] text-[#9DB89D] uppercase">
             ParentSimple Planning Suite
@@ -75,10 +77,14 @@ export default function CollegePlanningPage() {
               </div>
               <div className="mt-6">
                 {option.status === "available" && option.action ? (
-                  <Button variant="primary" className="w-full" href={option.action.href}>
+                  <Button
+                    variant="primary"
+                    className="w-full"
+                    href={option.action.href}
+                  >
                     {option.action.label}
                   </Button>
-                ) else (
+                ) : (
                   <Button variant="outline" className="w-full" disabled>
                     Coming Soon
                   </Button>
@@ -102,6 +108,7 @@ export default function CollegePlanningPage() {
             </Button>
           </div>
         </div>
+        </PageContainer>
       </section>
     </div>
   );
