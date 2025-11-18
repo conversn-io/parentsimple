@@ -25,12 +25,12 @@ export function ParentSimpleHero({
   headline = "Parenting with Purpose. Planning with Power.",
   subheadline = "Expert guidance for parents navigating college planning, education savings, and family financial security.",
   primaryCTA = {
-    text: "Get Free College Guide",
-    href: "/college-planning",
+    text: "Take the Elite University Readiness Quiz",
+    href: "/quiz/elite-university-readiness",
   },
   secondaryCTA = {
-    text: "Find a Consultant",
-    href: "/consultation",
+    text: "Explore College Planning Resources",
+    href: "/college-planning",
   },
   trustIndicator = "Trusted by 10,000+ families",
 }: ParentSimpleHeroProps) {

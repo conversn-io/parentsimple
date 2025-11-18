@@ -50,10 +50,10 @@ export function Header() {
             <Button
               variant="primary"
               size="sm"
-              href="/college-planning"
+              href="/quiz/elite-university-readiness"
               className="hidden sm:inline-flex whitespace-nowrap"
             >
-              Get Free Guide
+              Take the Quiz
             </Button>
             <MobileMenu />
           </div>
