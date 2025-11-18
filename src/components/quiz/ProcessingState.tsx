@@ -9,8 +9,8 @@ interface ProcessingStateProps {
 
 export const ProcessingState = ({ message, isComplete = false }: ProcessingStateProps) => {
   return (
-    <div className="w-full max-w-xl mx-auto px-4 py-10">
-      <div className="w-full bg-white rounded-2xl shadow-2xl border border-[#E3E0D5] p-6 sm:p-8 text-center space-y-4">
+    <div className="w-full max-w-xl mx-auto px-4 py-6">
+      <div className="w-full bg-white rounded-2xl shadow-2xl border border-[#E3E0D5] p-5 sm:p-6 text-center space-y-4">
         <div>
           {isComplete ? (
             <CheckCircle className="w-14 h-14 text-green-500 mx-auto" />

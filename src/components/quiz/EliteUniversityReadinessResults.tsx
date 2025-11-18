@@ -108,6 +108,37 @@ export function EliteUniversityReadinessResults({
 
   const empowerlyCTA = getEmpowerlyCTA();
 
+  const getScoreVisuals = (value: number) => {
+    if (value >= 85) {
+      return {
+        circleBg: 'bg-green-600',
+        barBg: 'bg-green-500',
+        text: 'text-green-700',
+      };
+    }
+    if (value >= 70) {
+      return {
+        circleBg: 'bg-orange-500',
+        barBg: 'bg-orange-400',
+        text: 'text-orange-600',
+      };
+    }
+    if (value >= 55) {
+      return {
+        circleBg: 'bg-yellow-500',
+        barBg: 'bg-yellow-400',
+        text: 'text-yellow-600',
+      };
+    }
+    return {
+      circleBg: 'bg-red-600',
+      barBg: 'bg-red-500',
+      text: 'text-red-600',
+    };
+  };
+
+  const scoreVisuals = getScoreVisuals(score);
+
   // Calculate percentage for each category
   const getCategoryPercentage = (value: number, max: number) => {
     return Math.round((value / max) * 100);
@@ -129,20 +160,20 @@ export function EliteUniversityReadinessResults({
         {/* Score Display */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-[#1A2B49] text-white mb-6">
+            <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full text-white mb-6 ${scoreVisuals.circleBg}`}>
               <span className="text-5xl font-bold">{score}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
               <div 
-                className="bg-[#1A2B49] h-4 rounded-full transition-all duration-500"
-                style={{ width: `${score}%` }}
+                className={`h-4 rounded-full transition-all duration-500 ${scoreVisuals.barBg}`}
+                style={{ width: `${Math.min(score, 100)}%` }}
               />
             </div>
             <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
               <IconComponent className="w-5 h-5" />
               <span className="font-bold text-lg">{category}</span>
             </div>
-            <p className="text-gray-600 mt-4 text-lg">{badge.message}</p>
+            <p className={`mt-4 text-lg ${scoreVisuals.text}`}>{badge.message}</p>
           </div>
 
           {/* Top Empowerly CTA */}

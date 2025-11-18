@@ -113,7 +113,7 @@ function VerifyOTPContent() {
 
   if (showProcessing) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
         <ProcessingState 
           message="We're processing your information and preparing your personalized readiness report..." 
           isComplete={false}
@@ -124,8 +124,8 @@ function VerifyOTPContent() {
 
   if (!phoneNumber) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4">
-        <div className="text-center bg-white shadow-lg rounded-xl px-6 py-8">
+      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
+        <div className="text-center bg-white shadow-lg rounded-xl px-6 py-6">
           <p className="text-gray-600">Loading your secure verification flow…</p>
         </div>
       </div>
@@ -133,7 +133,7 @@ function VerifyOTPContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
       <OTPVerification
         phoneNumber={phoneNumber}
         onVerificationComplete={handleOTPVerification}
@@ -146,7 +146,7 @@ function VerifyOTPContent() {
 export default function VerifyOTPPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
         <div className="text-center">
           <p className="text-gray-600">Loading...</p>
         </div>

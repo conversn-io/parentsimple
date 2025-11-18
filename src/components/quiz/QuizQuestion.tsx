@@ -19,6 +19,12 @@ interface QuizQuestionProps {
     isQualifying?: boolean;
     required?: boolean;
     helpText?: string;
+    sliderFormat?: 'currency' | 'number' | 'gpa' | 'count';
+    sliderSuffix?: string;
+    sliderPrefix?: string;
+    sliderDecimals?: number;
+    sliderMinLabel?: string;
+    sliderMaxLabel?: string;
   };
   onAnswer: (answer: any) => void;
   currentAnswer?: any;
@@ -38,10 +44,43 @@ interface ZipValidationResult {
   error?: string;
 }
 
+const formatSliderValue = (value: number, question: QuizQuestionProps['question']) => {
+  const decimals = question.sliderDecimals ?? 0;
+  const prefix = question.sliderPrefix ?? '';
+  const suffix = question.sliderSuffix ?? '';
+  
+  switch (question.sliderFormat) {
+    case 'gpa':
+      return `${value.toFixed(decimals || 2)}`;
+    case 'number':
+    case 'count':
+      return `${value.toFixed(decimals)}${suffix}`;
+    default:
+      return `${prefix || '$'}${Math.round(value).toLocaleString()}${suffix}`;
+  }
+};
+
+const formatSliderLabel = (
+  value: number | undefined,
+  fallback: string,
+  question: QuizQuestionProps['question']
+) => {
+  if (value === undefined) {
+    return fallback;
+  }
+  if (question.sliderFormat === 'gpa') {
+    return value.toFixed(question.sliderDecimals ?? 2);
+  }
+  if (question.sliderFormat === 'number' || question.sliderFormat === 'count') {
+    return `${value}${question.sliderSuffix ?? ''}`;
+  }
+  return `$${value.toLocaleString()}`;
+};
+
 export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: QuizQuestionProps) => {
   const [selectedAnswer, setSelectedAnswer] = useState<any>(currentAnswer || question.defaultValue);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(currentAnswer || []);
-  const [sliderValue, setSliderValue] = useState(question.defaultValue as number || question.min || 0);
+  const [sliderValue, setSliderValue] = useState((question.defaultValue as number) ?? question.min ?? 0);
   
   // Personal info fields
   const [firstName, setFirstName] = useState('');
@@ -268,12 +307,23 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
         );
 
       case 'slider':
+        const sliderMin = question.min ?? 0;
+        const sliderMax = question.max ?? 100;
+        const sliderRange = sliderMax - sliderMin || 1;
+        const progressPercentage = ((sliderValue - sliderMin) / sliderRange) * 100;
+        const formattedValue = formatSliderValue(sliderValue, question);
+        const minLabel = question.sliderMinLabel ?? formatSliderLabel(question.min, 'Min', question);
+        const maxLabel = question.sliderMaxLabel ?? formatSliderLabel(question.max, 'Max', question);
+
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <div className="text-4xl sm:text-5xl font-bold text-[#36596A] mb-4">
-                ${sliderValue.toLocaleString()}
+              <div className="text-4xl sm:text-5xl font-bold text-[#36596A] mb-2">
+                {formattedValue}
               </div>
+              {question.subtitle && (
+                <p className="text-gray-600">{question.subtitle}</p>
+              )}
             </div>
             <div className="px-4">
               <input
@@ -285,13 +335,13 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 onChange={(e) => handleSliderChange(Number(e.target.value))}
                 className="w-full h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #36596A 0%, #36596A ${((sliderValue - (question.min || 0)) / ((question.max || 100) - (question.min || 0))) * 100}%, #e5e7eb ${((sliderValue - (question.min || 0)) / ((question.max || 100) - (question.min || 0))) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #36596A 0%, #36596A ${progressPercentage}%, #e5e7eb ${progressPercentage}%, #e5e7eb 100%)`
                 }}
                 disabled={isLoading}
               />
               <div className="flex justify-between text-lg text-gray-600 mt-4">
-                <span className="font-semibold">${question.min?.toLocaleString()}</span>
-                <span className="font-semibold">${question.max?.toLocaleString()}</span>
+                <span className="font-semibold">{minLabel}</span>
+                <span className="font-semibold">{maxLabel}</span>
               </div>
             </div>
           </div>
@@ -308,7 +358,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all"
+                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
                 required
                 disabled={isLoading}
                 style={{ minHeight: '56px' }}
@@ -322,7 +372,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all"
+                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
                 required
                 disabled={isLoading}
                 style={{ minHeight: '56px' }}
@@ -336,7 +386,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all"
+                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
                 required
                 disabled={isLoading}
                 style={{ minHeight: '56px' }}
@@ -361,7 +411,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                     const limitedDigits = digits.slice(0, 10);
                     setPhone(limitedDigits);
                   }}
-                  className="quiz-input w-full pr-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all"
+                  className="quiz-input w-full pr-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
                   placeholder="(555) 123-4567"
                   required
                   disabled={isLoading}
@@ -419,7 +469,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                   type="text"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').substring(0, 5))}
-                  className={`quiz-input w-full px-6 py-4 text-lg border-2 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all ${
+                  className={`quiz-input w-full px-6 py-4 text-lg border-2 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white ${
                     zipError ? 'border-red-500' : zipValidationResult?.valid ? 'border-green-500' : 'border-gray-300'
                   }`}
                   placeholder="12345"
@@ -494,7 +544,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                     const limitedDigits = digits.slice(0, 10);
                     setPhone(limitedDigits);
                   }}
-                  className="quiz-input w-full pr-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all"
+                  className="quiz-input w-full pr-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
                   placeholder="(555) 123-4567"
                   required
                   disabled={isLoading}
@@ -591,7 +641,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 }
               }}
               placeholder={question.placeholder}
-              className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#1A2B49]/20 focus:border-[#1A2B49] transition-all"
+              className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#1A2B49]/20 focus:border-[#1A2B49] transition-all bg-white"
               required={question.required}
               disabled={isLoading}
               style={{ minHeight: '56px' }}
@@ -610,7 +660,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
   return (
     <div className="space-y-8 pt-6">
       <div className="text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">{question.title}</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 leading-tight">{question.title}</h2>
         {question.subtitle && (
           <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">{question.subtitle}</p>
         )}

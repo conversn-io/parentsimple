@@ -77,23 +77,34 @@ function getGraduationYearModifiers(graduationYear: string): {
 }
 
 /**
- * Calculate academic performance score (0-25 points)
+ * Calculate GPA (0-15 points) and AP/IB rigor (0-10 points)
  */
-function calculateAcademicScore(answer: string): number {
-  switch (answer) {
-    case 'gpa_3.9_4.0_ap_8plus':
-      return 25; // Elite level
-    case 'gpa_3.7_3.89_ap_5_7':
-      return 20; // Strong
-    case 'gpa_3.5_3.69_ap_3_4':
-      return 15; // Good
-    case 'gpa_3.0_3.49_ap_1_2':
-      return 10; // Adequate
-    case 'gpa_below_3.0_no_ap':
-      return 5; // Needs improvement
-    default:
-      return 0;
-  }
+function calculateGPAScore(value?: number): number {
+  if (value === undefined || Number.isNaN(value)) return 0;
+  
+  if (value >= 4.0) return 15;
+  if (value >= 3.8) return 13;
+  if (value >= 3.6) return 11;
+  if (value >= 3.3) return 8;
+  if (value >= 3.0) return 5;
+  return 2;
+}
+
+function calculateAPCourseScore(value?: number): number {
+  if (value === undefined || Number.isNaN(value)) return 0;
+  
+  if (value >= 8) return 10;
+  if (value >= 6) return 8;
+  if (value >= 4) return 6;
+  if (value >= 2) return 4;
+  if (value >= 1) return 2;
+  return 0;
+}
+
+function calculateAcademicScore(gpaValue?: number, apValue?: number): number {
+  const gpaScore = calculateGPAScore(gpaValue);
+  const apScore = calculateAPCourseScore(apValue);
+  return Math.min(25, gpaScore + apScore);
 }
 
 /**
@@ -241,21 +252,25 @@ function calculateResearchScore(answer: string): number {
 /**
  * Calculate diversity factors score (0-2 points)
  */
-function calculateDiversityScore(answer: string): number {
-  switch (answer) {
-    case 'first_generation':
-      return 2; // First-gen
-    case 'low_middle_income':
-      return 1.5; // Low/middle income
-    case 'underrepresented_minority':
-      return 1.5; // Underrepresented minority
-    case 'unique_geographic_cultural':
-      return 1; // Unique background
-    case 'none_prefer_not':
-      return 0; // None/prefer not to answer
-    default:
-      return 0;
-  }
+function calculateDiversityScore(answer: string | string[]): number {
+  const selections = Array.isArray(answer)
+    ? answer
+    : answer
+      ? [answer]
+      : [];
+  
+  if (selections.length === 0) return 0;
+  
+  const valueMap: Record<string, number> = {
+    first_generation: 1.2,
+    low_middle_income: 0.8,
+    underrepresented_minority: 1.0,
+    unique_geographic_cultural: 0.6,
+    none_prefer_not: 0,
+  };
+  
+  const score = selections.reduce((total, key) => total + (valueMap[key] ?? 0), 0);
+  return Math.min(2, score);
 }
 
 /**
@@ -388,7 +403,10 @@ export function calculateEliteUniversityReadinessScore(
   const modifiers = getGraduationYearModifiers(graduationYear);
   
   // Calculate scores for each category
-  const academics = calculateAcademicScore(answers.academic_performance || '');
+  const academics = calculateAcademicScore(
+    typeof answers.gpa_score === 'number' ? answers.gpa_score : undefined,
+    typeof answers.ap_course_load === 'number' ? answers.ap_course_load : undefined
+  );
   const testScores = calculateTestScore(answers.test_scores || '', modifiers.testScores);
   const extracurriculars = calculateExtracurricularScore(answers.extracurriculars || '', modifiers.extracurriculars);
   const achievements = calculateAchievementsScore(answers.achievements || '');

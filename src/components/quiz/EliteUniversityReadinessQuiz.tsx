@@ -262,7 +262,7 @@ export const EliteUniversityReadinessQuiz = () => {
 
   if (showProcessing) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 py-12">
+      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
         <ProcessingState 
           message="We're processing your information and preparing your personalized readiness report..." 
           isComplete={false}
