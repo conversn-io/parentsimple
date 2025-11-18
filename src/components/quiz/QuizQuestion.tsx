@@ -181,7 +181,10 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
-    onAnswer(value);
+  };
+
+  const handleSliderContinue = () => {
+    onAnswer(sliderValue);
   };
 
   const handlePersonalInfoSubmit = (e: React.FormEvent) => {
@@ -343,6 +346,15 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 <span className="font-semibold">{minLabel}</span>
                 <span className="font-semibold">{maxLabel}</span>
               </div>
+            </div>
+            <div className="pt-2">
+              <button
+                onClick={handleSliderContinue}
+                className="quiz-button w-full bg-[#36596A] text-white py-4 px-8 rounded-xl font-bold text-xl hover:bg-[#2a4a5a] transition-all duration-200 transform active:scale-95 shadow-lg hover:shadow-xl"
+                style={{ minHeight: '56px' }}
+              >
+                Continue
+              </button>
             </div>
           </div>
         );
