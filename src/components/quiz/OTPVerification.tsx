@@ -15,7 +15,7 @@ export const OTPVerification = ({ phoneNumber, onVerificationComplete, onBack }:
   });
   
   return (
-    <div className="w-full max-w-xl mx-auto px-4 py-6">
+    <div className="w-full max-w-xl mx-auto px-4 py-4">
       <div className="w-full bg-white rounded-2xl shadow-2xl border border-[#E3E0D5] p-5 sm:p-6">
         <ReusableOTP
           phoneNumber={phoneNumber}

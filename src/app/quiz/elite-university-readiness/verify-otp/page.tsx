@@ -113,18 +113,20 @@ function VerifyOTPContent() {
 
   if (showProcessing) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
-        <ProcessingState 
-          message="We're processing your information and preparing your personalized readiness report..." 
-          isComplete={false}
-        />
+      <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
+        <div className="w-full max-w-xl">
+          <ProcessingState 
+            message="We're processing your information and preparing your personalized readiness report..." 
+            isComplete={false}
+          />
+        </div>
       </div>
     );
   }
 
   if (!phoneNumber) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
+      <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
         <div className="text-center bg-white shadow-lg rounded-xl px-6 py-6">
           <p className="text-gray-600">Loading your secure verification flow…</p>
         </div>
@@ -133,12 +135,14 @@ function VerifyOTPContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
-      <OTPVerification
-        phoneNumber={phoneNumber}
-        onVerificationComplete={handleOTPVerification}
-        onBack={handleBack}
-      />
+    <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
+      <div className="w-full max-w-xl">
+        <OTPVerification
+          phoneNumber={phoneNumber}
+          onVerificationComplete={handleOTPVerification}
+          onBack={handleBack}
+        />
+      </div>
     </div>
   );
 }
@@ -146,8 +150,8 @@ function VerifyOTPContent() {
 export default function VerifyOTPPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center px-4 pt-8 pb-10">
-        <div className="text-center">
+      <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
+        <div className="text-center bg-white shadow-lg rounded-xl px-6 py-6">
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>

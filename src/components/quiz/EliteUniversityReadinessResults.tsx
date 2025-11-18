@@ -179,7 +179,12 @@ export function EliteUniversityReadinessResults({
           {/* Top Empowerly CTA */}
           <div className="bg-gradient-to-r from-[#1A2B49] to-[#152238] rounded-2xl shadow-xl p-6 sm:p-8 text-white">
             <div className="text-center mb-6">
-              <h2 className="text-3xl font-serif font-bold text-white drop-shadow mb-4">{empowerlyCTA.title}</h2>
+              <h2
+                className="text-3xl font-serif font-bold drop-shadow mb-4"
+                style={{ color: '#ffffff' }}
+              >
+                {empowerlyCTA.title}
+              </h2>
               <p className="text-lg text-gray-100 leading-relaxed max-w-2xl mx-auto">
                 {empowerlyCTA.message}
               </p>
@@ -299,7 +304,12 @@ export function EliteUniversityReadinessResults({
         {/* Empowerly CTA */}
         <div className="bg-gradient-to-r from-[#1A2B49] to-[#152238] rounded-2xl shadow-xl p-8 text-white">
           <div className="text-center mb-6">
-            <h2 className="text-3xl font-serif font-bold text-white drop-shadow mb-4">{empowerlyCTA.title}</h2>
+            <h2
+              className="text-3xl font-serif font-bold drop-shadow mb-4"
+              style={{ color: '#ffffff' }}
+            >
+              {empowerlyCTA.title}
+            </h2>
             <p className="text-lg text-gray-100 leading-relaxed max-w-2xl mx-auto">
               {empowerlyCTA.message}
             </p>
