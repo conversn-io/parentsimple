@@ -20,7 +20,7 @@ export async function GET() {
     const categoriesWithCounts = await Promise.all(
       categories.map(async (category) => {
         // Query article_ux_categories with inner join to articles
-        const { data: articles, error: articlesError } = await supabase
+        const { data: articleAssignments, error: articlesError } = await supabase
           .from('article_ux_categories')
           .select(`
             article_id,
@@ -34,7 +34,10 @@ export async function GET() {
           .eq('articles.site_id', PUBLISHARE_SITE_ID)
           .eq('articles.status', 'published')
 
-        const articleCount = articles?.filter(a => a.articles?.status === 'published').length || 0
+        // Count published articles (already filtered by query, but double-check)
+        const articleCount = articleAssignments?.filter(
+          (assignment: any) => assignment.articles?.status === 'published'
+        ).length || 0
 
         return {
           id: category.id,

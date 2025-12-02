@@ -1,5 +1,4 @@
 import { supabase } from './supabase'
-import { cache } from 'react'
 
 const PUBLISHARE_SITE_ID =
   process.env.NEXT_PUBLIC_PUBLISHARE_SITE_ID ||
@@ -246,7 +245,7 @@ export async function getFeaturedArticles(limit: number = 6): Promise<{ articles
 }
 
 // Get UX categories from CMS
-export const getUxCategories = cache(async (): Promise<{ categories: UxCategory[], error: Error | null }> => {
+export async function getUxCategories(): Promise<{ categories: UxCategory[], error: Error | null }> {
   try {
     const { data, error } = await supabase
       .from('ux_categories')
@@ -280,10 +279,10 @@ export const getUxCategories = cache(async (): Promise<{ categories: UxCategory[
       error: error instanceof Error ? error : new Error(String(error)) 
     }
   }
-})
+}
 
 // Get UX category by slug
-export const getUxCategoryBySlug = cache(async (slug: string): Promise<{ category: UxCategory | null, error: Error | null }> => {
+export async function getUxCategoryBySlug(slug: string): Promise<{ category: UxCategory | null, error: Error | null }> {
   if (!slug) {
     return { category: null, error: null }
   }
@@ -322,4 +321,4 @@ export const getUxCategoryBySlug = cache(async (slug: string): Promise<{ categor
       error: error instanceof Error ? error : new Error(String(error)) 
     }
   }
-})
+}

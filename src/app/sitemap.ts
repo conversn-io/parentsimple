@@ -50,23 +50,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Category pages
-  const { categories } = await getUxCategories()
-  const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
-    url: `${baseUrl}/category/${category.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }))
+  // Category pages - with error handling
+  let categoryPages: MetadataRoute.Sitemap = []
+  try {
+    const { categories, error } = await getUxCategories()
+    if (!error && categories) {
+      categoryPages = categories.map((category) => ({
+        url: `${baseUrl}/category/${category.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching categories for sitemap:', error)
+  }
 
-  // Article pages
-  const { articles } = await getPublishedArticles()
-  const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
-    url: `${baseUrl}/articles/${article.slug}`,
-    lastModified: new Date(article.updated_at),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }))
+  // Article pages - with error handling
+  let articlePages: MetadataRoute.Sitemap = []
+  try {
+    const { articles, error } = await getPublishedArticles()
+    if (!error && articles) {
+      articlePages = articles.map((article) => ({
+        url: `${baseUrl}/articles/${article.slug}`,
+        lastModified: new Date(article.updated_at),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching articles for sitemap:', error)
+  }
 
   return [...staticPages, ...categoryPages, ...articlePages]
 }
