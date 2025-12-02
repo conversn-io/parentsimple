@@ -1,16 +1,44 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link';
 import { Logo } from './brand/Logo';
 import { Mail, Users } from 'lucide-react';
 
-const articlesHref = (categorySlug?: string, query?: string) => {
-  const params = new URLSearchParams()
-  if (categorySlug) params.set('category', categorySlug)
-  if (query) params.set('query', query)
-  const search = params.toString()
-  return search ? `/articles?${search}` : '/articles'
+const categoryHref = (categorySlug: string) => `/category/${categorySlug}`
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  display_order?: number | null
 }
 
 const Footer = () => {
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        if (response.ok) {
+          const data = await response.json()
+          setCategories(data.categories || [])
+        }
+      } catch (error) {
+        console.error('Error loading categories:', error)
+      }
+    }
+
+    loadCategories()
+  }, [])
+
+  // Sort categories by display_order
+  const sortedCategories = [...categories].sort((a, b) => 
+    (a.display_order ?? 999) - (b.display_order ?? 999)
+  )
+
   return (
     <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-[#1A2B49] text-[#F9F6EF]">
       <div className="max-w-7xl mx-auto w-full">
@@ -30,21 +58,35 @@ const Footer = () => {
           <div>
             <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-white">Resources</h3>
             <div className="space-y-3 text-sm">
-              <Link href={articlesHref('early-years')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                Early Years (0-10)
-              </Link>
-              <Link href={articlesHref('middle-school')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                Middle School (11-14)
-              </Link>
-              <Link href={articlesHref('high-school')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                High School (15-17)
-              </Link>
-              <Link href="/college-planning" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                College Planning
-              </Link>
-              <Link href={articlesHref('financial-planning')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                Financial Planning
-              </Link>
+              {sortedCategories.length > 0 ? (
+                sortedCategories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={category.slug === 'college-planning' ? '/college-planning' : categoryHref(category.slug)}
+                    className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors"
+                  >
+                    {category.name}
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <Link href={categoryHref('early-years')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                    Early Years (0-10)
+                  </Link>
+                  <Link href={categoryHref('middle-school')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                    Middle School (11-14)
+                  </Link>
+                  <Link href={categoryHref('high-school')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                    High School (15-17)
+                  </Link>
+                  <Link href="/college-planning" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                    College Planning
+                  </Link>
+                  <Link href={categoryHref('financial-planning')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                    Financial Planning
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -52,17 +94,17 @@ const Footer = () => {
           <div>
             <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Tools & Calculators</h3>
             <div className="space-y-3 text-sm">
-              <Link href="/calculators/investment-growth" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                College Savings Growth
+              <Link href="/calculators/college-savings" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                529 Plan Calculator
               </Link>
-              <Link href="/calculators/retirement-savings" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                Future Cost Planner
+              <Link href="/calculators/college-cost" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                College Cost Calculator
               </Link>
               <Link href="/calculators/life-insurance" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Life Insurance Calculator
               </Link>
-              <Link href="/calculators" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                Explore All Calculators
+              <Link href={categoryHref('resources')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                All Tools & Guides
               </Link>
             </div>
           </div>

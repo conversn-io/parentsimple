@@ -1,77 +1,83 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "../ui/Button"
 
-const articlesLink = (categorySlug?: string, query?: string) => {
-  const params = new URLSearchParams()
-  if (categorySlug) params.set('category', categorySlug)
-  if (query) params.set('query', query)
-  const search = params.toString()
-  return search ? `/articles?${search}` : '/articles'
+const categoryHref = (categorySlug: string) => `/category/${categorySlug}`
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  display_order?: number | null
 }
 
-const mobileMenuItems = [
+const defaultMenuItems = [
   {
     title: "Early Years",
-    href: articlesLink('early-years'),
-    items: [
-      { name: "Development Milestones", href: articlesLink('early-years', 'development milestones') },
-      { name: "Learning Through Play", href: articlesLink('early-years', 'learning through play') },
-      { name: "529 Plan Essentials", href: articlesLink('financial-planning', '529 plan') },
-    ]
+    slug: "early-years",
+    href: categoryHref('early-years'),
   },
   {
     title: "Middle School",
-    href: articlesLink('middle-school'),
-    items: [
-      { name: "Course Selection Guide", href: articlesLink('middle-school', 'course selection') },
-      { name: "Study Skills & Time Management", href: articlesLink('middle-school', 'study skills') },
-      { name: "Summer Program Guide", href: articlesLink('middle-school', 'summer program') },
-    ]
+    slug: "middle-school",
+    href: categoryHref('middle-school'),
   },
   {
     title: "High School",
-    href: articlesLink('high-school'),
-    items: [
-      { name: "GPA Optimization Strategies", href: articlesLink('high-school', 'gpa') },
-      { name: "Standardized Test Prep", href: articlesLink('high-school', 'test prep') },
-      { name: "Free College Timeline", href: articlesLink('college-planning', 'timeline') },
-    ]
+    slug: "high-school",
+    href: categoryHref('high-school'),
   },
   {
     title: "College Planning",
+    slug: "college-planning",
     href: "/college-planning",
-    items: [
-      { name: "Find College Consultant", href: "/consultation" },
-      { name: "Application Timeline", href: "/college-planning/application-timeline" },
-      { name: "Essay Writing Guide", href: "/college-planning/essay-guide" },
-    ]
   },
   {
     title: "Financial Planning",
-    href: articlesLink('financial-planning'),
-    items: [
-      { name: "529 Plans Explained", href: articlesLink('financial-planning', '529 plan') },
-      { name: "Life Insurance for Parents", href: articlesLink('financial-planning', 'life insurance') },
-      { name: "College Cost Strategy", href: articlesLink('financial-planning', 'college cost') },
-    ]
+    slug: "financial-planning",
+    href: categoryHref('financial-planning'),
   },
   {
     title: "Resources",
-    href: articlesLink('resources'),
-    items: [
-      { name: "College Planning Checklists", href: articlesLink('resources', 'checklist') },
-      { name: "Summer Programs Database", href: articlesLink('middle-school', 'summer program') },
-      { name: "Educational Tools & Apps", href: articlesLink('resources', 'educational tools') },
-    ]
+    slug: "resources",
+    href: categoryHref('resources'),
   },
 ]
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        if (response.ok) {
+          const data = await response.json()
+          setCategories(data.categories || [])
+        }
+      } catch (error) {
+        console.error('Error loading categories:', error)
+      }
+    }
+
+    loadCategories()
+  }, [])
+
+  // Use CMS categories if available, otherwise fallback to defaults
+  const menuItems = categories.length > 0
+    ? categories
+        .sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999))
+        .map(cat => ({
+          title: cat.name,
+          slug: cat.slug,
+          href: cat.slug === 'college-planning' ? '/college-planning' : categoryHref(cat.slug),
+        }))
+    : defaultMenuItems
 
   return (
     <div className="lg:hidden">
@@ -103,8 +109,8 @@ export function MobileMenu() {
               {/* Menu items */}
               <div className="flex-1 overflow-y-auto py-4">
                 <nav className="space-y-1">
-                  {mobileMenuItems.map((item) => (
-                    <div key={item.title} className="px-4">
+                  {menuItems.map((item) => (
+                    <div key={item.slug} className="px-4">
                       <Link
                         href={item.href}
                         className="block py-3 text-base font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors border-b border-[#9DB89D]/20"
@@ -112,18 +118,6 @@ export function MobileMenu() {
                       >
                         {item.title}
                       </Link>
-                      <div className="ml-4 space-y-1 mt-2">
-                        {item.items.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className="block py-2 text-sm text-gray-700 hover:text-[#1A2B49] transition-colors"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))}
-                      </div>
                     </div>
                   ))}
                 </nav>

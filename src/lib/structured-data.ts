@@ -23,17 +23,17 @@ export function generateArticleStructuredData(article: {
       "@type": "Article",
       "headline": article.title,
       "description": article.description,
-      "image": article.image || "https://seniorsimple.org/images/default-article.jpg",
+      "image": article.image || "https://parentsimple.org/images/default-article.jpg",
       "author": {
         "@type": "Person",
         "name": article.author
       },
       "publisher": {
         "@type": "Organization",
-        "name": "SeniorSimple",
+        "name": "ParentSimple",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://seniorsimple.org/logo.png"
+          "url": "https://parentsimple.org/logo.png"
         }
       },
       "datePublished": article.publishedDate,
@@ -42,13 +42,13 @@ export function generateArticleStructuredData(article: {
         "@type": "WebPage",
         "@id": article.url
       },
-      "articleSection": "Retirement Planning",
+      "articleSection": "College Planning",
       "keywords": generateKeywordsFromContent(article.content),
       "inLanguage": "en-US",
       "isAccessibleForFree": true,
       "audience": {
         "@type": "Audience",
-        "audienceType": "Seniors and Baby Boomers"
+        "audienceType": "Parents planning for college and education"
       }
     }
   }
@@ -75,7 +75,7 @@ export function generateHowToStructuredData(guide: {
       "@type": "HowTo",
       "name": guide.title,
       "description": guide.description,
-      "image": "https://seniorsimple.org/images/howto-default.jpg",
+      "image": "https://parentsimple.org/images/howto-default.jpg",
       "totalTime": guide.totalTime || "PT30M",
       "estimatedCost": guide.estimatedCost || "Free",
       "supply": [],
@@ -236,14 +236,14 @@ export function generateOrganizationStructuredData(): StructuredDataConfig {
     data: {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "SeniorSimple",
-      "description": "Your trusted partner in retirement planning and financial security for seniors and baby boomers.",
-      "url": "https://seniorsimple.org",
-      "logo": "https://seniorsimple.org/logo.png",
+      "name": "ParentSimple",
+      "description": "Expert guidance for parents navigating college planning, education savings, and family financial security.",
+      "url": "https://parentsimple.org",
+      "logo": "https://parentsimple.org/logo.png",
       "sameAs": [
-        "https://facebook.com/seniorsimple",
-        "https://twitter.com/seniorsimple",
-        "https://linkedin.com/company/seniorsimple"
+        "https://facebook.com/parentsimple",
+        "https://twitter.com/parentsimple",
+        "https://linkedin.com/company/parentsimple"
       ],
       "contactPoint": {
         "@type": "ContactPoint",
@@ -257,12 +257,15 @@ export function generateOrganizationStructuredData(): StructuredDataConfig {
       },
       "foundingDate": "2024",
       "knowsAbout": [
-        "Retirement Planning",
-        "Medicare",
+        "College Planning",
+        "College Admissions",
+        "529 Plans",
+        "Financial Planning",
         "Estate Planning",
-        "Annuities",
-        "Reverse Mortgages",
-        "Long-term Care Planning"
+        "Life Insurance",
+        "High School Preparation",
+        "Middle School Planning",
+        "Early Childhood Education"
       ]
     }
   }
@@ -275,20 +278,61 @@ export function generateWebsiteStructuredData(): StructuredDataConfig {
     data: {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "SeniorSimple",
-      "description": "Comprehensive retirement planning resources, calculators, and guides for seniors and baby boomers.",
-      "url": "https://seniorsimple.org",
+      "name": "ParentSimple",
+      "description": "Expert guidance on college planning, financial strategies, and academic success for affluent families planning elite education journeys.",
+      "url": "https://parentsimple.org",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://seniorsimple.org/search?q={search_term_string}"
+          "urlTemplate": "https://parentsimple.org/articles?query={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "SeniorSimple"
+        "name": "ParentSimple"
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "College Planning",
+            "url": "https://parentsimple.org/category/college-planning"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Financial Planning",
+            "url": "https://parentsimple.org/category/financial-planning"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "High School",
+            "url": "https://parentsimple.org/category/high-school"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "Middle School",
+            "url": "https://parentsimple.org/category/middle-school"
+          },
+          {
+            "@type": "ListItem",
+            "position": 5,
+            "name": "Early Years",
+            "url": "https://parentsimple.org/category/early-years"
+          },
+          {
+            "@type": "ListItem",
+            "position": 6,
+            "name": "Resources",
+            "url": "https://parentsimple.org/category/resources"
+          }
+        ]
       }
     }
   }

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   NavigationMenu,
@@ -14,369 +15,151 @@ import {
   BookOpen,
   GraduationCap,
   DollarSign,
-  Shield,
-  Users,
-  TrendingUp,
-  PiggyBank,
-  Target,
-  Building,
   School,
   Heart,
   FileText,
-  Sparkles,
 } from "lucide-react"
 
-const articlesLink = (categorySlug?: string, query?: string) => {
-  const params = new URLSearchParams()
-  if (categorySlug) params.set('category', categorySlug)
-  if (query) params.set('query', query)
-  const search = params.toString()
-  return search ? `/articles?${search}` : '/articles'
+const categoryHref = (categorySlug: string, hasArticles: boolean = true) => {
+  // If category has no articles, link to articles page with category filter to prevent 404
+  if (!hasArticles) {
+    return `/articles?category=${categorySlug}`
+  }
+  return `/category/${categorySlug}`
 }
 
-// ParentSimple content pillar menu structure
-const menuItems = [
+// Icon mapping for categories
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  'college-planning': GraduationCap,
+  'financial-planning': DollarSign,
+  'high-school': School,
+  'middle-school': BookOpen,
+  'early-years': Heart,
+  'resources': FileText,
+}
+
+// Default menu structure (fallback if categories not loaded)
+const defaultMenuItems = [
   {
     title: "Early Years",
-    href: articlesLink('early-years'),
+    slug: "early-years",
     description: "Building the foundation (Ages 0-10)",
-    sections: [
-      {
-        title: "Early Childhood (0-5)",
-        items: [
-          {
-            name: "Development Milestones",
-            href: articlesLink('early-years', 'development milestones'),
-            icon: Sparkles,
-            description: "Track your child's growth"
-          },
-          {
-            name: "Learning Through Play",
-            href: articlesLink('early-years', 'learning through play'),
-            icon: Heart,
-            description: "Educational play strategies"
-          },
-          {
-            name: "Preschool Selection",
-            href: articlesLink('early-years', 'preschool'),
-            icon: School,
-            description: "Choose the right preschool"
-          },
-        ],
-      },
-      {
-        title: "Elementary School (6-10)",
-        items: [
-          {
-            name: "Academic Foundations",
-            href: articlesLink('early-years', 'academic foundations'),
-            icon: BookOpen,
-            description: "Build strong academic skills"
-          },
-          {
-            name: "Character Development",
-            href: articlesLink('early-years', 'character development'),
-            icon: Shield,
-            description: "Values and character building"
-          },
-          {
-            name: "529 Plan Calculator",
-            href: articlesLink('financial-planning', '529 plan'),
-            icon: Calculator,
-            description: "Start saving for college"
-          },
-        ],
-      },
-    ],
+    href: categoryHref('early-years'),
   },
   {
     title: "Middle School",
-    href: articlesLink('middle-school'),
+    slug: "middle-school",
     description: "Building momentum (Ages 11-14)",
-    sections: [
-      {
-        title: "Academic Preparation",
-        items: [
-          {
-            name: "Course Selection Guide",
-            href: articlesLink('middle-school', 'course selection'),
-            icon: BookOpen,
-            description: "Choose the right courses"
-          },
-          {
-            name: "Study Skills & Time Management",
-            href: articlesLink('middle-school', 'study skills'),
-            icon: Target,
-            description: "Build effective study habits"
-          },
-          {
-            name: "Enrichment Opportunities",
-            href: articlesLink('middle-school', 'enrichment'),
-            icon: Sparkles,
-            description: "STEM, arts, and athletics"
-          },
-        ],
-      },
-      {
-        title: "Social & Emotional",
-        items: [
-          {
-            name: "Navigating Adolescence",
-            href: articlesLink('middle-school', 'adolescence'),
-            icon: Users,
-            description: "Support your teen's development"
-          },
-          {
-            name: "Parent-Teen Communication",
-            href: articlesLink('middle-school', 'parent communication'),
-            icon: Heart,
-            description: "Build strong relationships"
-          },
-          {
-            name: "Summer Program Guide",
-            href: articlesLink('middle-school', 'summer program'),
-            icon: GraduationCap,
-            description: "Find the right programs"
-          },
-        ],
-      },
-    ],
+    href: categoryHref('middle-school'),
   },
   {
     title: "High School",
-    href: articlesLink('high-school'),
+    slug: "high-school",
     description: "College readiness (Ages 15-17)",
-    sections: [
-      {
-        title: "Academic Planning",
-        items: [
-          {
-            name: "GPA Optimization Strategies",
-            href: articlesLink('high-school', 'gpa'),
-            icon: TrendingUp,
-            description: "Maximize your GPA"
-          },
-          {
-            name: "Standardized Test Prep",
-            href: articlesLink('high-school', 'test prep'),
-            icon: Target,
-            description: "SAT/ACT preparation"
-          },
-          {
-            name: "Extracurricular Strategy",
-            href: articlesLink('high-school', 'extracurricular'),
-            icon: Sparkles,
-            description: "Build a strong profile"
-          },
-        ],
-      },
-      {
-        title: "College Preparation",
-        items: [
-          {
-            name: "College List Building",
-            href: articlesLink('college-planning', 'college list'),
-            icon: School,
-            description: "Find the right fit"
-          },
-          {
-            name: "Teacher Recommendations",
-            href: articlesLink('high-school', 'recommendations'),
-            icon: Users,
-            description: "Get strong recommendations"
-          },
-          {
-            name: "Free College Timeline",
-            href: articlesLink('college-planning', 'timeline'),
-            icon: FileText,
-            description: "Download our free guide"
-          },
-        ],
-      },
-    ],
+    href: categoryHref('high-school'),
   },
   {
     title: "College Planning",
-    href: "/college-planning",
+    slug: "college-planning",
     description: "Your path to college success (PRIMARY)",
-    sections: [
-      {
-        title: "Admissions Strategy",
-        items: [
-          {
-            name: "College Search & Fit",
-            href: articlesLink('college-planning', 'college search'),
-            icon: School,
-            description: "Find your perfect match"
-          },
-          {
-            name: "Application Timeline",
-            href: articlesLink('college-planning', 'application timeline'),
-            icon: FileText,
-            description: "Stay on track"
-          },
-          {
-            name: "Essay Writing Guide",
-            href: articlesLink('college-planning', 'essay'),
-            icon: BookOpen,
-            description: "Write winning essays"
-          },
-          {
-            name: "Interview Preparation",
-            href: articlesLink('college-planning', 'interview'),
-            icon: Users,
-            description: "Ace your interviews"
-          },
-        ],
-      },
-      {
-        title: "Get Expert Help",
-        items: [
-          {
-            name: "Find College Consultant",
-            href: "/consultation",
-            icon: GraduationCap,
-            description: "Match with an expert (Primary CTA)"
-          },
-          {
-            name: "Ivy League Strategies",
-            href: articlesLink('college-planning', 'ivy league'),
-            icon: Target,
-            description: "Competitive admissions guide"
-          },
-          {
-            name: "Early Decision Guide",
-            href: articlesLink('college-planning', 'early decision'),
-            icon: Shield,
-            description: "ED/EA strategies"
-          },
-        ],
-      },
-    ],
+    href: "/college-planning",
   },
   {
     title: "Financial Planning",
-    href: articlesLink('financial-planning'),
+    slug: "financial-planning",
     description: "Secure your family's future",
-    sections: [
-      {
-        title: "College Funding",
-        items: [
-          {
-            name: "529 Plans Explained",
-            href: articlesLink('financial-planning', '529 plan'),
-            icon: PiggyBank,
-            description: "Maximize tax advantages"
-          },
-          {
-            name: "Financial Aid Strategies",
-            href: articlesLink('college-planning', 'financial aid'),
-            icon: DollarSign,
-            description: "Maximize aid eligibility"
-          },
-          {
-            name: "Scholarship Guide",
-            href: articlesLink('college-planning', 'scholarship'),
-            icon: GraduationCap,
-            description: "Find and win scholarships"
-          },
-          {
-            name: "College Cost Calculator",
-            href: articlesLink('financial-planning', 'college cost'),
-            icon: Calculator,
-            description: "Calculate total costs"
-          },
-        ],
-      },
-      {
-        title: "Family Protection",
-        items: [
-          {
-            name: "Life Insurance for Parents",
-            href: articlesLink('financial-planning', 'life insurance'),
-            icon: Shield,
-            description: "Protect your family"
-          },
-          {
-            name: "Estate Planning Essentials",
-            href: articlesLink('financial-planning', 'estate planning'),
-            icon: FileText,
-            description: "Secure your legacy"
-          },
-          {
-            name: "Life Insurance Calculator",
-            href: "/calculators/life-insurance",
-            icon: Calculator,
-            description: "Calculate your needs"
-          },
-        ],
-      },
-    ],
+    href: categoryHref('financial-planning'),
   },
   {
     title: "Resources",
-    href: articlesLink('resources'),
+    slug: "resources",
     description: "Tools and guides for parents",
-    sections: [
-      {
-        title: "Downloadable Guides",
-        items: [
-          {
-            name: "College Planning Checklists",
-            href: articlesLink('resources', 'checklist'),
-            icon: FileText,
-            description: "Stay organized"
-          },
-          {
-            name: "Financial Planning Templates",
-            href: articlesLink('financial-planning', 'template'),
-            icon: DollarSign,
-            description: "Plan your finances"
-          },
-          {
-            name: "Academic Milestone Guides",
-            href: articlesLink('early-years', 'milestone'),
-            icon: BookOpen,
-            description: "Track progress"
-          },
-        ],
-      },
-      {
-        title: "Tools & Programs",
-        items: [
-          {
-            name: "Summer Programs Database",
-            href: articlesLink('middle-school', 'summer program'),
-            icon: GraduationCap,
-            description: "Find programs"
-          },
-          {
-            name: "Educational Tools & Apps",
-            href: articlesLink('resources', 'educational tools'),
-            icon: Sparkles,
-            description: "Recommended resources"
-          },
-          {
-            name: "Expert Directory",
-            href: "/consultation",
-            icon: Users,
-            description: "Find professionals"
-          },
-        ],
-      },
-    ],
+    href: categoryHref('resources'),
   },
 ]
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  display_order?: number | null
+  article_count?: number
+  has_articles?: boolean
+}
+
 export function MegaMenu() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        if (!response.ok) {
+          console.warn('Failed to load categories, using defaults')
+          setCategories([])
+          return
+        }
+        const data = await response.json()
+        setCategories(data.categories || [])
+      } catch (error) {
+        console.error('Error loading categories:', error)
+        setCategories([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadCategories()
+  }, [])
+
+  // Use CMS categories if available, otherwise fallback to defaults
+  const menuCategories = categories.length > 0 
+    ? categories
+        .sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999))
+        .map(cat => ({
+          title: cat.name,
+          slug: cat.slug,
+          description: cat.description || '',
+          hasArticles: cat.has_articles ?? false,
+          articleCount: cat.article_count ?? 0,
+          href: cat.slug === 'college-planning' 
+            ? '/college-planning' 
+            : categoryHref(cat.slug, cat.has_articles ?? false),
+        }))
+    : defaultMenuItems.map(item => ({
+        ...item,
+        hasArticles: true, // Defaults assume content exists
+        articleCount: 0,
+      }))
+
+  if (isLoading) {
+    return (
+      <NavigationMenu>
+        <NavigationMenuList>
+          {defaultMenuItems.map((item) => (
+            <NavigationMenuItem key={item.slug}>
+              <NavigationMenuTrigger className="h-8 px-4 py-2 text-sm font-semibold text-[#1A2B49]">
+                {item.title}
+              </NavigationMenuTrigger>
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+    )
+  }
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        {menuItems.map((item) => (
-          <NavigationMenuItem key={item.title}>
-            <NavigationMenuTrigger className="h-8 px-4 py-2 text-sm font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors data-[state=open]:text-[#152238] data-[state=open]:underline decoration-[#9DB89D] decoration-2 underline-offset-4">
-                    {item.title}
-                </NavigationMenuTrigger>
+        {menuCategories.map((item) => {
+          const IconComponent = categoryIcons[item.slug] || FileText
+          return (
+            <NavigationMenuItem key={item.slug}>
+              <NavigationMenuTrigger className="h-8 px-4 py-2 text-sm font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors data-[state=open]:text-[#152238] data-[state=open]:underline decoration-[#9DB89D] decoration-2 underline-offset-4">
+                {item.title}
+              </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div className="w-[900px] p-6 bg-white rounded-lg shadow-xl border border-gray-100 z-50" style={{ backgroundColor: '#ffffff' }}>
                   {/* Header Section */}
@@ -387,48 +170,101 @@ export function MegaMenu() {
                     >
                       {item.title}
                     </Link>
-                    <p className="text-gray-600 mt-1 text-sm">{item.description}</p>
+                    {item.description && (
+                      <p className="text-gray-600 mt-1 text-sm">{item.description}</p>
+                    )}
                   </div>
 
-                  {/* Content Grid */}
+                  {/* Content Grid - Show featured articles from this category */}
                   <div className="grid grid-cols-2 gap-8">
-                    {item.sections.map((section) => (
-                      <div key={section.title}>
-                        <h3 className="font-semibold text-[#1A2B49] mb-4 text-sm uppercase tracking-wide">
-                          {section.title}
-                        </h3>
-                        <ul className="space-y-3">
-                          {section.items.map((menuItem) => {
-                            const IconComponent = menuItem.icon
-                            return (
-                              <li key={menuItem.name}>
-                                <Link
-                                  href={menuItem.href}
-                                  className="flex items-start space-x-3 p-3 rounded-lg hover:bg-[#F9F6EF] transition-colors group border border-transparent hover:border-[#9DB89D]/30"
-                                >
-                                  <IconComponent className="h-5 w-5 text-[#9DB89D] mt-0.5 flex-shrink-0 group-hover:text-[#8BA68B]" />
-                                  <div className="flex-1 min-w-0">
-                                    <span className="text-sm font-semibold text-[#1A2B49] group-hover:text-[#152238] block">
-                                      {menuItem.name}
-                                    </span>
-                                    {menuItem.description && (
-                                      <span className="text-xs text-gray-600 mt-1 block">
-                                        {menuItem.description}
-                                      </span>
-                                    )}
-                                  </div>
-                                </Link>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      </div>
-                    ))}
+                    <div>
+                      <h3 className="font-semibold text-[#1A2B49] mb-4 text-sm uppercase tracking-wide">
+                        Featured Articles
+                      </h3>
+                      <ul className="space-y-3">
+                        <li>
+                          <Link
+                            href={item.href}
+                            className="flex items-start space-x-3 p-3 rounded-lg hover:bg-[#F9F6EF] transition-colors group border border-transparent hover:border-[#9DB89D]/30"
+                          >
+                            <IconComponent className="h-5 w-5 text-[#9DB89D] mt-0.5 flex-shrink-0 group-hover:text-[#8BA68B]" />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm font-semibold text-[#1A2B49] group-hover:text-[#152238] block">
+                                View All {item.title} Articles
+                              </span>
+                              <span className="text-xs text-gray-600 mt-1 block">
+                                Explore our complete {item.title.toLowerCase()} library
+                              </span>
+                            </div>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-[#1A2B49] mb-4 text-sm uppercase tracking-wide">
+                        Quick Links
+                      </h3>
+                      <ul className="space-y-3">
+                        {item.slug === 'college-planning' && (
+                          <li>
+                            <Link
+                              href="/consultation"
+                              className="flex items-start space-x-3 p-3 rounded-lg hover:bg-[#F9F6EF] transition-colors group border border-transparent hover:border-[#9DB89D]/30"
+                            >
+                              <GraduationCap className="h-5 w-5 text-[#9DB89D] mt-0.5 flex-shrink-0 group-hover:text-[#8BA68B]" />
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-semibold text-[#1A2B49] group-hover:text-[#152238] block">
+                                  Find College Consultant
+                                </span>
+                                <span className="text-xs text-gray-600 mt-1 block">
+                                  Match with an expert (Primary CTA)
+                                </span>
+                              </div>
+                            </Link>
+                          </li>
+                        )}
+                        {item.slug === 'financial-planning' && (
+                          <li>
+                            <Link
+                              href="/calculators/life-insurance"
+                              className="flex items-start space-x-3 p-3 rounded-lg hover:bg-[#F9F6EF] transition-colors group border border-transparent hover:border-[#9DB89D]/30"
+                            >
+                              <Calculator className="h-5 w-5 text-[#9DB89D] mt-0.5 flex-shrink-0 group-hover:text-[#8BA68B]" />
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-semibold text-[#1A2B49] group-hover:text-[#152238] block">
+                                  Life Insurance Calculator
+                                </span>
+                                <span className="text-xs text-gray-600 mt-1 block">
+                                  Calculate your needs
+                                </span>
+                              </div>
+                            </Link>
+                          </li>
+                        )}
+                        <li>
+                          <Link
+                            href={item.href}
+                            className="flex items-start space-x-3 p-3 rounded-lg hover:bg-[#F9F6EF] transition-colors group border border-transparent hover:border-[#9DB89D]/30"
+                          >
+                            <FileText className="h-5 w-5 text-[#9DB89D] mt-0.5 flex-shrink-0 group-hover:text-[#8BA68B]" />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm font-semibold text-[#1A2B49] group-hover:text-[#152238] block">
+                                Browse All Articles
+                              </span>
+                              <span className="text-xs text-gray-600 mt-1 block">
+                                See complete {item.title.toLowerCase()} content
+                              </span>
+                            </div>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </NavigationMenuContent>
-          </NavigationMenuItem>
-        ))}
+            </NavigationMenuItem>
+          )
+        })}
       </NavigationMenuList>
     </NavigationMenu>
   )
