@@ -55,17 +55,15 @@ export interface UxCategory {
 
 export interface ArticleWithCategory extends Article {
   category_details?: Category
+  primary_ux_category?: UxCategory
 }
 
-// Get all published articles
+// Get all published articles - using view with primary UX category
 export async function getPublishedArticles(limit?: number): Promise<{ articles: ArticleWithCategory[], error: Error | null }> {
   try {
     let query = supabase
-      .from('articles')
-      .select(`
-        *,
-        category_details:article_categories!articles_category_id_fkey(name, slug, description)
-      `)
+      .from('articles_with_primary_ux_category')
+      .select('*')
       .eq('status', 'published')
       .eq('site_id', PUBLISHARE_SITE_ID)
       .order('created_at', { ascending: false })
@@ -76,49 +74,95 @@ export async function getPublishedArticles(limit?: number): Promise<{ articles: 
 
     const { data, error } = await query
 
+    if (error) {
+      return { articles: [], error }
+    }
+
+    // Map to include category_details for backward compatibility
+    const articles = (data || []).map((article: any) => ({
+      ...article,
+      primary_ux_category: article.primary_ux_category_slug ? {
+        id: article.primary_ux_category_id,
+        name: article.primary_ux_category_name,
+        slug: article.primary_ux_category_slug,
+        description: null,
+        display_order: null,
+      } : undefined,
+      category_details: article.primary_ux_category_slug ? {
+        id: article.primary_ux_category_id,
+        name: article.primary_ux_category_name,
+        slug: article.primary_ux_category_slug,
+        description: null,
+        created_at: '',
+      } : undefined,
+    }))
+
     return { 
-      articles: data as ArticleWithCategory[], 
-      error 
+      articles: articles as ArticleWithCategory[], 
+      error: null 
     }
   } catch (error) {
     return { articles: [], error: error instanceof Error ? error : new Error(String(error)) }
   }
 }
 
-// Get a single article by slug
+// Get a single article by slug - using view with primary UX category
 export async function getArticle(slug: string): Promise<{ article: ArticleWithCategory | null, error: Error | null }> {
   try {
     const { data, error } = await supabase
-      .from('articles')
-      .select(`
-        *,
-        category_details:article_categories!articles_category_id_fkey(name, slug, description)
-      `)
+      .from('articles_with_primary_ux_category')
+      .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
       .eq('site_id', PUBLISHARE_SITE_ID)
-      .single()
+      .maybeSingle()
+
+    if (error) {
+      return { article: null, error }
+    }
+
+    if (!data) {
+      return { article: null, error: null }
+    }
+
+    // Map to include category_details for backward compatibility
+    const article = {
+      ...data,
+      primary_ux_category: data.primary_ux_category_slug ? {
+        id: data.primary_ux_category_id,
+        name: data.primary_ux_category_name,
+        slug: data.primary_ux_category_slug,
+        description: null,
+        display_order: null,
+      } : undefined,
+      category_details: data.primary_ux_category_slug ? {
+        id: data.primary_ux_category_id,
+        name: data.primary_ux_category_name,
+        slug: data.primary_ux_category_slug,
+        description: null,
+        created_at: '',
+      } : undefined,
+    }
 
     return { 
-      article: data as ArticleWithCategory, 
-      error 
+      article: article as ArticleWithCategory, 
+      error: null 
     }
   } catch (error) {
     return { article: null, error: error instanceof Error ? error : new Error(String(error)) }
   }
 }
 
-// Get articles by category
+// Get articles by UX category slug - using articles_with_primary_ux_category view
 export async function getArticlesByCategory(categorySlug: string, limit?: number): Promise<{ articles: ArticleWithCategory[], error: Error | null }> {
   try {
+    // Use the view which includes primary_ux_category fields
     let query = supabase
-      .from('articles')
-      .select(`
-        *,
-        category_details:article_categories!articles_category_id_fkey(name, slug, description)
-      `)
+      .from('articles_with_primary_ux_category')
+      .select('*')
       .eq('status', 'published')
       .eq('site_id', PUBLISHARE_SITE_ID)
+      .eq('primary_ux_category_slug', categorySlug)
       .order('created_at', { ascending: false })
 
     if (limit) {
@@ -127,55 +171,54 @@ export async function getArticlesByCategory(categorySlug: string, limit?: number
 
     const { data, error } = await query
 
-    const filteredArticles = (data as ArticleWithCategory[] | null)?.filter((article) => {
-      const categorySlugMatches =
-        slugifyCategory(article.category_details?.slug) === categorySlug ||
-        slugifyCategory(article.category_details?.name) === categorySlug ||
-        slugifyCategory(article.category) === categorySlug
+    if (error) {
+      console.error('[getArticlesByCategory] Query error:', error)
+      return { articles: [], error }
+    }
 
-      return categorySlugMatches
-    }) ?? []
+    // Map the data to include category_details for backward compatibility
+    const articles = (data || []).map((article: any) => ({
+      ...article,
+      primary_ux_category: article.primary_ux_category_slug ? {
+        id: article.primary_ux_category_id,
+        name: article.primary_ux_category_name,
+        slug: article.primary_ux_category_slug,
+        description: null,
+        display_order: null,
+      } : undefined,
+      category_details: article.primary_ux_category_slug ? {
+        id: article.primary_ux_category_id,
+        name: article.primary_ux_category_name,
+        slug: article.primary_ux_category_slug,
+        description: null,
+        created_at: '',
+      } : undefined,
+    }))
 
     return { 
-      articles: filteredArticles, 
-      error 
+      articles: articles as ArticleWithCategory[], 
+      error: null 
     }
   } catch (error) {
+    console.error('[getArticlesByCategory] Exception:', error)
     return { articles: [], error: error instanceof Error ? error : new Error(String(error)) }
   }
 }
 
-// Get all categories
-export async function getCategories(): Promise<{ categories: Category[], error: Error | null }> {
+// Get UX categories (for navigation) - returns UX categories, not article_categories
+export async function getCategories(): Promise<{ categories: UxCategory[], error: Error | null }> {
   try {
-    const { data, error } = await supabase
-      .from('articles')
-      .select(`
-        category_details:article_categories!articles_category_id_fkey(id, name, slug, description, created_at)
-      `)
-      .eq('status', 'published')
-      .eq('site_id', PUBLISHARE_SITE_ID)
-    const categoryMap = new Map<string, Category>()
-
-    for (const row of data || []) {
-      const category = row.category_details as Category | Category[] | null | undefined
-      if (category && !Array.isArray(category) && category.id && !categoryMap.has(category.id)) {
-        categoryMap.set(category.id, category)
-      }
-    }
-
-    return { 
-      categories: Array.from(categoryMap.values()), 
-      error 
-    }
+    const { categories, error } = await getUxCategories()
+    return { categories, error }
   } catch (error) {
     return { categories: [], error: error instanceof Error ? error : new Error(String(error)) }
   }
 }
 
-// Get related articles (same category, excluding current article)
+// Get related articles (same UX category, excluding current article)
 export async function getRelatedArticles(currentArticleId: string, categoryId?: string, limit: number = 3): Promise<{ articles: Article[], error: Error | null }> {
   try {
+    // If categoryId is provided, use it to filter by UX category
     let query = supabase
       .from('articles')
       .select('*')
@@ -186,7 +229,19 @@ export async function getRelatedArticles(currentArticleId: string, categoryId?: 
       .limit(limit)
 
     if (categoryId) {
-      query = query.eq('category_id', categoryId)
+      // Filter by UX category via join
+      query = supabase
+        .from('articles')
+        .select(`
+          *,
+          article_ux_categories!inner(ux_category_id)
+        `)
+        .eq('status', 'published')
+        .eq('site_id', PUBLISHARE_SITE_ID)
+        .eq('article_ux_categories.ux_category_id', categoryId)
+        .neq('id', currentArticleId)
+        .order('created_at', { ascending: false })
+        .limit(limit)
     }
 
     const { data, error } = await query
@@ -205,10 +260,7 @@ export async function searchArticles(searchTerm: string, limit: number = 10): Pr
   try {
     const { data, error } = await supabase
       .from('articles')
-      .select(`
-        *,
-        category_details:article_categories!articles_category_id_fkey(name, slug, description)
-      `)
+      .select('*')
       .eq('status', 'published')
       .eq('site_id', PUBLISHARE_SITE_ID)
       .or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%,excerpt.ilike.%${searchTerm}%`)

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
-import { getArticlesByCategory, getCategories } from '@/lib/articles'
+import { getArticlesByCategory, getCategories, getUxCategoryBySlug } from '@/lib/articles'
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>
@@ -26,9 +26,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params
-  const [categoryResult, categoriesResult] = await Promise.all([
+  const [categoryResult, categoriesResult, uxCategoryResult] = await Promise.all([
     getArticlesByCategory(slug),
     getCategories(),
+    getUxCategoryBySlug(slug),
   ])
 
   if (categoryResult.error) {
@@ -37,9 +38,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   const articles = categoryResult.articles || []
   const categories = categoriesResult.categories || []
+  const uxCategory = uxCategoryResult.category
 
   const categoryName =
-    articles[0]?.category_details?.name || formatCategoryName(slug)
+    uxCategory?.name || articles[0]?.primary_ux_category?.name || articles[0]?.category_details?.name || formatCategoryName(slug)
 
   if (!articles.length) {
     notFound()
