@@ -7,6 +7,10 @@ interface ArticlePageProps {
   params: Promise<{ slug: string }>
 }
 
+// Force dynamic rendering - fetch from database on every request
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params
   const { article, error } = await getArticle(slug)

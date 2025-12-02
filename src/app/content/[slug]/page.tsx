@@ -90,6 +90,10 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
 
 // Dynamic route - no generateStaticParams needed
 
+// Force dynamic rendering - fetch from database on every request
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function ContentPage({ params }: ContentPageProps) {
   const { slug } = await params;
 
