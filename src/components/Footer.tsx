@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import { Logo } from './brand/Logo';
-import { Mail, Phone, Users } from 'lucide-react';
+import { Mail, Users } from 'lucide-react';
+
+const articlesHref = (categorySlug?: string, query?: string) => {
+  const params = new URLSearchParams()
+  if (categorySlug) params.set('category', categorySlug)
+  if (query) params.set('query', query)
+  const search = params.toString()
+  return search ? `/articles?${search}` : '/articles'
+}
 
 const Footer = () => {
   return (
@@ -22,19 +30,19 @@ const Footer = () => {
           <div>
             <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-white">Resources</h3>
             <div className="space-y-3 text-sm">
-              <Link href="/early-years" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+              <Link href={articlesHref('early-years')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Early Years (0-10)
               </Link>
-              <Link href="/middle-school" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+              <Link href={articlesHref('middle-school')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Middle School (11-14)
               </Link>
-              <Link href="/high-school" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+              <Link href={articlesHref('high-school')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 High School (15-17)
               </Link>
               <Link href="/college-planning" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 College Planning
               </Link>
-              <Link href="/financial-planning" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+              <Link href={articlesHref('financial-planning')} className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Financial Planning
               </Link>
             </div>
@@ -44,17 +52,17 @@ const Footer = () => {
           <div>
             <h3 className="footer-heading text-lg font-serif font-bold mb-4 text-[#F9F6EF]">Tools & Calculators</h3>
             <div className="space-y-3 text-sm">
-              <Link href="/calculators/college-savings" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                529 Plan Calculator
+              <Link href="/calculators/investment-growth" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                College Savings Growth
               </Link>
-              <Link href="/calculators/college-cost" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                College Cost Calculator
+              <Link href="/calculators/retirement-savings" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                Future Cost Planner
               </Link>
               <Link href="/calculators/life-insurance" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
                 Life Insurance Calculator
               </Link>
-              <Link href="/resources" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
-                All Tools & Guides
+              <Link href="/calculators" className="block text-[#F9F6EF]/80 hover:text-[#9DB89D] transition-colors">
+                Explore All Calculators
               </Link>
             </div>
           </div>
@@ -107,8 +115,8 @@ const Footer = () => {
               </Link>
             </div>
             <p className="text-xs text-[#F9F6EF]/60">
-              © 2024 ParentSimple. All rights reserved.
-          </p>
+              © {new Date().getFullYear()} ParentSimple. All rights reserved.
+            </p>
           </div>
         </div>
       </div>

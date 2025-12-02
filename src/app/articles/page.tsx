@@ -1,37 +1,108 @@
 import type { Metadata } from 'next'
-import { getPublishedArticles, getCategories } from '../../lib/articles'
 import Link from 'next/link'
 import Image from 'next/image'
 import { generateListingMetadata } from '../../lib/seo-utils'
+import { getPublishedArticles, getCategories } from '../../lib/articles'
+
+type ArticlesPageSearchParams = {
+  category?: string | string[]
+  query?: string | string[]
+}
+
+interface ArticlesPageProps {
+  searchParams?: Promise<ArticlesPageSearchParams | undefined>
+}
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
 
 export const metadata: Metadata = generateListingMetadata(
-  "Retirement Education & Insights",
-  "Expert guidance on annuities, tax planning, estate planning, and more. Stay informed with our latest articles and resources for retirement planning.",
-  "retirement planning"
+  "ParentSimple Insights & Guides",
+  "Expert guidance on college planning, financial strategies, and academic success. Explore the latest ParentSimple articles for affluent families planning elite education journeys.",
+  "college planning"
 )
 
-export default async function ArticlesPage() {
+export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
+  const resolvedSearchParams = await searchParams
   const { articles, error } = await getPublishedArticles()
   const { categories } = await getCategories()
+
+  const categoryParam = Array.isArray(resolvedSearchParams?.category)
+    ? resolvedSearchParams?.category[0]
+    : resolvedSearchParams?.category
+  const queryParam = Array.isArray(resolvedSearchParams?.query)
+    ? resolvedSearchParams?.query[0]
+    : resolvedSearchParams?.query
+
+  const activeCategory = categories.find(
+    (category) =>
+      category.slug === categoryParam ||
+      slugify(category.name) === categoryParam
+  )
+
+  const normalizedQuery = queryParam?.toLowerCase().trim()
 
   if (error) {
     console.error('Error fetching articles:', error)
   }
 
+  const filteredArticles = (articles || []).filter((article) => {
+    let matches = true
+
+    if (activeCategory) {
+      matches =
+        matches &&
+        (article.category_details?.slug === activeCategory.slug ||
+          slugify(article.category_details?.name || '') === activeCategory.slug)
+    }
+
+    if (normalizedQuery) {
+      const haystacks = [
+        article.title,
+        article.excerpt,
+        article.meta_description,
+        article.content,
+      ]
+        .filter((value): value is string => Boolean(value))
+        .map((text) => text.toLowerCase())
+
+      matches =
+        matches &&
+        haystacks.some((text) => text.includes(normalizedQuery))
+    }
+
+    return matches
+  })
+
+  const headline = activeCategory
+    ? `${activeCategory.name} Insights`
+    : 'ParentSimple Education & Planning Library'
+  const subheading = activeCategory
+    ? `Hand-picked guidance for ${activeCategory.name.toLowerCase()} families.`
+    : 'Elite college planning, financial strategies, and expert parenting guidance—curated for ambitious families.'
+
   return (
     <div className="min-h-screen bg-[#F5F5F0]">
-
-
       {/* Hero Section */}
-      <section className="py-16 px-6" style={{ background: 'linear-gradient(135deg, #36596A 0%, #82A6B1 100%)' }}>
+      <section
+        className="py-16 px-6"
+        style={{ background: 'linear-gradient(135deg, #36596A 0%, #82A6B1 100%)' }}
+      >
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-serif font-semibold text-white mb-6">
-            Retirement Education & Insights
+            {headline}
           </h1>
           <p className="text-xl text-white opacity-90 mb-8 max-w-3xl mx-auto">
-            Expert guidance on annuities, tax planning, estate planning, and more. 
-            Stay informed with our latest articles and resources.
+            {subheading}
           </p>
+          {normalizedQuery && (
+            <p className="text-sm text-white/80">
+              Showing results for “{normalizedQuery}”
+            </p>
+          )}
         </div>
       </section>
 
@@ -41,15 +112,35 @@ export default async function ArticlesPage() {
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-wrap gap-3">
               <span className="text-[#36596A] font-medium mr-2">Filter by:</span>
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/category/${category.slug}`}
-                  className="px-4 py-2 bg-[#F5F5F0] text-[#36596A] rounded-full text-sm font-medium hover:bg-[#E4CDA1] transition-colors"
-                >
-                  {category.name}
-                </Link>
-              ))}
+              <Link
+                href="/articles"
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  !activeCategory
+                    ? 'bg-[#36596A] text-white'
+                    : 'bg-[#F5F5F0] text-[#36596A] hover:bg-[#E4CDA1]'
+                }`}
+              >
+                All
+              </Link>
+              {categories.map((category) => {
+                const isActive = category.id === activeCategory?.id
+                const categoryHref = new URLSearchParams({
+                  category: category.slug,
+                }).toString()
+                return (
+                  <Link
+                    key={category.id}
+                    href={`/articles?${categoryHref}`}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-[#36596A] text-white'
+                        : 'bg-[#F5F5F0] text-[#36596A] hover:bg-[#E4CDA1]'
+                    }`}
+                  >
+                    {category.name}
+                  </Link>
+                )
+              })}
             </div>
           </div>
         </section>
@@ -60,12 +151,17 @@ export default async function ArticlesPage() {
         <div className="max-w-6xl mx-auto">
           {error ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">Unable to load articles at this time. Please try again later.</p>
+              <p className="text-gray-600">
+                Unable to load articles at this time. Please try again later.
+              </p>
             </div>
-          ) : articles && articles.length > 0 ? (
+          ) : filteredArticles && filteredArticles.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {articles.map((article) => (
-                <article key={article.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+              {filteredArticles.map((article) => (
+                <article
+                  key={article.id}
+                  className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+                >
                   {/* Featured Image */}
                   {article.featured_image_url && (
                     <div className="relative h-48 rounded-t-lg overflow-hidden">
@@ -108,10 +204,10 @@ export default async function ArticlesPage() {
                         {new Date(article.created_at).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
-                          day: 'numeric'
+                          day: 'numeric',
                         })}
                       </span>
-                      <Link 
+                      <Link
                         href={`/articles/${article.slug}`}
                         className="text-[#36596A] font-medium hover:underline"
                       >
@@ -124,25 +220,36 @@ export default async function ArticlesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600">No articles available yet. Check back soon!</p>
+              <p className="text-gray-600">
+                No articles matched your filters. Try adjusting your search or view all insights.
+              </p>
+              <Link
+                href="/articles"
+                className="inline-flex mt-4 px-6 py-3 rounded-full bg-[#36596A] text-white font-medium hover:bg-[#2a4a5a] transition-colors"
+              >
+                Reset filters
+              </Link>
             </div>
           )}
         </div>
       </section>
 
       {/* Newsletter Signup */}
-      <section className="py-16 px-6" style={{ background: 'linear-gradient(135deg, #36596A 0%, #82A6B1 100%)' }}>
+      <section
+        className="py-16 px-6"
+        style={{ background: 'linear-gradient(135deg, #36596A 0%, #82A6B1 100%)' }}
+      >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-serif font-semibold text-white mb-4">
-            Stay Updated with Retirement Insights
+            Stay Updated with ParentSimple Insights
           </h2>
           <p className="text-xl text-white mb-8 opacity-90">
-            Get the latest articles and expert advice delivered to your inbox.
+            Get the latest ParentSimple research and expert advice delivered to your inbox.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
+            <input
+              type="email"
+              placeholder="Enter your email"
               className="flex-1 px-4 py-3 rounded-lg border-0 text-gray-900"
             />
             <button className="bg-white text-[#36596A] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
@@ -161,16 +268,16 @@ export default async function ArticlesPage() {
               <div className="space-y-2 text-gray-600">
                 <p>Contact Us</p>
                 <p>Phone: 800-555-2040</p>
-                <p>Email: support@seniorsimple.org</p>
+                <p>Email: support@parentsimple.org</p>
               </div>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-[#36596A] mb-4">Resources</h3>
               <div className="space-y-2 text-gray-600">
-                <p>Annuities</p>
-                <p>Estate Planning</p>
-                <p>Health</p>
-                <p>Housing</p>
+                <p>College Planning</p>
+                <p>Financial Planning</p>
+                <p>High School Success</p>
+                <p>Early Years</p>
               </div>
             </div>
             <div>
@@ -191,12 +298,10 @@ export default async function ArticlesPage() {
             </div>
           </div>
           <div className="text-center mt-8 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-500">© 2024 SeniorSimple. All rights reserved.</p>
+            <p className="text-sm text-gray-500">© {new Date().getFullYear()} ParentSimple. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
   )
 }
-
-

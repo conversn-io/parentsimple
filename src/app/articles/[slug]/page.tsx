@@ -40,19 +40,19 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     "dateModified": article.updated_at,
     "author": {
       "@type": "Organization",
-      "name": "SeniorSimple"
+      "name": "ParentSimple"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "SeniorSimple",
+      "name": "ParentSimple",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://seniorsimple.org/logo.png"
+        "url": "https://parentsimple.org/logo.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://seniorsimple.org/articles/${article.slug}`
+      "@id": `https://parentsimple.org/articles/${article.slug}`
     }
   }
 
@@ -285,7 +285,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <div className="space-y-2 text-gray-600">
                 <p>Contact Us</p>
                 <p>Phone: 800-555-2040</p>
-                <p>Email: support@seniorsimple.org</p>
+                <p>Email: support@parentsimple.org</p>
               </div>
             </div>
             <div>
@@ -315,7 +315,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </div>
           </div>
           <div className="text-center mt-8 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-500">© 2024 SeniorSimple. All rights reserved.</p>
+            <p className="text-sm text-gray-500">© {new Date().getFullYear()} ParentSimple. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -330,17 +330,17 @@ export async function generateMetadata({ params }: ArticlePageProps) {
 
   if (!article) {
     return {
-      title: 'Article Not Found - SeniorSimple',
+      title: 'Article Not Found - ParentSimple',
       description: 'The requested article could not be found.'
     }
   }
 
   return {
-    title: article.meta_title || `${article.title} - SeniorSimple`,
-    description: article.meta_description || article.excerpt || 'Expert retirement planning advice from SeniorSimple.',
+    title: article.meta_title || `${article.title} - ParentSimple`,
+    description: article.meta_description || article.excerpt || 'Expert education and financial planning advice from ParentSimple.',
     openGraph: {
       title: article.title,
-      description: article.excerpt || 'Expert retirement planning advice from SeniorSimple.',
+      description: article.excerpt || 'Expert education and financial planning advice from ParentSimple.',
       images: article.featured_image_url ? [article.featured_image_url] : [],
       type: 'article',
     },

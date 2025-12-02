@@ -5,32 +5,40 @@ import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "../ui/Button"
 
+const articlesLink = (categorySlug?: string, query?: string) => {
+  const params = new URLSearchParams()
+  if (categorySlug) params.set('category', categorySlug)
+  if (query) params.set('query', query)
+  const search = params.toString()
+  return search ? `/articles?${search}` : '/articles'
+}
+
 const mobileMenuItems = [
   {
     title: "Early Years",
-    href: "/early-years",
+    href: articlesLink('early-years'),
     items: [
-      { name: "Development Milestones", href: "/early-years/development-milestones" },
-      { name: "Learning Through Play", href: "/early-years/learning-through-play" },
-      { name: "529 Plan Calculator", href: "/calculators/college-savings" },
+      { name: "Development Milestones", href: articlesLink('early-years', 'development milestones') },
+      { name: "Learning Through Play", href: articlesLink('early-years', 'learning through play') },
+      { name: "529 Plan Essentials", href: articlesLink('financial-planning', '529 plan') },
     ]
   },
   {
     title: "Middle School",
-    href: "/middle-school",
+    href: articlesLink('middle-school'),
     items: [
-      { name: "Course Selection Guide", href: "/middle-school/course-selection" },
-      { name: "Study Skills & Time Management", href: "/middle-school/study-skills" },
-      { name: "Summer Program Guide", href: "/resources/summer-programs" },
+      { name: "Course Selection Guide", href: articlesLink('middle-school', 'course selection') },
+      { name: "Study Skills & Time Management", href: articlesLink('middle-school', 'study skills') },
+      { name: "Summer Program Guide", href: articlesLink('middle-school', 'summer program') },
     ]
   },
   {
     title: "High School",
-    href: "/high-school",
+    href: articlesLink('high-school'),
     items: [
-      { name: "GPA Optimization Strategies", href: "/high-school/gpa-optimization" },
-      { name: "Standardized Test Prep", href: "/high-school/test-prep" },
-      { name: "Free College Timeline", href: "/college-planning/timeline" },
+      { name: "GPA Optimization Strategies", href: articlesLink('high-school', 'gpa') },
+      { name: "Standardized Test Prep", href: articlesLink('high-school', 'test prep') },
+      { name: "Free College Timeline", href: articlesLink('college-planning', 'timeline') },
     ]
   },
   {
@@ -44,20 +52,20 @@ const mobileMenuItems = [
   },
   {
     title: "Financial Planning",
-    href: "/financial-planning",
+    href: articlesLink('financial-planning'),
     items: [
-      { name: "529 Plans Explained", href: "/financial-planning/529-plans" },
-      { name: "Life Insurance for Parents", href: "/financial-planning/life-insurance" },
-      { name: "College Cost Calculator", href: "/calculators/college-cost" },
+      { name: "529 Plans Explained", href: articlesLink('financial-planning', '529 plan') },
+      { name: "Life Insurance for Parents", href: articlesLink('financial-planning', 'life insurance') },
+      { name: "College Cost Strategy", href: articlesLink('financial-planning', 'college cost') },
     ]
   },
   {
     title: "Resources",
-    href: "/resources",
+    href: articlesLink('resources'),
     items: [
-      { name: "College Planning Checklists", href: "/resources/college-planning-checklist" },
-      { name: "Summer Programs Database", href: "/resources/summer-programs" },
-      { name: "Educational Tools & Apps", href: "/resources/educational-tools" },
+      { name: "College Planning Checklists", href: articlesLink('resources', 'checklist') },
+      { name: "Summer Programs Database", href: articlesLink('middle-school', 'summer program') },
+      { name: "Educational Tools & Apps", href: articlesLink('resources', 'educational tools') },
     ]
   },
 ]

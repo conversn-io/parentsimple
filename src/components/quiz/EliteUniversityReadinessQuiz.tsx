@@ -4,39 +4,61 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { QuizProgress } from './QuizProgress';
 import { QuizQuestion } from './QuizQuestion';
-import { ProcessingState } from './ProcessingState';
-import { 
-  initializeTracking, 
-  trackQuestionAnswer, 
-  trackLeadFormSubmit, 
-  trackPageView, 
-  trackQuizStart, 
-  trackQuizComplete,
+import {
+  initializeTracking,
+  trackQuestionAnswer,
+  trackLeadFormSubmit,
+  trackPageView,
+  trackQuizStart,
   trackGraduationYearSelected,
   trackScoreCalculated,
-  LeadData
+  LeadData,
 } from '@/lib/temp-tracking';
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, UTMParameters } from '@/utils/utm-utils';
 import { trackUTMParameters } from '@/utils/utm-tracker';
 import { ELITE_UNIVERSITY_QUESTIONS } from '@/data/elite-university-questions';
-import { calculateEliteUniversityReadinessScore } from '@/utils/elite-university-scoring';
+import { calculateEliteUniversityReadinessScore, type EliteUniversityReadinessResults } from '@/utils/elite-university-scoring';
 
-interface QuizAnswer {
-  [key: string]: any;
+const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
+
+type QuizVariant = 'default' | 'embed';
+
+type QuizAnswer = Record<string, unknown>;
+
+type ContactInfoAnswer = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  consent?: boolean;
+};
+
+type QuizAnswerValue = string | number | string[] | ContactInfoAnswer | undefined;
+
+interface EliteUniversityReadinessQuizProps {
+  resultVariant?: QuizVariant;
 }
 
-export const EliteUniversityReadinessQuiz = () => {
+export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default' }: EliteUniversityReadinessQuizProps) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
-  const [calculatedResults, setCalculatedResults] = useState<any>(null);
-  const [showProcessing, setShowProcessing] = useState(false);
+  const [calculatedResults, setCalculatedResults] = useState<EliteUniversityReadinessResults | null>(null);
   const [quizSessionId, setQuizSessionId] = useState<string | null>(null);
   const [utmParams, setUtmParams] = useState<UTMParameters | null>(null);
   const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
 
   const questions = ELITE_UNIVERSITY_QUESTIONS;
   const totalSteps = questions.length;
+
+  useEffect(() => {
+    if (typeof sessionStorage === 'undefined') return;
+    if (resultVariant === 'embed') {
+      sessionStorage.setItem(RESULT_VARIANT_STORAGE_KEY, 'embed');
+    } else {
+      sessionStorage.removeItem(RESULT_VARIANT_STORAGE_KEY);
+    }
+  }, [resultVariant]);
 
   useEffect(() => {
     // Generate unique session ID for tracking
@@ -48,7 +70,15 @@ export const EliteUniversityReadinessQuiz = () => {
     initializeTracking();
     
     // Track page view
-    trackPageView('ParentSimple Elite University Readiness Assessment', '/quiz/elite-university-readiness');
+    const pageTitle =
+      resultVariant === 'embed'
+        ? 'Elite University Readiness Assessment – Empowerly Beta'
+        : 'Elite University Readiness Assessment | ParentSimple';
+    const pagePath =
+      resultVariant === 'embed'
+        ? '/quiz/elite-university-readiness/empowerly'
+        : '/quiz/elite-university-readiness';
+    trackPageView(pageTitle, pagePath);
     
     // Track quiz start
     trackQuizStart('elite_university_readiness', sessionId);
@@ -99,15 +129,13 @@ export const EliteUniversityReadinessQuiz = () => {
     };
 
     extractAndTrackUTM();
-  }, [totalSteps]);
+  }, [resultVariant, totalSteps]);
 
   // Calculate readiness score when answers change
   useEffect(() => {
-    if (answers.graduation_year && Object.keys(answers).length >= 2) {
-      const results = calculateEliteUniversityReadinessScore(
-        answers,
-        answers.graduation_year
-      );
+    const graduationYear = answers.graduation_year;
+    if (typeof graduationYear === 'string' && Object.keys(answers).length >= 2) {
+      const results = calculateEliteUniversityReadinessScore(answers, graduationYear);
       setCalculatedResults(results);
       console.log('📊 Readiness Score Calculated:', {
         totalScore: results.totalScore,
@@ -120,7 +148,7 @@ export const EliteUniversityReadinessQuiz = () => {
     }
   }, [answers, quizSessionId]);
 
-  const handleAnswer = async (answer: any) => {
+  const handleAnswer = async (answer: QuizAnswerValue) => {
     const currentQuestion = questions[currentStep];
     
     // Track question answer
@@ -136,7 +164,7 @@ export const EliteUniversityReadinessQuiz = () => {
       
       // Track graduation year selection specifically
       if (currentQuestion.id === 'graduation_year') {
-        trackGraduationYearSelected(quizSessionId || 'unknown', answer);
+        trackGraduationYearSelected(quizSessionId || 'unknown', answer as string);
       }
     } catch (err) {
       console.error('Tracking error:', err);
@@ -147,7 +175,7 @@ export const EliteUniversityReadinessQuiz = () => {
       step: currentStep + 1,
       questionId: currentQuestion.id,
       questionTitle: currentQuestion.title,
-      answer: answer,
+      answer,
       timestamp: new Date().toISOString()
     });
     
@@ -157,15 +185,21 @@ export const EliteUniversityReadinessQuiz = () => {
 
     // Handle personal info submission - save email for retargeting
     if (currentQuestion.id === 'contact_info') {
+      if (!answer || typeof answer !== 'object') {
+        console.error('❌ Invalid contact info answer payload');
+        return;
+      }
+
+      const contactInfo = answer as ContactInfoAnswer;
       console.log('📧 Personal Info Submitted - Capturing Email for Retargeting');
       
       const readinessScore = calculatedResults?.totalScore || 0;
       
       const emailCaptureData = {
-        email: answer.email,
-        firstName: answer.firstName,
-        lastName: answer.lastName,
-        phoneNumber: answer.phone,
+        email: contactInfo.email,
+        firstName: contactInfo.firstName,
+        lastName: contactInfo.lastName,
+        phoneNumber: contactInfo.phone,
         quizAnswers: updatedAnswers,
         sessionId: quizSessionId || 'unknown',
         funnelType: 'college_consulting',
@@ -185,7 +219,7 @@ export const EliteUniversityReadinessQuiz = () => {
           body: JSON.stringify(emailCaptureData)
         });
 
-        let result: any = {};
+        let result: Record<string, unknown> = {};
         try {
           const text = await response.text();
           if (text) {
@@ -201,14 +235,14 @@ export const EliteUniversityReadinessQuiz = () => {
         }
 
         if (response.ok && result.success) {
-          console.log('✅ Email Captured for Retargeting:', { eventId: result.eventId, email: answer.email });
+          console.log('✅ Email Captured for Retargeting:', { eventId: result.eventId, email: contactInfo.email });
           
           // Track lead form submit
           const leadData: LeadData = {
-            firstName: answer.firstName,
-            lastName: answer.lastName,
-            email: answer.email,
-            phoneNumber: answer.phone,
+            firstName: contactInfo.firstName,
+            lastName: contactInfo.lastName,
+            email: contactInfo.email,
+            phoneNumber: contactInfo.phone,
             zipCode: '',
             state: '',
             stateName: '',
@@ -221,14 +255,14 @@ export const EliteUniversityReadinessQuiz = () => {
         } else {
           console.error('❌ Email Capture Failed:', result);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('💥 Email Capture Exception:', error);
       }
       
       // Store quiz data in sessionStorage before routing to OTP page
       console.log('📱 Personal Info Complete - Routing to OTP Page:', {
         sessionId: quizSessionId || 'unknown',
-        phoneNumber: answer.phone,
+        phoneNumber: contactInfo.phone,
         timestamp: new Date().toISOString()
       });
       
@@ -249,7 +283,7 @@ export const EliteUniversityReadinessQuiz = () => {
     }
 
     // Auto-advance for multiple-choice questions (tap to continue)
-    if (currentQuestion.type === 'multiple-choice' && answer) {
+    if (currentQuestion.type === 'multiple-choice' && typeof answer === 'string' && answer) {
       setTimeout(() => {
         if (currentStep < questions.length - 1) {
           setCurrentStep(currentStep + 1);
@@ -259,10 +293,16 @@ export const EliteUniversityReadinessQuiz = () => {
     }
 
     // Auto-advance for slider and multi-select after explicit continue
-    if (
-      (currentQuestion.type === 'slider' || currentQuestion.type === 'multi-select') &&
-      typeof answer !== 'undefined'
-    ) {
+    if (currentQuestion.type === 'slider' && typeof answer === 'number') {
+      setTimeout(() => {
+        if (currentStep < questions.length - 1) {
+          setCurrentStep(currentStep + 1);
+        }
+      }, 150);
+      return;
+    }
+
+    if (currentQuestion.type === 'multi-select' && Array.isArray(answer)) {
       setTimeout(() => {
         if (currentStep < questions.length - 1) {
           setCurrentStep(currentStep + 1);
@@ -271,19 +311,6 @@ export const EliteUniversityReadinessQuiz = () => {
       return;
     }
   };
-
-
-  if (showProcessing) {
-    return (
-      <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
-        <ProcessingState 
-          message="We're processing your information and preparing your personalized readiness report..." 
-          isComplete={false}
-        />
-      </div>
-    );
-  }
-
 
   const currentQuestion = questions[currentStep];
 

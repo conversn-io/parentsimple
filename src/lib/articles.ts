@@ -1,5 +1,18 @@
 import { supabase } from './supabase'
 
+const PUBLISHARE_SITE_ID =
+  process.env.NEXT_PUBLIC_PUBLISHARE_SITE_ID ||
+  process.env.PUBLISHARE_SITE_ID ||
+  'parentsimple'
+
+const slugifyCategory = (value?: string | null) =>
+  value
+    ? value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+    : ''
+
 export interface Article {
   id: string
   title: string
@@ -8,6 +21,7 @@ export interface Article {
   html_body?: string
   excerpt: string
   author_id: string
+  site_id?: string
   status: 'draft' | 'published' | 'pending' | 'private' | 'scheduled'
   created_at: string
   updated_at: string
@@ -45,6 +59,7 @@ export async function getPublishedArticles(limit?: number): Promise<{ articles: 
         category_details:article_categories!articles_category_id_fkey(name, slug, description)
       `)
       .eq('status', 'published')
+      .eq('site_id', PUBLISHARE_SITE_ID)
       .order('created_at', { ascending: false })
 
     if (limit) {
@@ -73,6 +88,7 @@ export async function getArticle(slug: string): Promise<{ article: ArticleWithCa
       `)
       .eq('slug', slug)
       .eq('status', 'published')
+      .eq('site_id', PUBLISHARE_SITE_ID)
       .single()
 
     return { 
@@ -94,7 +110,7 @@ export async function getArticlesByCategory(categorySlug: string, limit?: number
         category_details:article_categories!articles_category_id_fkey(name, slug, description)
       `)
       .eq('status', 'published')
-      .eq('category_details.slug', categorySlug)
+      .eq('site_id', PUBLISHARE_SITE_ID)
       .order('created_at', { ascending: false })
 
     if (limit) {
@@ -103,8 +119,17 @@ export async function getArticlesByCategory(categorySlug: string, limit?: number
 
     const { data, error } = await query
 
+    const filteredArticles = (data as ArticleWithCategory[] | null)?.filter((article) => {
+      const categorySlugMatches =
+        slugifyCategory(article.category_details?.slug) === categorySlug ||
+        slugifyCategory(article.category_details?.name) === categorySlug ||
+        slugifyCategory(article.category) === categorySlug
+
+      return categorySlugMatches
+    }) ?? []
+
     return { 
-      articles: data as ArticleWithCategory[], 
+      articles: filteredArticles, 
       error 
     }
   } catch (error) {
@@ -116,12 +141,23 @@ export async function getArticlesByCategory(categorySlug: string, limit?: number
 export async function getCategories(): Promise<{ categories: Category[], error: Error | null }> {
   try {
     const { data, error } = await supabase
-      .from('article_categories')
-      .select('*')
-      .order('name', { ascending: true })
+      .from('articles')
+      .select(`
+        category_details:article_categories!articles_category_id_fkey(id, name, slug, description, created_at)
+      `)
+      .eq('status', 'published')
+      .eq('site_id', PUBLISHARE_SITE_ID)
+    const categoryMap = new Map<string, Category>()
+
+    for (const row of data || []) {
+      const category = row.category_details as Category | Category[] | null | undefined
+      if (category && !Array.isArray(category) && category.id && !categoryMap.has(category.id)) {
+        categoryMap.set(category.id, category)
+      }
+    }
 
     return { 
-      categories: data as Category[], 
+      categories: Array.from(categoryMap.values()), 
       error 
     }
   } catch (error) {
@@ -136,6 +172,7 @@ export async function getRelatedArticles(currentArticleId: string, categoryId?: 
       .from('articles')
       .select('*')
       .eq('status', 'published')
+      .eq('site_id', PUBLISHARE_SITE_ID)
       .neq('id', currentArticleId)
       .order('created_at', { ascending: false })
       .limit(limit)
@@ -165,6 +202,7 @@ export async function searchArticles(searchTerm: string, limit: number = 10): Pr
         category_details:article_categories!articles_category_id_fkey(name, slug, description)
       `)
       .eq('status', 'published')
+      .eq('site_id', PUBLISHARE_SITE_ID)
       .or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%,excerpt.ilike.%${searchTerm}%`)
       .order('created_at', { ascending: false })
       .limit(limit)
@@ -185,6 +223,7 @@ export async function getFeaturedArticles(limit: number = 6): Promise<{ articles
       .from('articles')
       .select('*')
       .eq('status', 'published')
+      .eq('site_id', PUBLISHARE_SITE_ID)
       .order('created_at', { ascending: false })
       .limit(limit)
 

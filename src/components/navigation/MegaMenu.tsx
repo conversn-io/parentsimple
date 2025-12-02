@@ -26,11 +26,19 @@ import {
   Sparkles,
 } from "lucide-react"
 
+const articlesLink = (categorySlug?: string, query?: string) => {
+  const params = new URLSearchParams()
+  if (categorySlug) params.set('category', categorySlug)
+  if (query) params.set('query', query)
+  const search = params.toString()
+  return search ? `/articles?${search}` : '/articles'
+}
+
 // ParentSimple content pillar menu structure
 const menuItems = [
   {
     title: "Early Years",
-    href: "/early-years",
+    href: articlesLink('early-years'),
     description: "Building the foundation (Ages 0-10)",
     sections: [
       {
@@ -38,19 +46,19 @@ const menuItems = [
         items: [
           {
             name: "Development Milestones",
-            href: "/early-years/development-milestones",
+            href: articlesLink('early-years', 'development milestones'),
             icon: Sparkles,
             description: "Track your child's growth"
           },
           {
             name: "Learning Through Play",
-            href: "/early-years/learning-through-play",
+            href: articlesLink('early-years', 'learning through play'),
             icon: Heart,
             description: "Educational play strategies"
           },
           {
             name: "Preschool Selection",
-            href: "/early-years/preschool-selection",
+            href: articlesLink('early-years', 'preschool'),
             icon: School,
             description: "Choose the right preschool"
           },
@@ -61,19 +69,19 @@ const menuItems = [
         items: [
           {
             name: "Academic Foundations",
-            href: "/early-years/academic-foundations",
+            href: articlesLink('early-years', 'academic foundations'),
             icon: BookOpen,
             description: "Build strong academic skills"
           },
           {
             name: "Character Development",
-            href: "/early-years/character-development",
+            href: articlesLink('early-years', 'character development'),
             icon: Shield,
             description: "Values and character building"
           },
           {
             name: "529 Plan Calculator",
-            href: "/calculators/college-savings",
+            href: articlesLink('financial-planning', '529 plan'),
             icon: Calculator,
             description: "Start saving for college"
           },
@@ -83,7 +91,7 @@ const menuItems = [
   },
   {
     title: "Middle School",
-    href: "/middle-school",
+    href: articlesLink('middle-school'),
     description: "Building momentum (Ages 11-14)",
     sections: [
       {
@@ -91,19 +99,19 @@ const menuItems = [
         items: [
           {
             name: "Course Selection Guide",
-            href: "/middle-school/course-selection",
+            href: articlesLink('middle-school', 'course selection'),
             icon: BookOpen,
             description: "Choose the right courses"
           },
           {
             name: "Study Skills & Time Management",
-            href: "/middle-school/study-skills",
+            href: articlesLink('middle-school', 'study skills'),
             icon: Target,
             description: "Build effective study habits"
           },
           {
             name: "Enrichment Opportunities",
-            href: "/middle-school/enrichment",
+            href: articlesLink('middle-school', 'enrichment'),
             icon: Sparkles,
             description: "STEM, arts, and athletics"
           },
@@ -114,19 +122,19 @@ const menuItems = [
         items: [
           {
             name: "Navigating Adolescence",
-            href: "/middle-school/adolescence",
+            href: articlesLink('middle-school', 'adolescence'),
             icon: Users,
             description: "Support your teen's development"
           },
           {
             name: "Parent-Teen Communication",
-            href: "/middle-school/communication",
+            href: articlesLink('middle-school', 'parent communication'),
             icon: Heart,
             description: "Build strong relationships"
           },
           {
             name: "Summer Program Guide",
-            href: "/resources/summer-programs",
+            href: articlesLink('middle-school', 'summer program'),
             icon: GraduationCap,
             description: "Find the right programs"
           },
@@ -136,7 +144,7 @@ const menuItems = [
   },
   {
     title: "High School",
-    href: "/high-school",
+    href: articlesLink('high-school'),
     description: "College readiness (Ages 15-17)",
     sections: [
       {
@@ -144,19 +152,19 @@ const menuItems = [
         items: [
           {
             name: "GPA Optimization Strategies",
-            href: "/high-school/gpa-optimization",
+            href: articlesLink('high-school', 'gpa'),
             icon: TrendingUp,
             description: "Maximize your GPA"
           },
           {
             name: "Standardized Test Prep",
-            href: "/high-school/test-prep",
+            href: articlesLink('high-school', 'test prep'),
             icon: Target,
             description: "SAT/ACT preparation"
           },
           {
             name: "Extracurricular Strategy",
-            href: "/high-school/extracurriculars",
+            href: articlesLink('high-school', 'extracurricular'),
             icon: Sparkles,
             description: "Build a strong profile"
           },
@@ -167,19 +175,19 @@ const menuItems = [
         items: [
           {
             name: "College List Building",
-            href: "/high-school/college-list",
+            href: articlesLink('college-planning', 'college list'),
             icon: School,
             description: "Find the right fit"
           },
           {
             name: "Teacher Recommendations",
-            href: "/high-school/recommendations",
+            href: articlesLink('high-school', 'recommendations'),
             icon: Users,
             description: "Get strong recommendations"
           },
           {
             name: "Free College Timeline",
-            href: "/college-planning/timeline",
+            href: articlesLink('college-planning', 'timeline'),
             icon: FileText,
             description: "Download our free guide"
           },
@@ -197,25 +205,25 @@ const menuItems = [
         items: [
           {
             name: "College Search & Fit",
-            href: "/college-planning/college-search",
+            href: articlesLink('college-planning', 'college search'),
             icon: School,
             description: "Find your perfect match"
           },
           {
             name: "Application Timeline",
-            href: "/college-planning/application-timeline",
+            href: articlesLink('college-planning', 'application timeline'),
             icon: FileText,
             description: "Stay on track"
           },
           {
             name: "Essay Writing Guide",
-            href: "/college-planning/essay-guide",
+            href: articlesLink('college-planning', 'essay'),
             icon: BookOpen,
             description: "Write winning essays"
           },
           {
             name: "Interview Preparation",
-            href: "/college-planning/interviews",
+            href: articlesLink('college-planning', 'interview'),
             icon: Users,
             description: "Ace your interviews"
           },
@@ -232,13 +240,13 @@ const menuItems = [
           },
           {
             name: "Ivy League Strategies",
-            href: "/college-planning/ivy-league",
+            href: articlesLink('college-planning', 'ivy league'),
             icon: Target,
             description: "Competitive admissions guide"
           },
           {
             name: "Early Decision Guide",
-            href: "/college-planning/early-decision",
+            href: articlesLink('college-planning', 'early decision'),
             icon: Shield,
             description: "ED/EA strategies"
           },
@@ -248,7 +256,7 @@ const menuItems = [
   },
   {
     title: "Financial Planning",
-    href: "/financial-planning",
+    href: articlesLink('financial-planning'),
     description: "Secure your family's future",
     sections: [
       {
@@ -256,25 +264,25 @@ const menuItems = [
         items: [
           {
             name: "529 Plans Explained",
-            href: "/financial-planning/529-plans",
+            href: articlesLink('financial-planning', '529 plan'),
             icon: PiggyBank,
             description: "Maximize tax advantages"
           },
           {
             name: "Financial Aid Strategies",
-            href: "/financial-planning/financial-aid",
+            href: articlesLink('college-planning', 'financial aid'),
             icon: DollarSign,
             description: "Maximize aid eligibility"
           },
           {
             name: "Scholarship Guide",
-            href: "/financial-planning/scholarships",
+            href: articlesLink('college-planning', 'scholarship'),
             icon: GraduationCap,
             description: "Find and win scholarships"
           },
           {
             name: "College Cost Calculator",
-            href: "/calculators/college-cost",
+            href: articlesLink('financial-planning', 'college cost'),
             icon: Calculator,
             description: "Calculate total costs"
           },
@@ -285,13 +293,13 @@ const menuItems = [
         items: [
           {
             name: "Life Insurance for Parents",
-            href: "/financial-planning/life-insurance",
+            href: articlesLink('financial-planning', 'life insurance'),
             icon: Shield,
             description: "Protect your family"
           },
           {
             name: "Estate Planning Essentials",
-            href: "/financial-planning/estate-planning",
+            href: articlesLink('financial-planning', 'estate planning'),
             icon: FileText,
             description: "Secure your legacy"
           },
@@ -307,7 +315,7 @@ const menuItems = [
   },
   {
     title: "Resources",
-    href: "/resources",
+    href: articlesLink('resources'),
     description: "Tools and guides for parents",
     sections: [
       {
@@ -315,19 +323,19 @@ const menuItems = [
         items: [
           {
             name: "College Planning Checklists",
-            href: "/resources/college-planning-checklist",
+            href: articlesLink('resources', 'checklist'),
             icon: FileText,
             description: "Stay organized"
           },
           {
             name: "Financial Planning Templates",
-            href: "/resources/financial-templates",
+            href: articlesLink('financial-planning', 'template'),
             icon: DollarSign,
             description: "Plan your finances"
           },
           {
             name: "Academic Milestone Guides",
-            href: "/resources/milestone-guides",
+            href: articlesLink('early-years', 'milestone'),
             icon: BookOpen,
             description: "Track progress"
           },
@@ -338,19 +346,19 @@ const menuItems = [
         items: [
           {
             name: "Summer Programs Database",
-            href: "/resources/summer-programs",
+            href: articlesLink('middle-school', 'summer program'),
             icon: GraduationCap,
             description: "Find programs"
           },
           {
             name: "Educational Tools & Apps",
-            href: "/resources/educational-tools",
+            href: articlesLink('resources', 'educational tools'),
             icon: Sparkles,
             description: "Recommended resources"
           },
           {
             name: "Expert Directory",
-            href: "/resources/experts",
+            href: "/consultation",
             icon: Users,
             description: "Find professionals"
           },
@@ -367,9 +375,9 @@ export function MegaMenu() {
         {menuItems.map((item) => (
           <NavigationMenuItem key={item.title}>
             <NavigationMenuTrigger className="h-8 px-4 py-2 text-sm font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors data-[state=open]:text-[#152238] data-[state=open]:underline decoration-[#9DB89D] decoration-2 underline-offset-4">
-              {item.title}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
+                    {item.title}
+                </NavigationMenuTrigger>
+              <NavigationMenuContent>
                 <div className="w-[900px] p-6 bg-white rounded-lg shadow-xl border border-gray-100 z-50" style={{ backgroundColor: '#ffffff' }}>
                   {/* Header Section */}
                   <div className="mb-6 pb-4 border-b border-[#9DB89D]">
@@ -418,7 +426,7 @@ export function MegaMenu() {
                     ))}
                   </div>
                 </div>
-            </NavigationMenuContent>
+              </NavigationMenuContent>
           </NavigationMenuItem>
         ))}
       </NavigationMenuList>
