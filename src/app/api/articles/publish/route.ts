@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { submitArticleToIndexNow } from '@/lib/indexnow'
 
 /**
  * Article Publish Webhook
@@ -87,11 +88,26 @@ export async function POST(request: NextRequest) {
       console.error('Revalidation failed:', errorText)
     }
 
+    // Submit to IndexNow for instant search engine indexing
+    let indexNowResult = { success: false, errors: [] as string[] }
+    try {
+      indexNowResult = await submitArticleToIndexNow(articleSlug)
+      if (indexNowResult.success) {
+        console.log(`IndexNow: Successfully submitted article ${articleSlug}`)
+      } else {
+        console.warn(`IndexNow: Failed to submit article ${articleSlug}:`, indexNowResult.errors)
+      }
+    } catch (error) {
+      console.error('IndexNow submission error:', error)
+      // Don't fail the webhook if IndexNow fails
+    }
+
     return NextResponse.json({
       success: true,
       revalidated: revalidateResponse.ok,
+      indexNow: indexNowResult.success,
       path: `/articles/${articleSlug}`,
-      message: 'Article published and revalidated',
+      message: 'Article published, revalidated, and submitted to IndexNow',
     })
   } catch (error) {
     console.error('Publish webhook error:', error)

@@ -294,15 +294,16 @@ async function sendPageViewToSupabase(
         properties: {
           site_key: 'parentsimple.org',
           funnel_type: 'college_consulting',
-          utm_parameters: utmParams,
+          utm_parameters: utmParams || {}, // Store full UTM object
           contact: {
             ga_client_id: gaClientId,
             ...metaIds
           }
         },
-        utm_source: utmParams.utm_source || null,
-        utm_medium: utmParams.utm_medium || null,
-        utm_campaign: utmParams.utm_campaign || null
+        utmParams: utmParams || {}, // Pass full UTM object
+        utm_source: utmParams?.utm_source || null,
+        utm_medium: utmParams?.utm_medium || null,
+        utm_campaign: utmParams?.utm_campaign || null
       })
     });
 
@@ -353,16 +354,29 @@ function getMetaPixelIds(): { fbc?: string; fbp?: string } {
   return result;
 }
 
-// Get UTM parameters
-function getUTMParams(): Record<string, string> {
+// Get UTM parameters - use utm-utils for consistency
+import { extractUTMParameters, getStoredUTMParameters, storeUTMParameters, UTMParameters } from '@/utils/utm-utils';
+
+function getUTMParams(): Record<string, string | undefined> {
   if (typeof window === 'undefined') return {};
   
-  const urlParams = new URLSearchParams(window.location.search);
-  return {
-    utm_source: urlParams.get('utm_source') || '',
-    utm_medium: urlParams.get('utm_medium') || '',
-    utm_campaign: urlParams.get('utm_campaign') || ''
-  };
+  // Try to get stored UTM parameters first (persisted across page navigations)
+  const stored = getStoredUTMParameters();
+  if (stored && Object.keys(stored).length > 0) {
+    // Convert UTMParameters to Record<string, string | undefined>
+    return stored as Record<string, string | undefined>;
+  }
+  
+  // Extract from URL if available
+  const urlParams = extractUTMParameters();
+  if (urlParams && Object.keys(urlParams).length > 0) {
+    // Store for future page views
+    storeUTMParameters(urlParams);
+    // Convert UTMParameters to Record<string, string | undefined>
+    return urlParams as Record<string, string | undefined>;
+  }
+  
+  return {};
 }
 
 // Page view tracking

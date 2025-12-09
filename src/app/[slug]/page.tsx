@@ -80,6 +80,7 @@ export default async function RootSlugPage({ params }: RootSlugPageProps) {
   )
 
   // Generate structured data for SEO/AEO
+  const articleUrl = `https://parentsimple.org/${article.slug}`
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -102,8 +103,37 @@ export default async function RootSlugPage({ params }: RootSlugPageProps) {
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://parentsimple.org/${article.slug}`
-    }
+      "@id": articleUrl
+    },
+    "articleSection": article.category_details?.name || article.primary_ux_category?.name || "College Planning",
+    "inLanguage": "en-US",
+    "isAccessibleForFree": true
+  }
+
+  // Breadcrumb structured data
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://parentsimple.org"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Articles",
+        "item": "https://parentsimple.org/articles"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": article.title,
+        "item": articleUrl
+      }
+    ]
   }
 
   return (
@@ -112,6 +142,10 @@ export default async function RootSlugPage({ params }: RootSlugPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
 
       {/* Breadcrumb */}
@@ -315,15 +349,36 @@ export async function generateMetadata({ params }: RootSlugPageProps) {
     }
   }
 
+  const articleUrl = `https://parentsimple.org/${article.slug}`
+  
   return {
     title: article.meta_title || `${article.title} - ParentSimple`,
     description: article.meta_description || article.excerpt || 'Expert education and financial planning advice from ParentSimple.',
+    alternates: {
+      canonical: articleUrl,
+    },
     openGraph: {
       title: article.title,
       description: article.excerpt || 'Expert education and financial planning advice from ParentSimple.',
       images: article.featured_image_url ? [article.featured_image_url] : [],
       type: 'article',
+      url: articleUrl,
+      publishedTime: article.created_at,
+      modifiedTime: article.updated_at,
+      authors: ['ParentSimple'],
+      section: article.category_details?.name || article.primary_ux_category?.name || 'College Planning',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.excerpt || 'Expert education and financial planning advice from ParentSimple.',
+      images: article.featured_image_url ? [article.featured_image_url] : [],
     },
   }
 }
+
+
+
+
+
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import ConditionalHeader from "@/components/navigation/ConditionalHeader";
 import ConditionalFooter from "@/components/ConditionalFooter";
 import { LayoutProvider } from "@/contexts/FooterContext";
+import { UTMTracker } from "@/components/analytics/UTMTracker";
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
@@ -97,75 +98,68 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/images/logos/parentsimple-favicon.png" />
         
         {/* ✅ DIRECT TRACKING: GA4 Base Code (Synchronous Loading) */}
-        {process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID_PARENTSIMPLE && (
-          <>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID_PARENTSIMPLE}');
-                `
-              }}
-            />
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID_PARENTSIMPLE}`}
-            />
-          </>
-        )}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-ZC29XQ0W2J');
+            `
+          }}
+        />
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZC29XQ0W2J"
+        />
         
         {/* ✅ DIRECT TRACKING: Meta Pixel Base Code (with bot detection) */}
-        {process.env.NEXT_PUBLIC_META_PIXEL_ID_PARENTSIMPLE && (
-          <>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  !function(f,b,e,v,n,t,s)
-                  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                  n.queue=[];t=b.createElement(e);t.async=!0;
-                  t.src=v;s=b.getElementsByTagName(e)[0];
-                  s.parentNode.insertBefore(t,s)}(window, document,'script',
-                  'https://connect.facebook.net/en_US/fbevents.js');
-                  
-                  // Bot detection - only track if not a bot
-                  (function() {
-                    var isBot = false;
-                    if (typeof navigator !== 'undefined') {
-                      var ua = navigator.userAgent || '';
-                      isBot = /bot|crawler|spider|crawling|facebookexternalhit|Googlebot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|Exabot|facebot|ia_archiver/i.test(ua);
-                    }
-                    
-                    if (!isBot) {
-                      fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID_PARENTSIMPLE}');
-                      fbq('track', 'PageView');
-                    } else {
-                      // Still initialize but don't track PageView for bots
-                      fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID_PARENTSIMPLE}');
-                    }
-                  })();
-                `
-              }}
-            />
-            <noscript>
-              <img height="1" width="1" style={{display:'none'}} 
-                   src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_META_PIXEL_ID_PARENTSIMPLE}&ev=PageView&noscript=1`} />
-            </noscript>
-          </>
-        )}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              
+              // Bot detection - only track if not a bot
+              (function() {
+                var isBot = false;
+                if (typeof navigator !== 'undefined') {
+                  var ua = navigator.userAgent || '';
+                  isBot = /bot|crawler|spider|crawling|facebookexternalhit|Googlebot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|Exabot|facebot|ia_archiver/i.test(ua);
+                }
+                
+                if (!isBot) {
+                  fbq('init', '799755069642014');
+                  fbq('track', 'PageView');
+                } else {
+                  // Still initialize but don't track PageView for bots
+                  fbq('init', '799755069642014');
+                }
+              })();
+            `
+          }}
+        />
+        <noscript>
+          <img height="1" width="1" style={{display:'none'}} 
+               src="https://www.facebook.com/tr?id=799755069642014&ev=PageView&noscript=1" />
+        </noscript>
       </head>
-      <body
-        className={`${playfairDisplay.variable} ${inter.variable} antialiased`}
-      >
-        <LayoutProvider>
-          <ConditionalHeader />
-          <main>{children}</main>
-          <ConditionalFooter />
-        </LayoutProvider>
-      </body>
+          <body
+            className={`${playfairDisplay.variable} ${inter.variable} antialiased`}
+          >
+            <UTMTracker />
+            <LayoutProvider>
+              <ConditionalHeader />
+              <main>{children}</main>
+              <ConditionalFooter />
+            </LayoutProvider>
+          </body>
     </html>
   );
 }

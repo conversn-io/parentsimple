@@ -18,6 +18,7 @@ import {
   ArrowRight,
   CheckCircle,
 } from 'lucide-react'
+import { generateOrganizationStructuredData, generateWebsiteStructuredData } from '@/lib/structured-data'
 
 export const metadata: Metadata = {
   title: "ParentSimple - Parenting with Purpose. Planning with Power.",
@@ -119,8 +120,22 @@ export default function HomePage() {
     },
   ]
 
+  // Generate structured data for SEO/AEO
+  const organizationData = generateOrganizationStructuredData()
+  const websiteData = generateWebsiteStructuredData()
+
   return (
     <div className="min-h-screen bg-[#F9F6EF]">
+      {/* Structured Data for SEO/AEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData.data) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData.data) }}
+      />
+
       {/* Hero Section */}
       <ParentSimpleHero
         headline="Parenting with Purpose. Planning with Power."

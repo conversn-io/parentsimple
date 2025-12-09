@@ -267,3 +267,4 @@ const categoryHref = (categorySlug: string, hasArticles: boolean) => {
 - Maintains navigation functionality
 - Allows gradual content creation without breaking UX
 
+

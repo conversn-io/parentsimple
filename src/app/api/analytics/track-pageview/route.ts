@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
       properties,
       utm_source,
       utm_medium,
-      utm_campaign
+      utm_campaign,
+      utmParams // Full UTM parameters object
     } = body;
 
     if (!session_id) {
@@ -31,7 +32,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert into analytics_events
+    // Extract UTM parameters from body or properties
+    const utmParameters = utmParams || properties?.utm_parameters || {};
+    const utmSource = utm_source || utmParameters?.utm_source || null;
+    const utmMedium = utm_medium || utmParameters?.utm_medium || null;
+    const utmCampaign = utm_campaign || utmParameters?.utm_campaign || null;
+    const utmTerm = utmParameters?.utm_term || null;
+    const utmContent = utmParameters?.utm_content || null;
+    const utmId = utmParameters?.utm_id || null;
+    const gclid = utmParameters?.gclid || null;
+    const fbclid = utmParameters?.fbclid || null;
+    const msclkid = utmParameters?.msclkid || null;
+
+    // Insert into analytics_events with UTM parameters
     const { data, error } = await callreadyQuizDb
       .from('analytics_events')
       .insert({
@@ -48,8 +61,19 @@ export async function POST(request: NextRequest) {
           page_title,
           page_path,
           site_key: 'parentsimple.org',
-          funnel_type: properties?.funnel_type || 'college_consulting'
-        }
+          funnel_type: properties?.funnel_type || 'college_consulting',
+          utm_parameters: utmParameters || {} // Store full UTM object
+        },
+        // Store UTM parameters in top-level fields for easy querying
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
+        utm_term: utmTerm,
+        utm_content: utmContent,
+        utm_id: utmId,
+        gclid: gclid,
+        fbclid: fbclid,
+        msclkid: msclkid
       })
       .select()
       .single();

@@ -142,6 +142,12 @@ export async function POST(request: NextRequest) {
     const utmSource = utmParams?.utm_source || null;
     const utmMedium = utmParams?.utm_medium || null;
     const utmCampaign = utmParams?.utm_campaign || null;
+    const utmTerm = utmParams?.utm_term || null;
+    const utmContent = utmParams?.utm_content || null;
+    const utmId = utmParams?.utm_id || null;
+    const gclid = utmParams?.gclid || null;
+    const fbclid = utmParams?.fbclid || null;
+    const msclkid = utmParams?.msclkid || null;
 
     // Check if lead already exists for this contact and session
     let existingLead = null;
@@ -210,6 +216,12 @@ export async function POST(request: NextRequest) {
       utm_source: utmSource,
       utm_medium: utmMedium,
       utm_campaign: utmCampaign,
+      utm_term: utmTerm,
+      utm_content: utmContent,
+      utm_id: utmId,
+      gclid: gclid,
+      fbclid: fbclid,
+      msclkid: msclkid,
       // Optional columns removed - they don't exist in schema:
       // form_type: 'quiz',
       // attributed_ad_account: 'CallReady - Insurance',
@@ -334,12 +346,22 @@ export async function POST(request: NextRequest) {
       .insert({
         event_name: eventName,
         event_category: 'lead_generation',
-        event_label: 'seniorsimple_quiz',
+        event_label: 'parentsimple_quiz',
         user_id: email,
         session_id: sessionId,
         page_url: request.headers.get('referer'),
         user_agent: request.headers.get('user-agent'),
         ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
+        // Store UTM parameters in top-level fields for easy querying
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
+        utm_term: utmTerm,
+        utm_content: utmContent,
+        utm_id: utmId,
+        gclid: gclid,
+        fbclid: fbclid,
+        msclkid: msclkid,
         properties: {
           site_key: 'parentsimple.org',
           email,
@@ -355,7 +377,7 @@ export async function POST(request: NextRequest) {
           licensing_info: licensingInfo,
           status: phoneNumber ? 'lead_captured' : 'email_captured_for_retargeting',
           is_verified: false,
-          utm_parameters: utmParams
+          utm_parameters: utmParams || {} // Store full UTM object in properties
         }
       })
       .select()

@@ -140,6 +140,12 @@ async function upsertLead(
   const utmSource = utmParams?.utm_source || null;
   const utmMedium = utmParams?.utm_medium || null;
   const utmCampaign = utmParams?.utm_campaign || null;
+  const utmTerm = utmParams?.utm_term || null;
+  const utmContent = utmParams?.utm_content || null;
+  const utmId = utmParams?.utm_id || null;
+  const gclid = utmParams?.gclid || null;
+  const fbclid = utmParams?.fbclid || null;
+  const msclkid = utmParams?.msclkid || null;
   
   // Get referrer and landing page from analytics_events (since request may not be available)
   let referrer = null;
@@ -213,6 +219,12 @@ async function upsertLead(
     utm_source: utmSource,
     utm_medium: utmMedium,
     utm_campaign: utmCampaign,
+    utm_term: utmTerm,
+    utm_content: utmContent,
+    utm_id: utmId,
+    gclid: gclid,
+    fbclid: fbclid,
+    msclkid: msclkid,
     // Optional columns removed - they don't exist in schema:
     // form_type: 'quiz',
     // attributed_ad_account: 'CallReady - Insurance',
@@ -306,6 +318,17 @@ export async function POST(request: NextRequest) {
     if (!email || !phoneNumber) {
       return createCorsResponse({ error: 'Email and phone number are required' }, 400);
     }
+
+    // Extract UTM parameters - use null instead of defaults to clearly indicate missing UTM data
+    const utmSource = utmParams?.utm_source || null;
+    const utmMedium = utmParams?.utm_medium || null;
+    const utmCampaign = utmParams?.utm_campaign || null;
+    const utmTerm = utmParams?.utm_term || null;
+    const utmContent = utmParams?.utm_content || null;
+    const utmId = utmParams?.utm_id || null;
+    const gclid = utmParams?.gclid || null;
+    const fbclid = utmParams?.fbclid || null;
+    const msclkid = utmParams?.msclkid || null;
 
     // Find existing lead by session_id (should already exist from capture-email)
     console.log('🔍 Finding existing lead...');
@@ -528,12 +551,22 @@ export async function POST(request: NextRequest) {
     await callreadyQuizDb.from('analytics_events').insert({
       event_name: 'ghl_webhook_sent',
       event_category: 'lead_distribution',
-      event_label: 'seniorsimple_quiz',
+      event_label: 'parentsimple_quiz',
       user_id: phoneNumber,
       session_id: sessionId,
       page_url: request.headers.get('referer'),
       user_agent: request.headers.get('user-agent'),
       ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
+      // Store UTM parameters in top-level fields for easy querying
+      utm_source: utmSource,
+      utm_medium: utmMedium,
+      utm_campaign: utmCampaign,
+      utm_term: utmTerm,
+      utm_content: utmContent,
+      utm_id: utmId,
+      gclid: gclid,
+      fbclid: fbclid,
+      msclkid: msclkid,
       properties: {
         site_key: 'parentsimple.org',
         lead_id: lead.id,
@@ -542,7 +575,8 @@ export async function POST(request: NextRequest) {
         request_payload: ghlPayload,
         response_status: ghlResponse.status,
         response_body: ghlResponseData,
-        success: ghlResponse.ok
+        success: ghlResponse.ok,
+        utm_parameters: utmParams || {} // Store full UTM object in properties
       }
     });
 
