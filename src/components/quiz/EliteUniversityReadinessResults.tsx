@@ -12,7 +12,9 @@ const addEmpowerlyUTM = (url: string): string => {
     utm_content: 'social'
   });
   const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}${utmParams.toString()}`;
+  const finalUrl = `${url}${separator}${utmParams.toString()}`;
+  console.log('🔗 Empowerly URL with UTM:', finalUrl); // Debug log
+  return finalUrl;
 };
 
 interface EliteUniversityReadinessResultsProps {
@@ -92,21 +94,21 @@ export function EliteUniversityReadinessResults({
         title: "You're Elite-Ready!",
         message: "Maximize your acceptance odds with Empowerly's strategic application support. Our counselors have admissions office experience at top universities.",
         cta: "Schedule Free Strategy Consultation",
-        href: addEmpowerlyUTM("https://empowerly.com/consultation")
+        href: addEmpowerlyUTM("https://empowerly.com/consult")
       };
     } else if (score >= 70) {
       return {
         title: "You're Competitive!",
         message: "Strengthen key areas to boost your profile. Get personalized guidance from Empowerly's expert college counselors.",
         cta: "Get Free Assessment Review",
-        href: addEmpowerlyUTM("https://empowerly.com/consultation")
+        href: addEmpowerlyUTM("https://empowerly.com/consult")
       };
     } else if (score >= 55) {
       return {
         title: "You Have Potential!",
         message: "Create a roadmap to elite readiness. Empowerly's counselors can help you develop a comprehensive improvement plan.",
         cta: "Schedule Free Consultation",
-        href: addEmpowerlyUTM("https://empowerly.com/consultation")
+        href: addEmpowerlyUTM("https://empowerly.com/consult")
       };
     } else {
       return {

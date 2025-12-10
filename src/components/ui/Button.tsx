@@ -42,6 +42,15 @@ export function Button({
   );
     
   if (href) {
+    // Use regular anchor tag for external URLs to preserve query parameters
+    if (href.startsWith('http://') || href.startsWith('https://')) {
+      return (
+        <a href={href} className={classes} target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      );
+    }
+    // Use Next.js Link for internal routes
     return (
       <Link href={href} className={classes}>
         {children}
