@@ -3,6 +3,18 @@
 import { Button } from '@/components/ui/Button'
 import { CheckCircle, AlertCircle, TrendingUp, Target, ArrowRight, BookOpen, Users, Award } from 'lucide-react'
 
+// Helper function to add UTM parameters to Empowerly URLs
+const addEmpowerlyUTM = (url: string): string => {
+  const utmParams = new URLSearchParams({
+    utm_campaign: 'parent-simple',
+    utm_source: 'leadgen',
+    utm_medium: 'referral',
+    utm_content: 'social'
+  });
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}${utmParams.toString()}`;
+};
+
 interface EliteUniversityReadinessResultsProps {
   score: number;
   category: string;
@@ -80,28 +92,28 @@ export function EliteUniversityReadinessResults({
         title: "You're Elite-Ready!",
         message: "Maximize your acceptance odds with Empowerly's strategic application support. Our counselors have admissions office experience at top universities.",
         cta: "Schedule Free Strategy Consultation",
-        href: "https://empowerly.com/consultation"
+        href: addEmpowerlyUTM("https://empowerly.com/consultation")
       };
     } else if (score >= 70) {
       return {
         title: "You're Competitive!",
         message: "Strengthen key areas to boost your profile. Get personalized guidance from Empowerly's expert college counselors.",
         cta: "Get Free Assessment Review",
-        href: "https://empowerly.com/consultation"
+        href: addEmpowerlyUTM("https://empowerly.com/consultation")
       };
     } else if (score >= 55) {
       return {
         title: "You Have Potential!",
         message: "Create a roadmap to elite readiness. Empowerly's counselors can help you develop a comprehensive improvement plan.",
         cta: "Schedule Free Consultation",
-        href: "https://empowerly.com/consultation"
+        href: addEmpowerlyUTM("https://empowerly.com/consultation")
       };
     } else {
       return {
         title: "Build Your Foundation",
         message: "Let's build a strong foundation for college success. Access Empowerly's educational resources and expert guidance.",
         cta: "Access Free Resources",
-        href: "https://empowerly.com/resources"
+        href: addEmpowerlyUTM("https://empowerly.com/resources")
       };
     }
   };
@@ -202,7 +214,7 @@ export function EliteUniversityReadinessResults({
               <Button
                 variant="outline"
                 size="lg"
-                href="https://empowerly.com/resources"
+                href={addEmpowerlyUTM("https://empowerly.com/resources")}
                 className="border-white text-white hover:bg-white/10 min-w-[250px]"
               >
                 Access Resource Library
