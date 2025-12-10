@@ -339,7 +339,7 @@ export function EliteUniversityReadinessResults({
             <Button
               variant="outline"
               size="lg"
-              href="https://empowerly.com/resources"
+              href={addEmpowerlyUTM("https://empowerly.com/resources")}
               className="border-white text-white hover:bg-white/10 min-w-[250px]"
             >
               Access Resource Library
