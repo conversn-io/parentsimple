@@ -322,17 +322,43 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
           if (response.ok && result.success) {
             console.log('✅ Lead Submitted Successfully (No OTP):', { leadId: result.leadId, email: contactInfo.email });
             
-            // Route to thank you page
-            router.push('/quiz-submitted');
+            // Store results in sessionStorage for results page
+            if (typeof sessionStorage !== 'undefined' && calculatedResults) {
+              sessionStorage.setItem('elite_university_readiness_results', JSON.stringify({
+                ...calculatedResults,
+                graduationYear: answers.graduation_year as string
+              }));
+            }
+            
+            // Route to results page with score and category
+            const readinessScore = calculatedResults?.totalScore || 0;
+            const category = calculatedResults?.category || 'Needs Improvement';
+            router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(category)}`);
           } else {
             console.error('❌ Submit Failed:', result);
-            // Still route to thank you page even if webhook fails (lead was saved)
-            router.push('/quiz-submitted');
+            // Still route to results page even if webhook fails (lead was saved)
+            if (typeof sessionStorage !== 'undefined' && calculatedResults) {
+              sessionStorage.setItem('elite_university_readiness_results', JSON.stringify({
+                ...calculatedResults,
+                graduationYear: answers.graduation_year as string
+              }));
+            }
+            const readinessScore = calculatedResults?.totalScore || 0;
+            const category = calculatedResults?.category || 'Needs Improvement';
+            router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(category)}`);
           }
         } catch (error) {
           console.error('💥 Submit Exception:', error);
-          // Route to thank you page even on error
-          router.push('/quiz-submitted');
+          // Route to results page even on error
+          if (typeof sessionStorage !== 'undefined' && calculatedResults) {
+            sessionStorage.setItem('elite_university_readiness_results', JSON.stringify({
+              ...calculatedResults,
+              graduationYear: answers.graduation_year as string
+            }));
+          }
+          const readinessScore = calculatedResults?.totalScore || 0;
+          const category = calculatedResults?.category || 'Needs Improvement';
+          router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(category)}`);
         }
         
         return;

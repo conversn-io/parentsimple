@@ -39,7 +39,6 @@ const RESERVED_ROUTES = [
   'thank-you',
   'quote',
   'quote-submitted',
-  'quiz-submitted',
   'consultation-booked',
   'consultation-confirmed',
   'book-confirmation',
