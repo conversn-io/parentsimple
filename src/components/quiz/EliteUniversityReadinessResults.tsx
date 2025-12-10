@@ -113,9 +113,9 @@ export function EliteUniversityReadinessResults({
     } else {
       return {
         title: "Build Your Foundation",
-        message: "Let's build a strong foundation for college success. Access Empowerly's educational resources and expert guidance.",
-        cta: "Access Free Resources",
-        href: addEmpowerlyUTM("https://empowerly.com/resources")
+        message: "Let's build a strong foundation for college success. Get personalized guidance from Empowerly's expert college counselors.",
+        cta: "Schedule Free Consultation",
+        href: addEmpowerlyUTM("https://empowerly.com/consult")
       };
     }
   };
@@ -203,7 +203,7 @@ export function EliteUniversityReadinessResults({
                 {empowerlyCTA.message}
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex justify-center items-center">
               <Button
                 variant="primary"
                 size="lg"
@@ -212,14 +212,6 @@ export function EliteUniversityReadinessResults({
               >
                 {empowerlyCTA.cta}
                 <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                href={addEmpowerlyUTM("https://empowerly.com/resources")}
-                className="border-white text-white hover:bg-white/10 min-w-[250px]"
-              >
-                Access Resource Library
               </Button>
             </div>
             <p className="text-center text-sm text-gray-300 mt-6">

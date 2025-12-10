@@ -4,17 +4,15 @@ import { useEffect } from 'react';
 import { useFooter, useHeader } from '../contexts/FooterContext';
 
 export const useFunnelLayout = () => {
-  const { setFooterType } = useFooter();
   const { setHeaderType } = useHeader();
 
   useEffect(() => {
-    setFooterType('funnel');
+    // Only set header to funnel, keep footer as standard
     setHeaderType('funnel');
     return () => {
-      setFooterType('standard');
       setHeaderType('standard');
     };
-  }, [setFooterType, setHeaderType]);
+  }, [setHeaderType]);
 };
 
 // Keep the old hook for backward compatibility
