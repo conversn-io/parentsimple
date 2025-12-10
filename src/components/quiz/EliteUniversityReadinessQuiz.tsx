@@ -38,9 +38,10 @@ type QuizAnswerValue = string | number | string[] | ContactInfoAnswer | undefine
 
 interface EliteUniversityReadinessQuizProps {
   resultVariant?: QuizVariant;
+  skipOTP?: boolean; // If true, skip OTP verification and submit directly to GHL
 }
 
-export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default' }: EliteUniversityReadinessQuizProps) => {
+export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOTP = false }: EliteUniversityReadinessQuizProps) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
@@ -271,6 +272,70 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default' }: Elit
         }
       } catch (error) {
         console.error('💥 Email Capture Exception:', error);
+      }
+      
+      // If skipOTP is true, submit directly without OTP verification
+      if (skipOTP) {
+        console.log('📝 Skipping OTP - Submitting directly to GHL:', {
+          sessionId: quizSessionId || 'unknown',
+          phoneNumber: contactInfo.phone,
+          timestamp: new Date().toISOString()
+        });
+        
+        try {
+          // Use submit-without-otp route that handles database save + GHL webhook without OTP
+          const response = await fetch('/api/leads/submit-without-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: contactInfo.email,
+              phoneNumber: contactInfo.phone,
+              firstName: contactInfo.firstName,
+              lastName: contactInfo.lastName,
+              quizAnswers: updatedAnswers,
+              calculatedResults: calculatedResults,
+              zipCode: null, // Not collected in this quiz
+              state: null,
+              stateName: null,
+              licensingInfo: null,
+              utmParams: utmParams,
+              sessionId: quizSessionId || 'unknown',
+              funnelType: 'college_consulting'
+            })
+          });
+
+          let result: Record<string, unknown> = {};
+          try {
+            const text = await response.text();
+            if (text) {
+              try {
+                result = JSON.parse(text);
+              } catch {
+                result = { raw: text, success: false, error: 'Invalid JSON response' };
+              }
+            }
+          } catch (parseError) {
+            console.warn('⚠️ Could not parse submit response:', parseError);
+            result = { success: false, error: 'Failed to parse response' };
+          }
+
+          if (response.ok && result.success) {
+            console.log('✅ Lead Submitted Successfully (No OTP):', { leadId: result.leadId, email: contactInfo.email });
+            
+            // Route to thank you page
+            router.push('/quiz-submitted');
+          } else {
+            console.error('❌ Submit Failed:', result);
+            // Still route to thank you page even if webhook fails (lead was saved)
+            router.push('/quiz-submitted');
+          }
+        } catch (error) {
+          console.error('💥 Submit Exception:', error);
+          // Route to thank you page even on error
+          router.push('/quiz-submitted');
+        }
+        
+        return;
       }
       
       // Store quiz data in sessionStorage before routing to OTP page
