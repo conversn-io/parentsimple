@@ -64,16 +64,14 @@ export async function POST(request: NextRequest) {
           funnel_type: properties?.funnel_type || 'college_consulting',
           utm_parameters: utmParameters || {} // Store full UTM object
         },
-        // Store UTM parameters in top-level fields for easy querying
+        // Store UTM parameters in top-level fields for easy querying (only columns that exist in schema)
         utm_source: utmSource,
         utm_medium: utmMedium,
         utm_campaign: utmCampaign,
         utm_term: utmTerm,
         utm_content: utmContent,
-        utm_id: utmId,
-        gclid: gclid,
-        fbclid: fbclid,
-        msclkid: msclkid
+        // Note: utm_id, gclid, fbclid, msclkid are stored in properties.utm_parameters JSONB
+        // They are not top-level columns in the analytics_events table schema
       })
       .select()
       .single();

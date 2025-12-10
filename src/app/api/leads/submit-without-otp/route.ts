@@ -207,10 +207,8 @@ async function upsertLead(
     utm_campaign: utmCampaign,
     utm_term: utmTerm,
     utm_content: utmContent,
-    utm_id: utmId,
-    gclid: gclid,
-    fbclid: fbclid,
-    msclkid: msclkid,
+    // Note: utm_id, gclid, fbclid, msclkid are stored in quiz_answers.utm_parameters JSONB
+    // They are not top-level columns in the leads table schema
   };
   
   if (existingLead?.id) {
@@ -411,16 +409,14 @@ export async function POST(request: NextRequest) {
           page_url: request.headers.get('referer'),
           user_agent: request.headers.get('user-agent'),
           ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
-          // Store UTM parameters in top-level fields for easy querying
+          // Store UTM parameters in top-level fields for easy querying (only columns that exist in schema)
           utm_source: utmSource,
           utm_medium: utmMedium,
           utm_campaign: utmCampaign,
           utm_term: utmTerm,
           utm_content: utmContent,
-          utm_id: utmId,
-          gclid: gclid,
-          fbclid: fbclid,
-          msclkid: msclkid,
+          // Note: utm_id, gclid, fbclid, msclkid are stored in properties.utm_parameters JSONB
+          // They are not top-level columns in the analytics_events table schema
           properties: {
             site_key: 'parentsimple.org',
             lead_id: lead.id,
