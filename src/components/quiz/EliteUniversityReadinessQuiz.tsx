@@ -10,6 +10,7 @@ import {
   trackLeadFormSubmit,
   trackPageView,
   trackQuizStart,
+  trackQuizComplete,
   trackGraduationYearSelected,
   trackScoreCalculated,
   LeadData,
@@ -236,6 +237,19 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default' }: Elit
 
         if (response.ok && result.success) {
           console.log('✅ Email Captured for Retargeting:', { eventId: result.eventId, email: contactInfo.email });
+          
+          // Track quiz completion
+          try {
+            const completionTime = Math.round((Date.now() - quizStartTime) / 1000); // Convert to seconds
+            trackQuizComplete(
+              'elite_university_readiness',
+              quizSessionId || 'unknown',
+              'college_consulting',
+              completionTime
+            );
+          } catch (err) {
+            console.error('Tracking error (quiz complete):', err);
+          }
           
           // Track lead form submit
           const leadData: LeadData = {
