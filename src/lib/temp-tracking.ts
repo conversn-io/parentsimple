@@ -240,14 +240,7 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
     zip_code: leadData.zipCode
   });
   
-  trackMetaEvent('Lead', {
-    content_name: 'ParentSimple College Planning Lead',
-    content_category: 'lead_generation',
-    value: leadData.leadScore || 0,
-    currency: 'USD'
-  });
-  
-  // Track SubmitApplication event for Meta Pixel
+  // Only track SubmitApplication event for Meta Pixel (removed Lead event to avoid double counting)
   trackMetaEvent('SubmitApplication', {
     content_name: 'Elite University Readiness Quiz',
     content_category: 'quiz_submission',
