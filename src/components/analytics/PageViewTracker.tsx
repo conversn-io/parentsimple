@@ -1,18 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { trackPageView } from '@/lib/temp-tracking'
 
 /**
- * PageView Tracker Component
+ * PageView Tracker Component (Internal)
  * 
  * Automatically tracks page views on all route changes.
  * Fires Meta Pixel PageView event and GA4 page_view event.
- * 
- * Usage: Add to root layout to track all page views automatically
  */
-export function PageViewTracker() {
+function PageViewTrackerInner() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -33,5 +31,20 @@ export function PageViewTracker() {
   }, [pathname, searchParams])
 
   return null // This component doesn't render anything
+}
+
+/**
+ * PageView Tracker Component
+ * 
+ * Wrapped in Suspense boundary to satisfy Next.js 15 requirements for useSearchParams()
+ * 
+ * Usage: Add to root layout to track all page views automatically
+ */
+export function PageViewTracker() {
+  return (
+    <Suspense fallback={null}>
+      <PageViewTrackerInner />
+    </Suspense>
+  )
 }
 
