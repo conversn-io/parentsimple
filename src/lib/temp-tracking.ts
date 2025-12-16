@@ -247,6 +247,15 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
     currency: 'USD'
   });
   
+  // Track SubmitApplication event for Meta Pixel
+  trackMetaEvent('SubmitApplication', {
+    content_name: 'Elite University Readiness Quiz',
+    content_category: 'quiz_submission',
+    value: leadData.leadScore || 0,
+    currency: 'USD',
+    status: 'completed'
+  });
+  
   // ❌ REMOVED: sendToGHL() to prevent duplicate GHL submissions
   // API route handles GHL webhook sending
 }

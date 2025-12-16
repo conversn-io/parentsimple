@@ -75,3 +75,5 @@ fi
 echo ""
 echo "📋 Diagnostic complete"
 
+
+

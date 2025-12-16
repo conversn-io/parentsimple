@@ -1,10 +1,8 @@
 import FunnelLayoutActivator from '@/components/FunnelLayoutActivator'
 
-export default function QuizLayout({
+export default function QuizSubmittedLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
       <FunnelLayoutActivator />

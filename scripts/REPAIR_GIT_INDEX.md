@@ -93,3 +93,5 @@ git clone https://github.com/conversn-io/parentsimple.git 04-ParentSimple
 - No lock files ✅
 - Filesystem: Possible I/O issues ⚠️
 
+
+

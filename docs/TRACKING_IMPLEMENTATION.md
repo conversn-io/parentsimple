@@ -138,3 +138,5 @@ This implementation matches SeniorSimple's tracking configuration:
 - GA4 Documentation: https://developers.google.com/analytics/devguides/collection/gtagjs
 - Meta Pixel Documentation: https://developers.facebook.com/docs/meta-pixel
 
+
+

@@ -50,3 +50,5 @@
 - All SEO basics are now live
 - Enhanced structured data can be deployed later when git is fixed
 
+
+
