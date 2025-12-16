@@ -416,6 +416,15 @@ export function trackPageView(pageName: string, pagePath: string): void {
     });
   }
   
+  // Track to Meta Pixel
+  if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+    trackMetaEvent('PageView', {
+      content_name: pageName,
+      content_category: 'page_view',
+      page_path: pagePath
+    });
+  }
+  
   // Track to Supabase (async, non-blocking)
   sendPageViewToSupabase(pageName, pagePath, sessionId).catch(error => {
     console.error('Failed to send PageView to Supabase:', error);

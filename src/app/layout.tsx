@@ -5,6 +5,7 @@ import ConditionalHeader from "@/components/navigation/ConditionalHeader";
 import ConditionalFooter from "@/components/ConditionalFooter";
 import { LayoutProvider } from "@/contexts/FooterContext";
 import { UTMTracker } from "@/components/analytics/UTMTracker";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
@@ -179,6 +180,7 @@ export default function RootLayout({
             {/* End Google Tag Manager (noscript) */}
             
             <UTMTracker />
+            <PageViewTracker />
             <LayoutProvider>
               <ConditionalHeader />
               <main>{children}</main>
