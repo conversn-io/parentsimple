@@ -37,28 +37,28 @@ function getGraduationYearModifiers(graduationYear: string): {
   urgency: 'high' | 'medium' | 'low';
 } {
   switch (graduationYear) {
-    case '2027': // Senior
+    case '2026': // Senior
       return {
         testScores: { notTaken: 0.15 }, // 15% of max (major penalty)
         essays: { notStarted: 0.20 }, // 20% of max (critical)
         extracurriculars: { minimal: 0.30 }, // 30% of max (late to develop)
         urgency: 'high',
       };
-    case '2028': // Junior
+    case '2027': // Junior
       return {
         testScores: { notTaken: 0.40 }, // 40% of max (should be planning)
         essays: { notStarted: 0.50 }, // 50% of max (concerning)
         extracurriculars: { minimal: 0.60 }, // 60% of max (still time)
         urgency: 'medium',
       };
-    case '2029': // Sophomore
+    case '2028': // Sophomore
       return {
         testScores: { notTaken: 0.75 }, // 75% of max (early planning)
         essays: { notStarted: 0.80 }, // 80% of max (normal)
         extracurriculars: { minimal: 0.70 }, // 70% of max (developing)
         urgency: 'low',
       };
-    case '2030': // Freshman
+    case '2029': // Freshman
       return {
         testScores: { notTaken: 1.0 }, // 100% of max (no penalty)
         essays: { notStarted: 1.0 }, // 100% of max (normal)
@@ -379,12 +379,12 @@ function generateRecommendations(
   }
   
   // Timeline-specific recommendations
-  if (graduationYear === '2027' && urgency === 'high') {
+  if (graduationYear === '2026' && urgency === 'high') {
     recommendations.push('IMMEDIATE: Finalize test scores, complete essays, decide on Early Decision strategy');
-  } else if (graduationYear === '2028') {
+  } else if (graduationYear === '2027') {
     recommendations.push('THIS YEAR: Take SAT/ACT by spring, seek leadership roles, start essay brainstorming');
     recommendations.push('NEXT YEAR: Finalize essays, complete applications by October (ED/EA)');
-  } else if (graduationYear === '2029' || graduationYear === '2030') {
+  } else if (graduationYear === '2028' || graduationYear === '2029') {
     recommendations.push('FOUNDATION: Maintain strong GPA, explore interests deeply, plan AP/IB course selection');
     recommendations.push('DEVELOPMENT: Build leadership roles, prepare for standardized tests, start thinking about essays');
   }
