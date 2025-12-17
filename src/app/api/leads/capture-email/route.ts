@@ -117,6 +117,7 @@ export async function POST(request: NextRequest) {
       email, 
       firstName, 
       lastName,
+      studentFirstName,
       phoneNumber, // Now accepts phone number
       quizAnswers, 
       sessionId, 
@@ -187,6 +188,7 @@ export async function POST(request: NextRequest) {
       phone: phoneNumber || null,
       first_name: firstName,
       last_name: lastName,
+      student_first_name: studentFirstName || null,
       zip_code: zipCode || null
     };
 
@@ -209,6 +211,7 @@ export async function POST(request: NextRequest) {
       contact: contactData, // Populate contact JSONB from contact data
       quiz_answers: {
         ...quizAnswers,
+        student_first_name: studentFirstName || null,
         calculated_results: calculatedResults,
         licensing_info: licensingInfo,
         utm_parameters: utmParams || {}, // Ensure UTM is stored even if empty object

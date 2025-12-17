@@ -29,6 +29,7 @@ type QuizAnswer = Record<string, unknown>;
 type ContactInfoAnswer = {
   firstName: string;
   lastName: string;
+  studentFirstName?: string;
   email: string;
   phone: string;
   consent?: boolean;
@@ -201,6 +202,7 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
         email: contactInfo.email,
         firstName: contactInfo.firstName,
         lastName: contactInfo.lastName,
+        studentFirstName: contactInfo.studentFirstName,
         phoneNumber: contactInfo.phone,
         quizAnswers: updatedAnswers,
         sessionId: quizSessionId || 'unknown',
@@ -292,6 +294,7 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
               phoneNumber: contactInfo.phone,
               firstName: contactInfo.firstName,
               lastName: contactInfo.lastName,
+              studentFirstName: contactInfo.studentFirstName,
               quizAnswers: updatedAnswers,
               calculatedResults: calculatedResults,
               zipCode: null, // Not collected in this quiz

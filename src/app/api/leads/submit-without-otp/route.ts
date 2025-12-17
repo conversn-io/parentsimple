@@ -259,6 +259,7 @@ export async function POST(request: NextRequest) {
       email, 
       firstName, 
       lastName, 
+      studentFirstName,
       quizAnswers, 
       sessionId, 
       funnelType,
@@ -275,6 +276,7 @@ export async function POST(request: NextRequest) {
       email,
       firstName,
       lastName,
+      studentFirstName,
       sessionId,
       funnelType
     });
@@ -297,7 +299,10 @@ export async function POST(request: NextRequest) {
       zipCode,
       state,
       stateName,
-      quizAnswers,
+      {
+        ...quizAnswers,
+        student_first_name: studentFirstName || null,
+      },
       calculatedResults,
       licensingInfo,
       utmParams,
@@ -311,6 +316,7 @@ export async function POST(request: NextRequest) {
     const ghlPayload = {
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
+      studentFirstName: studentFirstName || quizAnswers?.student_first_name || null,
       email: email,
       phone: formattedPhone,
       zipCode: zipCode || lead.zip_code,
