@@ -85,6 +85,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
   // Personal info fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [studentFirstName, setStudentFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [consentChecked, setConsentChecked] = useState(false);
@@ -205,6 +206,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
       onAnswer({
         firstName,
         lastName,
+        studentFirstName: studentFirstName || undefined,
         email,
         phone: formattedPhoneNumber,
         consent: consentChecked
@@ -363,32 +365,48 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
       case 'personal-info':
         return (
           <form onSubmit={handlePersonalInfoSubmit} className="space-y-8">
-            <div>
-              <label className="block text-lg font-semibold text-gray-700 mb-3">
-                First Name *
-              </label>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
-                required
-                disabled={isLoading}
-                style={{ minHeight: '56px' }}
-              />
+            <div className="flex flex-col gap-6 md:flex-row md:gap-4">
+              <div className="md:w-1/2">
+                <label className="block text-lg font-semibold text-gray-700 mb-3">
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
+                  required
+                  disabled={isLoading}
+                  style={{ minHeight: '56px' }}
+                />
+              </div>
+              <div className="md:w-1/2">
+                <label className="block text-lg font-semibold text-gray-700 mb-3">
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
+                  required
+                  disabled={isLoading}
+                  style={{ minHeight: '56px' }}
+                />
+              </div>
             </div>
             <div>
               <label className="block text-lg font-semibold text-gray-700 mb-3">
-                Last Name *
+                Student First Name (Optional)
               </label>
               <input
                 type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={studentFirstName}
+                onChange={(e) => setStudentFirstName(e.target.value)}
                 className="quiz-input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] transition-all bg-white"
-                required
                 disabled={isLoading}
                 style={{ minHeight: '56px' }}
+                placeholder="We’ll personalize the report if provided"
               />
             </div>
             <div>
