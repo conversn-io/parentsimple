@@ -88,7 +88,6 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
   const [studentFirstName, setStudentFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [consentChecked, setConsentChecked] = useState(false);
   
   // Location info fields
   const [address, setAddress] = useState('');
@@ -190,7 +189,14 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
 
   const handlePersonalInfoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (firstName && lastName && email && phone && consentChecked) {
+    // For personal-info: require firstName, lastName, email, phone
+    // For phone-consent: only require phone
+    const isPersonalInfo = question.type === 'personal-info';
+    const hasRequiredFields = isPersonalInfo 
+      ? (firstName && lastName && email && phone)
+      : phone;
+    
+    if (hasRequiredFields) {
       // Extract 10 digits from phone input
       const digits = extractUSPhoneNumber(phone);
       
@@ -203,14 +209,22 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
       // Format phone with +1 for storage/submission
       const formattedPhoneNumber = formatPhoneForGHL(digits);
       
-      onAnswer({
-        firstName,
-        lastName,
-        studentFirstName: studentFirstName || undefined,
-        email,
-        phone: formattedPhoneNumber,
-        consent: consentChecked
-      });
+      if (isPersonalInfo) {
+        onAnswer({
+          firstName,
+          lastName,
+          studentFirstName: studentFirstName || undefined,
+          email,
+          phone: formattedPhoneNumber,
+          consent: true // Consent is implied by submission
+        });
+      } else {
+        // phone-consent case
+        onAnswer({
+          phone: formattedPhoneNumber,
+          consent: true // Consent is implied by submission
+        });
+      }
     }
   };
 
@@ -457,20 +471,6 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 We'll send a verification code to this number
               </p>
             </div>
-            <div className="flex items-start space-x-4">
-              <input
-                type="checkbox"
-                id="consent"
-                checked={consentChecked}
-                onChange={(e) => setConsentChecked(e.target.checked)}
-                className="mt-2 w-6 h-6 text-[#36596A] border-2 border-gray-300 rounded focus:ring-4 focus:ring-[#36596A]/20"
-                disabled={isLoading}
-              />
-              <label htmlFor="consent" className="text-lg text-gray-600 leading-relaxed">
-                I consent to receive SMS messages and phone calls from CallReady and its partners regarding my retirement planning inquiry. Message and data rates may apply. Reply STOP to opt out.
-              </label>
-            </div>
-
             {phoneError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <p className="text-red-600 text-sm">{phoneError}</p>
@@ -480,11 +480,27 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
             <button
               type="submit"
               className="quiz-button w-full bg-[#36596A] text-white py-4 px-8 rounded-xl font-bold text-xl hover:bg-[#2a4a5a] transition-all duration-200 transform active:scale-95 shadow-lg hover:shadow-xl disabled:opacity-50"
-              disabled={!firstName || !lastName || !email || !phone || !consentChecked || isLoading}
+              disabled={!firstName || !lastName || !email || !phone || isLoading}
               style={{ minHeight: '64px' }}
             >
               Continue
             </button>
+            
+            <p className="text-xs text-gray-600 text-center mt-4 leading-relaxed">
+              I agree to the ParentSimple{' '}
+              <a href="/privacy-policy" className="text-[#36596A] hover:underline" target="_blank" rel="noopener noreferrer">
+                privacy policy
+              </a>{' '}
+              and{' '}
+              <a href="/terms-of-service" className="text-[#36596A] hover:underline" target="_blank" rel="noopener noreferrer">
+                terms of use
+              </a>
+              . I consent to receive calls and text messages at the number entered, including for marketing purposes, from ParentSimple and their{' '}
+              <a href="/network-partners" className="text-[#36596A] hover:underline" target="_blank" rel="noopener noreferrer">
+                Network Partners
+              </a>
+              , including calls/texts made through automated means; message/data rates may apply; text "STOP" to cancel.
+            </p>
           </form>
         );
 
@@ -590,20 +606,6 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
                 We'll send a verification code to this number
               </p>
             </div>
-            <div className="flex items-start space-x-4">
-              <input
-                type="checkbox"
-                id="consent"
-                checked={consentChecked}
-                onChange={(e) => setConsentChecked(e.target.checked)}
-                className="mt-2 w-6 h-6 text-[#36596A] border-2 border-gray-300 rounded focus:ring-4 focus:ring-[#36596A]/20"
-                disabled={isLoading}
-              />
-              <label htmlFor="consent" className="text-lg text-gray-600 leading-relaxed">
-                I consent to receive SMS messages and phone calls from CallReady and its partners regarding my retirement planning inquiry. Message and data rates may apply. Reply STOP to opt out.
-              </label>
-            </div>
-
             {phoneError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <p className="text-red-600 text-sm">{phoneError}</p>
@@ -613,11 +615,27 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: Q
             <button
               type="submit"
               className="quiz-button w-full bg-[#36596A] text-white py-4 px-8 rounded-xl font-bold text-xl hover:bg-[#2a4a5a] transition-all duration-200 transform active:scale-95 shadow-lg hover:shadow-xl disabled:opacity-50"
-              disabled={!phone || !consentChecked || isLoading}
+              disabled={!phone || isLoading}
               style={{ minHeight: '64px' }}
             >
               Continue
             </button>
+            
+            <p className="text-xs text-gray-600 text-center mt-4 leading-relaxed">
+              I agree to the ParentSimple{' '}
+              <a href="/privacy-policy" className="text-[#36596A] hover:underline" target="_blank" rel="noopener noreferrer">
+                privacy policy
+              </a>{' '}
+              and{' '}
+              <a href="/terms-of-service" className="text-[#36596A] hover:underline" target="_blank" rel="noopener noreferrer">
+                terms of use
+              </a>
+              . I consent to receive calls and text messages at the number entered, including for marketing purposes, from ParentSimple and their{' '}
+              <a href="/network-partners" className="text-[#36596A] hover:underline" target="_blank" rel="noopener noreferrer">
+                Network Partners
+              </a>
+              , including calls/texts made through automated means; message/data rates may apply; text "STOP" to cancel.
+            </p>
           </form>
         );
 
