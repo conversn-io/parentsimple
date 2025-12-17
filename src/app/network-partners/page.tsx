@@ -5,7 +5,88 @@ export const metadata: Metadata = {
   description: 'Published partners available through ParentSimple for college planning, education savings, and family financial services.',
 }
 
-export default function NetworkPartnersPage() {
+type Partner = {
+  id: string
+  name: string
+  lender_type?: string | null
+  description?: string | null
+  highlights?: string[] | null
+  states?: string[] | null
+}
+
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  'https://vpysqshhafthuxvokwqj.supabase.co'
+const SUPABASE_ANON_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY
+
+async function fetchPartners(): Promise<{ partners: Partner[]; error?: string }> {
+  if (!SUPABASE_ANON_KEY) {
+    return { partners: [], error: 'Missing Supabase anon key for public partners view' }
+  }
+  
+  // Try to fetch from lenders table (same structure as RateRoots)
+  const url = `${SUPABASE_URL}/rest/v1/lenders?site_id=eq.parentsimple&is_published=eq.true&order=name.asc`
+  try {
+    const res = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      next: { revalidate: 60 * 60 }, // revalidate hourly
+    })
+    if (!res.ok) {
+      // If table doesn't exist or query fails, return empty with error
+      return { partners: [], error: `Upstream ${res.status} ${res.statusText}` }
+    }
+    const data = (await res.json()) as Partner[]
+    return { partners: data }
+  } catch (err) {
+    return { partners: [], error: `Fetch failed: ${String(err)}` }
+  }
+}
+
+function groupByType(partners: Partner[]) {
+  const groups: Record<string, Partner[]> = {}
+  partners.forEach((p) => {
+    // Map lender_type to partner categories for ParentSimple
+    let key = 'other'
+    if (p.lender_type === 'college_planning' || p.lender_type === 'education') {
+      key = 'college_planning'
+    } else if (p.lender_type === 'financial_planning' || p.lender_type === 'education_savings') {
+      key = 'financial_planning'
+    } else if (p.lender_type === 'insurance' || p.lender_type === 'estate_planning') {
+      key = 'insurance_estate'
+    } else {
+      key = p.lender_type?.toLowerCase() || 'other'
+    }
+    groups[key] = groups[key] || []
+    groups[key].push(p)
+  })
+  return groups
+}
+
+export default async function NetworkPartnersPage() {
+  const { partners, error } = await fetchPartners()
+  const groups = groupByType(partners)
+  const total = partners.length
+
+  // Fallback static list if database is not available
+  const staticPartners = [
+    { name: 'Empowerly', type: 'college_planning' },
+    { name: 'Global Financial Impact', type: 'financial_planning' },
+    { name: 'Legacy Financial Group', type: 'financial_planning' },
+  ]
+
+  const displayPartners = partners.length > 0 ? partners : staticPartners.map((p, i) => ({ 
+    id: `static-${i}`, 
+    name: p.name, 
+    lender_type: p.type 
+  } as Partner))
+
   return (
     <main className="min-h-screen bg-[#F9F6EF]">
       <div className="max-w-5xl mx-auto px-4 py-16 space-y-8">
@@ -16,41 +97,94 @@ export default function NetworkPartnersPage() {
             and related services. These partners are independent third-party companies that may offer products or services of interest to families 
             navigating their children's educational journey.
           </p>
-          <p className="text-[#1A2B49]/80">
-            When you submit an inquiry through ParentSimple, you may be connected with one or more Network Partners who can provide 
-            information, guidance, or services related to your needs. All decisions regarding offers, eligibility, pricing, terms, and 
-            availability are made solely by Network Partners.
-          </p>
+          {total > 0 && (
+            <div className="flex flex-wrap items-center gap-3 text-sm text-[#1A2B49]/60">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#1A2B49]/10 px-3 py-1">
+                <span className="w-2 h-2 rounded-full bg-[#9DB89D]" /> Published partners: {total}
+              </span>
+            </div>
+          )}
+          {error && partners.length === 0 && (
+            <p className="text-sm text-red-600">
+              Unable to load live directory ({error}). Showing static partner list.
+            </p>
+          )}
         </header>
 
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold text-[#1A2B49]">Types of Network Partners</h2>
-          <div className="space-y-4">
-            <div className="bg-white rounded-lg border border-[#1A2B49]/20 p-6">
-              <h3 className="text-xl font-semibold text-[#1A2B49] mb-2">College Planning & Admissions</h3>
-              <p className="text-[#1A2B49]/80">
-                Educational consultants, college counselors, and admissions advisors who help families navigate the college application 
-                process, test preparation, and academic planning.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg border border-[#1A2B49]/20 p-6">
-              <h3 className="text-xl font-semibold text-[#1A2B49] mb-2">Education Savings & Financial Planning</h3>
-              <p className="text-[#1A2B49]/80">
-                Financial advisors and planners specializing in 529 plans, education savings strategies, and family financial planning 
-                to help parents prepare for their children's educational expenses.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg border border-[#1A2B49]/20 p-6">
-              <h3 className="text-xl font-semibold text-[#1A2B49] mb-2">Insurance & Estate Planning</h3>
-              <p className="text-[#1A2B49]/80">
-                Insurance providers and estate planning professionals who offer life insurance, estate planning, and other financial 
-                protection products for families.
-              </p>
-            </div>
+        {displayPartners.length > 0 ? (
+          <>
+            {['college_planning', 'financial_planning', 'insurance_estate', 'other'].map((type) => {
+              const list = groups[type] || []
+              if (!list.length && type === 'other') {
+                // Show all partners in 'other' if they don't match categories
+                const otherPartners = displayPartners.filter(p => {
+                  const pType = p.lender_type?.toLowerCase() || 'other'
+                  return !['college_planning', 'education', 'financial_planning', 'education_savings', 'insurance', 'estate_planning'].includes(pType)
+                })
+                if (otherPartners.length === 0) return null
+                return (
+                  <section key={type} className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl font-semibold text-[#1A2B49]">Network Partners</h2>
+                      <span className="text-sm text-[#1A2B49]/60">{otherPartners.length} partners</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {otherPartners.map((partner) => (
+                        <div
+                          key={partner.id || partner.name}
+                          className="rounded-lg border border-[#1A2B49]/20 bg-white px-4 py-3 shadow-sm"
+                        >
+                          <p className="font-semibold text-[#1A2B49] truncate">{partner.name}</p>
+                          {partner.description && (
+                            <p className="text-sm text-[#1A2B49]/70 mt-1 line-clamp-2">{partner.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )
+              }
+              if (!list.length) return null
+              return (
+                <section key={type} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-[#1A2B49] capitalize">
+                      {type === 'college_planning' ? 'College Planning & Admissions' :
+                       type === 'financial_planning' ? 'Education Savings & Financial Planning' :
+                       type === 'insurance_estate' ? 'Insurance & Estate Planning' :
+                       'Other Partners'}
+                    </h2>
+                    <span className="text-sm text-[#1A2B49]/60">{list.length} partners</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {list.map((partner) => (
+                      <div
+                        key={partner.id || partner.name}
+                        className="rounded-lg border border-[#1A2B49]/20 bg-white px-4 py-3 shadow-sm"
+                      >
+                        <p className="font-semibold text-[#1A2B49] truncate">{partner.name}</p>
+                        {partner.description && (
+                          <p className="text-sm text-[#1A2B49]/70 mt-1 line-clamp-2">{partner.description}</p>
+                        )}
+                        {partner.highlights && partner.highlights.length > 0 && (
+                          <ul className="text-xs text-[#1A2B49]/60 mt-2 space-y-1">
+                            {partner.highlights.slice(0, 2).map((highlight, idx) => (
+                              <li key={idx}>• {highlight}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )
+            })}
+          </>
+        ) : (
+          <div className="rounded-lg border border-dashed border-[#1A2B49]/30 bg-white p-6 text-[#1A2B49]/60">
+            No partners are published yet for ParentSimple. Once partners are marked published in the directory, they will appear here.
           </div>
-        </section>
+        )}
 
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold text-[#1A2B49]">How It Works</h2>
