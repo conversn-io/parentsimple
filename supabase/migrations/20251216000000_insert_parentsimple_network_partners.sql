@@ -22,6 +22,7 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert Empowerly (College Planning & Admissions)
+-- Note: Replace (SELECT id FROM auth.users LIMIT 1) with a specific user_id UUID if needed
 INSERT INTO lenders (
   user_id,
   site_id,
@@ -34,8 +35,8 @@ INSERT INTO lenders (
   states_available,
   nationwide
 )
-VALUES (
-  (SELECT id FROM auth.users LIMIT 1), -- Use first available user, or replace with specific user_id
+SELECT 
+  COALESCE((SELECT id FROM auth.users LIMIT 1), gen_random_uuid()) as user_id, -- Fallback to random UUID if no users exist
   'parentsimple',
   'Empowerly',
   'empowerly',
@@ -50,7 +51,6 @@ VALUES (
   true,
   ARRAY[]::TEXT[], -- Nationwide - empty array means all states
   true
-)
 ON CONFLICT (site_id, slug) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
@@ -72,8 +72,8 @@ INSERT INTO lenders (
   states_available,
   nationwide
 )
-VALUES (
-  (SELECT id FROM auth.users LIMIT 1),
+SELECT 
+  COALESCE((SELECT id FROM auth.users LIMIT 1), gen_random_uuid()) as user_id,
   'parentsimple',
   'Global Financial Impact',
   'global-financial-impact',
@@ -88,7 +88,6 @@ VALUES (
   true,
   ARRAY[]::TEXT[],
   true
-)
 ON CONFLICT (site_id, slug) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
@@ -110,8 +109,8 @@ INSERT INTO lenders (
   states_available,
   nationwide
 )
-VALUES (
-  (SELECT id FROM auth.users LIMIT 1),
+SELECT 
+  COALESCE((SELECT id FROM auth.users LIMIT 1), gen_random_uuid()) as user_id,
   'parentsimple',
   'Legacy Financial Group',
   'legacy-financial-group',
@@ -126,7 +125,6 @@ VALUES (
   true,
   ARRAY[]::TEXT[],
   true
-)
 ON CONFLICT (site_id, slug) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,

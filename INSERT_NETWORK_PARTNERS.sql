@@ -40,8 +40,8 @@ INSERT INTO lenders (
   states_available,
   nationwide
 )
-SELECT 
-  (SELECT id FROM auth.users LIMIT 1) as user_id, -- Replace with specific UUID if needed
+VALUES (
+  (SELECT id FROM auth.users LIMIT 1), -- Replace with specific UUID if needed
   'parentsimple',
   'Empowerly',
   'empowerly',
@@ -56,6 +56,7 @@ SELECT
   true,
   ARRAY[]::TEXT[],
   true
+)
 ON CONFLICT (site_id, slug) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
@@ -77,8 +78,8 @@ INSERT INTO lenders (
   states_available,
   nationwide
 )
-SELECT 
-  (SELECT id FROM auth.users LIMIT 1) as user_id,
+VALUES (
+  (SELECT id FROM auth.users LIMIT 1),
   'parentsimple',
   'Global Financial Impact',
   'global-financial-impact',
@@ -93,6 +94,7 @@ SELECT
   true,
   ARRAY[]::TEXT[],
   true
+)
 ON CONFLICT (site_id, slug) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
@@ -114,8 +116,8 @@ INSERT INTO lenders (
   states_available,
   nationwide
 )
-SELECT 
-  (SELECT id FROM auth.users LIMIT 1) as user_id,
+VALUES (
+  (SELECT id FROM auth.users LIMIT 1),
   'parentsimple',
   'Legacy Financial Group',
   'legacy-financial-group',
@@ -130,6 +132,7 @@ SELECT
   true,
   ARRAY[]::TEXT[],
   true
+)
 ON CONFLICT (site_id, slug) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
