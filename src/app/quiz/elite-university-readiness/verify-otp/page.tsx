@@ -7,6 +7,34 @@ import { ProcessingState } from '@/components/quiz/ProcessingState';
 
 const EMBED_CONTEXT_STORAGE_KEY = 'elite_university_embed_context';
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
+const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
+
+// Helper function to get A/B test results route
+const getResultsRoute = (): string => {
+  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results';
+  
+  // Check if already assigned in this session
+  const stored = sessionStorage.getItem(RESULTS_LAYOUT_VARIANT_KEY);
+  if (stored === 'video') return '/quiz/elite-university-readiness/results-video';
+  if (stored === 'simplified') return '/quiz/elite-university-readiness/results';
+  
+  // Random assignment (50/50)
+  const variant = Math.random() < 0.5 ? 'video' : 'simplified';
+  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, variant);
+  
+  // Track assignment to analytics
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('event', 'ab_test_assignment', {
+      event_category: 'ab_testing',
+      event_label: `results_layout_${variant}`,
+      variant: variant
+    });
+  }
+  
+  return variant === 'video' 
+    ? '/quiz/elite-university-readiness/results-video'
+    : '/quiz/elite-university-readiness/results';
+};
 
 type ContactInfo = {
   firstName: string;
@@ -177,10 +205,11 @@ function VerifyOTPContent() {
             ? sessionStorage.getItem(RESULT_VARIANT_STORAGE_KEY)
             : null;
 
+        // Use embed route if specified, otherwise use A/B test routing
         const baseResultsRoute =
           resultVariant === 'embed'
             ? '/quiz/elite-university-readiness/results-embed'
-            : '/quiz/elite-university-readiness/results';
+            : getResultsRoute();
 
         // Redirect to appropriate results page
         setTimeout(() => {

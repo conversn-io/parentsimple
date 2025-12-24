@@ -1,0 +1,168 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { CheckCircle, AlertCircle, TrendingUp, Target } from 'lucide-react'
+import { EmpowerlyCTASection } from '@/components/empowerly/EmpowerlyCTASection'
+import Link from 'next/link'
+
+interface EliteUniversityReadinessResultsVideoProps {
+  score: number;
+  category: string;
+}
+
+export function EliteUniversityReadinessResultsVideo({
+  score,
+  category,
+}: EliteUniversityReadinessResultsVideoProps) {
+  const router = useRouter()
+  const [hasQuizData, setHasQuizData] = useState(true)
+
+  useEffect(() => {
+    // Check if user has quiz data in sessionStorage
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('elite_university_readiness_results')
+      setHasQuizData(!!stored)
+    }
+  }, [])
+
+  // Determine category badge styling
+  const getCategoryBadge = () => {
+    switch (category) {
+      case 'Elite Ready':
+        return {
+          bg: 'bg-green-100',
+          text: 'text-green-800',
+          border: 'border-green-300',
+          icon: CheckCircle,
+        };
+      case 'Competitive':
+        return {
+          bg: 'bg-blue-100',
+          text: 'text-blue-800',
+          border: 'border-blue-300',
+          icon: TrendingUp,
+        };
+      case 'Developing':
+        return {
+          bg: 'bg-yellow-100',
+          text: 'text-yellow-800',
+          border: 'border-yellow-300',
+          icon: Target,
+        };
+      default:
+        return {
+          bg: 'bg-gray-100',
+          text: 'text-gray-800',
+          border: 'border-gray-300',
+          icon: AlertCircle,
+        };
+    }
+  };
+
+  const badge = getCategoryBadge();
+  const IconComponent = badge.icon;
+
+  return (
+    <div className="min-h-screen bg-[#F9F6EF]">
+      {/* Pre-Header (for users who didn't take quiz) */}
+      {!hasQuizData && (
+        <div className="bg-blue-50 border-b border-blue-200 py-4 px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-blue-800">
+              Didn't take the quiz yet?{' '}
+              <Link href="/quiz/elite-university-readiness" className="font-semibold underline hover:text-blue-900">
+                Take the Elite University Readiness Assessment
+              </Link>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section */}
+      <div className="bg-gradient-to-b from-[#1A2B49] to-[#152238] py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          {/* Headline/Title */}
+          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+            Your Elite University Readiness Results
+          </h1>
+
+          {/* Results Teaser */}
+          <div className="mb-8">
+            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
+              <IconComponent className="w-5 h-5" />
+              <span className="font-bold text-lg">{category}</span>
+            </div>
+            <p className="mt-4 text-xl text-gray-200">
+              Score: {score}/100
+            </p>
+          </div>
+
+          {/* Video Headline */}
+          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-6">
+            Here's What That Means...
+          </h2>
+
+          {/* Video Placeholder */}
+          <div className="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden mb-8" style={{ aspectRatio: '16/9' }}>
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center p-8">
+                <div className="mb-4">
+                  <svg className="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="text-gray-300 text-lg font-semibold mb-2">
+                  Video coming soon
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Your personalized results analysis
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section Below Video */}
+      <div className="py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          <EmpowerlyCTASection 
+            title="What to expect on the call with a college counselor?"
+            showLogo={true}
+            logoPosition="above-title"
+          />
+        </div>
+      </div>
+
+      {/* Footer Elements */}
+      <footer className="bg-white border-t border-gray-200 py-8 px-4 mt-12">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center space-y-4">
+            {/* Copyright Notice */}
+            <p className="text-gray-600 text-sm">
+              © {new Date().getFullYear()} ParentSimple. All rights reserved.
+            </p>
+
+            {/* Compliance and Contact Links */}
+            <div className="flex flex-wrap justify-center gap-4 text-sm">
+              <Link href="/privacy-policy" className="text-[#1A2B49] hover:underline">
+                Privacy Policy
+              </Link>
+              <span className="text-gray-400">|</span>
+              <Link href="/terms-of-service" className="text-[#1A2B49] hover:underline">
+                Terms of Use
+              </Link>
+              <span className="text-gray-400">|</span>
+              <Link href="/contact" className="text-[#1A2B49] hover:underline">
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+

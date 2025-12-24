@@ -28,9 +28,8 @@ INSERT_NETWORK_PARTNERS.sql
 1. Open your Supabase project dashboard
 2. Navigate to SQL Editor
 3. Copy and paste the contents of `INSERT_NETWORK_PARTNERS.sql`
-4. **IMPORTANT**: Before running, replace `(SELECT id FROM auth.users LIMIT 1)` with an actual user_id UUID if you have one
-5. Execute the script
-6. Verify with the verification query at the bottom
+4. Execute the script (it now automatically creates a system user if needed)
+5. Verify with the verification query at the bottom
 
 ### Option 2: Via psql Command Line
 ```bash

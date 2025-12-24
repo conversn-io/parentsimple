@@ -21,8 +21,36 @@ import { ELITE_UNIVERSITY_QUESTIONS } from '@/data/elite-university-questions';
 import { calculateEliteUniversityReadinessScore, type EliteUniversityReadinessResults } from '@/utils/elite-university-scoring';
 
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
+const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
 
 type QuizVariant = 'default' | 'embed';
+
+// Helper function to get A/B test results route
+const getResultsRoute = (): string => {
+  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results';
+  
+  // Check if already assigned in this session
+  const stored = sessionStorage.getItem(RESULTS_LAYOUT_VARIANT_KEY);
+  if (stored === 'video') return '/quiz/elite-university-readiness/results-video';
+  if (stored === 'simplified') return '/quiz/elite-university-readiness/results';
+  
+  // Random assignment (50/50)
+  const variant = Math.random() < 0.5 ? 'video' : 'simplified';
+  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, variant);
+  
+  // Track assignment to analytics
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('event', 'ab_test_assignment', {
+      event_category: 'ab_testing',
+      event_label: `results_layout_${variant}`,
+      variant: variant
+    });
+  }
+  
+  return variant === 'video' 
+    ? '/quiz/elite-university-readiness/results-video'
+    : '/quiz/elite-university-readiness/results';
+};
 
 type QuizAnswer = Record<string, unknown>;
 
@@ -333,10 +361,11 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
               }));
             }
             
-            // Route to results page with score and category
+            // Route to results page with score and category (A/B test routing)
             const readinessScore = calculatedResults?.totalScore || 0;
             const category = calculatedResults?.category || 'Needs Improvement';
-            router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(category)}`);
+            const resultsRoute = getResultsRoute();
+            router.push(`${resultsRoute}?score=${readinessScore}&category=${encodeURIComponent(category)}`);
           } else {
             console.error('❌ Submit Failed:', result);
             // Still route to results page even if webhook fails (lead was saved)
@@ -348,7 +377,8 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
             }
             const readinessScore = calculatedResults?.totalScore || 0;
             const category = calculatedResults?.category || 'Needs Improvement';
-            router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(category)}`);
+            const resultsRoute = getResultsRoute();
+            router.push(`${resultsRoute}?score=${readinessScore}&category=${encodeURIComponent(category)}`);
           }
         } catch (error) {
           console.error('💥 Submit Exception:', error);
@@ -361,7 +391,8 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
           }
           const readinessScore = calculatedResults?.totalScore || 0;
           const category = calculatedResults?.category || 'Needs Improvement';
-          router.push(`/quiz/elite-university-readiness/results?score=${readinessScore}&category=${encodeURIComponent(category)}`);
+          const resultsRoute = getResultsRoute();
+          router.push(`${resultsRoute}?score=${readinessScore}&category=${encodeURIComponent(category)}`);
         }
         
         return;
