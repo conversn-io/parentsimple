@@ -91,7 +91,7 @@ export function EliteUniversityReadinessResultsSimplified({
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-3">
           <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
           <p className="text-green-800 font-semibold text-lg">
-            Your results are on their way to your inbox!
+            Your full PDF assessment is on its way to your inbox!
           </p>
         </div>
       </div>
