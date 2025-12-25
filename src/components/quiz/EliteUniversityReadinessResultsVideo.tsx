@@ -63,6 +63,37 @@ export function EliteUniversityReadinessResultsVideo({
   const badge = getCategoryBadge();
   const IconComponent = badge.icon;
 
+  const getScoreVisuals = (value: number) => {
+    if (value >= 85) {
+      return {
+        circleBg: 'bg-green-600',
+        barBg: 'bg-green-500',
+        text: 'text-green-700',
+      };
+    }
+    if (value >= 70) {
+      return {
+        circleBg: 'bg-orange-500',
+        barBg: 'bg-orange-400',
+        text: 'text-orange-600',
+      };
+    }
+    if (value >= 55) {
+      return {
+        circleBg: 'bg-yellow-500',
+        barBg: 'bg-yellow-400',
+        text: 'text-yellow-600',
+      };
+    }
+    return {
+      circleBg: 'bg-red-600',
+      barBg: 'bg-red-500',
+      text: 'text-red-600',
+    };
+  };
+
+  const scoreVisuals = getScoreVisuals(score);
+
   return (
     <div className="min-h-screen bg-[#F9F6EF]">
       {/* Pre-Header (for users who didn't take quiz) */}
@@ -79,55 +110,64 @@ export function EliteUniversityReadinessResultsVideo({
         </div>
       )}
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-b from-[#1A2B49] to-[#152238] py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          {/* Headline/Title */}
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">
-            Your Elite University Readiness Results
-          </h1>
-
-          {/* Results Teaser */}
-          <div className="mb-8">
-            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
-              <IconComponent className="w-5 h-5" />
-              <span className="font-bold text-lg">{category}</span>
-            </div>
-            <p className="mt-4 text-xl text-gray-200">
-              Score: {score}/100
-            </p>
+      <div className="py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4">
+              Your Elite University Readiness Results
+            </h1>
           </div>
 
-          {/* Video Headline */}
-          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-6">
-            Here's What That Means...
-          </h2>
-
-          {/* Video Placeholder */}
-          <div className="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden mb-8" style={{ aspectRatio: '16/9' }}>
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center p-8">
-                <div className="mb-4">
-                  <svg className="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p className="text-gray-300 text-lg font-semibold mb-2">
-                  Video coming soon
-                </p>
-                <p className="text-gray-400 text-sm">
-                  Your personalized results analysis
-                </p>
+          {/* Score & Category Display */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <div className="text-center mb-8">
+              <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full text-white mb-6 ${scoreVisuals.circleBg}`}>
+                <span className="text-5xl font-bold">{score}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
+                <div 
+                  className={`h-4 rounded-full transition-all duration-500 ${scoreVisuals.barBg}`}
+                  style={{ width: `${Math.min(score, 100)}%` }}
+                />
+              </div>
+              <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
+                <IconComponent className="w-5 h-5" />
+                <span className="font-bold text-lg">{category}</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* CTA Section Below Video */}
-      <div className="py-12 px-4">
-        <div className="max-w-4xl mx-auto">
+          {/* Video Headline */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1A2B49]">
+              Here's What That Means...
+            </h2>
+          </div>
+
+          {/* Video Placeholder */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <div className="bg-gray-100 rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-center p-8">
+                  <div className="mb-4">
+                    <svg className="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-600 text-lg font-semibold mb-2">
+                    Video coming soon
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Your personalized results analysis
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section Below Video */}
           <EmpowerlyCTASection 
             title="What to expect on the call with a college counselor?"
             showLogo={true}
