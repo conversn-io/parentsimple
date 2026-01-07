@@ -96,6 +96,16 @@ export function EliteUniversityReadinessResultsVideo({
 
   return (
     <div className="min-h-screen bg-[#F9F6EF]">
+      {/* Announcement Bar - Directly under header nav */}
+      <div className="bg-green-50 border-b border-green-200 py-4 px-6">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-3">
+          <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+          <p className="text-green-800 font-semibold text-lg">
+            Your full PDF assessment is on its way to your inbox!
+          </p>
+        </div>
+      </div>
+
       {/* Pre-Header (for users who didn't take quiz) */}
       {!hasQuizData && (
         <div className="bg-blue-50 border-b border-blue-200 py-4 px-6">
