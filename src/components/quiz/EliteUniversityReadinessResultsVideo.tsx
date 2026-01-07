@@ -145,25 +145,17 @@ export function EliteUniversityReadinessResultsVideo({
             </h2>
           </div>
 
-          {/* Video Placeholder */}
+          {/* Video Embed */}
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-            <div className="bg-gray-100 rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="mb-4">
-                    <svg className="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <p className="text-gray-600 text-lg font-semibold mb-2">
-                    Video coming soon
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Your personalized results analysis
-                  </p>
-                </div>
-              </div>
+            <div className="rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
+              <iframe
+                src="https://player.vimeo.com/video/1152285178?title=0&byline=0&portrait=0&autoplay=0"
+                className="w-full h-full"
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Elite University Readiness Results Analysis"
+              />
             </div>
           </div>
 
