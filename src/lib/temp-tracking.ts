@@ -46,7 +46,7 @@ export interface LeadData {
   leadScore?: number;
   riskLevel?: string;
   recommendedProducts?: string[];
-  householdIncome?: string; // Household income from quiz
+  householdIncome?: string | null; // Household income from quiz
 }
 
 // Bot detection utility

@@ -295,7 +295,7 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
             sessionId: quizSessionId || 'unknown',
             funnelType: 'college_consulting',
             leadScore: readinessScore,
-            householdIncome: updatedAnswers?.household_income || null // Include household income for tracking
+            householdIncome: (typeof updatedAnswers?.household_income === 'string' ? updatedAnswers.household_income : undefined) // Include household income for tracking
           };
           trackLeadFormSubmit(leadData);
         } else {
