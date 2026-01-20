@@ -470,6 +470,7 @@ export async function POST(request: NextRequest) {
     // Prepare GHL webhook payload (only sent if OTP is verified)
     // Format phone with +1 for GHL webhook
     const formattedPhone = formatPhoneForGHL(phoneNumber);
+    const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
     const ghlPayload = {
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
@@ -478,9 +479,13 @@ export async function POST(request: NextRequest) {
       zipCode: zipCode || lead.zip_code,
       state: state || lead.state,
       stateName: stateName || lead.state_name,
+      householdIncome: householdIncome, // Add household income to GHL payload
       source: 'ParentSimple Quiz',
       funnelType: funnelType || lead.funnel_type || 'college_consulting',
-      quizAnswers: lead.quiz_answers || quizAnswers,
+      quizAnswers: {
+        ...(lead.quiz_answers || quizAnswers),
+        household_income: householdIncome, // Ensure household income is in quizAnswers
+      },
       calculatedResults: calculatedResults,
       licensingInfo: licensingInfo,
       leadScore: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0, // Use calculated readiness score

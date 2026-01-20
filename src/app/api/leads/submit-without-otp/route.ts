@@ -302,6 +302,7 @@ export async function POST(request: NextRequest) {
       {
         ...quizAnswers,
         student_first_name: studentFirstName || null,
+        household_income: quizAnswers?.household_income || null,
       },
       calculatedResults,
       licensingInfo,
@@ -313,6 +314,7 @@ export async function POST(request: NextRequest) {
     // Prepare GHL webhook payload
     const formattedPhone = formatPhoneForGHL(phoneNumber);
     const leadScore = calculatedResults?.totalScore || calculatedResults?.readiness_score || 0;
+    const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
     const ghlPayload = {
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
@@ -322,9 +324,13 @@ export async function POST(request: NextRequest) {
       zipCode: zipCode || lead.zip_code,
       state: state || lead.state,
       stateName: stateName || lead.state_name,
+      householdIncome: householdIncome, // Add household income to GHL payload
       source: 'ParentSimple Quiz',
       funnelType: funnelType || lead.funnel_type || 'college_consulting',
-      quizAnswers: lead.quiz_answers || quizAnswers,
+      quizAnswers: {
+        ...(lead.quiz_answers || quizAnswers),
+        household_income: householdIncome, // Ensure household income is in quizAnswers
+      },
       calculatedResults: calculatedResults,
       licensingInfo: licensingInfo,
       leadScore: leadScore,

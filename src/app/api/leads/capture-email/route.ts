@@ -212,6 +212,7 @@ export async function POST(request: NextRequest) {
       quiz_answers: {
         ...quizAnswers,
         student_first_name: studentFirstName || null,
+        household_income: quizAnswers?.household_income || null,
         calculated_results: calculatedResults,
         licensing_info: licensingInfo,
         utm_parameters: utmParams || {}, // Ensure UTM is stored even if empty object

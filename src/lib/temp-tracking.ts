@@ -46,6 +46,7 @@ export interface LeadData {
   leadScore?: number;
   riskLevel?: string;
   recommendedProducts?: string[];
+  householdIncome?: string; // Household income from quiz
 }
 
 // Bot detection utility
@@ -241,12 +242,16 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
   });
   
   // Only track SubmitApplication event for Meta Pixel (removed Lead event to avoid double counting)
+  const householdIncome = leadData.householdIncome || leadData.quizAnswers?.household_income || null;
   trackMetaEvent('SubmitApplication', {
     content_name: 'Elite University Readiness Quiz',
     content_category: 'quiz_submission',
     value: leadData.leadScore || 0,
     currency: 'USD',
-    status: 'completed'
+    status: 'completed',
+    household_income: householdIncome, // Add household income for Meta targeting
+    // Custom parameter for high-income targeting ($200K+)
+    custom_parameter_1: householdIncome === '200k_plus' ? 'high_income' : (householdIncome || 'unknown')
   });
   
   // ❌ REMOVED: sendToGHL() to prevent duplicate GHL submissions

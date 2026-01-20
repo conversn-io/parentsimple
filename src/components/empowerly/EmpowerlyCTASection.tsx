@@ -67,18 +67,27 @@ export function EmpowerlyCTASection({
         ))}
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <Button
           variant="primary"
           size="lg"
           href={addEmpowerlyUTM("https://empowerly.com/consult")}
           className="bg-[#1A2B49] text-white hover:bg-[#152238] min-w-[300px]"
         >
-          Request Your Free Consultation with Empowerly
+          Request a call from Empowerly
           <ArrowRight className="w-5 h-5 ml-2" />
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          href={addEmpowerlyUTM("https://empowerly.com/consult")}
+          className="border-2 border-[#1A2B49] text-[#1A2B49] hover:bg-[#1A2B49] hover:text-white min-w-[200px]"
+        >
+          Book a call
         </Button>
       </div>
     </div>
   )
 }
+
 
