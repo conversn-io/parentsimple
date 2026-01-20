@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createSplitTestMiddleware } from '../../../shared-utils/ab-test-middleware';
+import { createSplitTestMiddleware } from '@/lib/ab-test-middleware';
 
 // Create middleware with ParentSimple-specific configuration
 const sharedMiddleware = createSplitTestMiddleware({
