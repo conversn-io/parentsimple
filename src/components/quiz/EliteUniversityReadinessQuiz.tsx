@@ -19,6 +19,7 @@ import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUT
 import { trackUTMParameters } from '@/utils/utm-tracker';
 import { ELITE_UNIVERSITY_QUESTIONS } from '@/data/elite-university-questions';
 import { calculateEliteUniversityReadinessScore, type EliteUniversityReadinessResults } from '@/utils/elite-university-scoring';
+import { getMetaCookies } from '@/lib/meta-capi-cookies';
 
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
 const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
@@ -226,6 +227,12 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
       
       const readinessScore = calculatedResults?.totalScore || 0;
       
+      const metaCookies = getMetaCookies();
+      const fbLoginId =
+        typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
+          ? (window as any).FB.getAuthResponse().userID
+          : null;
+
       const emailCaptureData = {
         email: contactInfo.email,
         firstName: contactInfo.firstName,
@@ -241,7 +248,12 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
         licensingInfo: null,
         calculatedResults: calculatedResults,
         utmParams: utmParams,
-        leadScore: readinessScore
+        leadScore: readinessScore,
+        metaCookies: {
+          fbp: metaCookies.fbp,
+          fbc: metaCookies.fbc,
+          fbLoginId,
+        }
       };
 
       try {

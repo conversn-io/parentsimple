@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { OTPVerification } from '@/components/quiz/OTPVerification';
 import { ProcessingState } from '@/components/quiz/ProcessingState';
+import { getMetaCookies } from '@/lib/meta-capi-cookies';
 
 const EMBED_CONTEXT_STORAGE_KEY = 'elite_university_embed_context';
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
@@ -110,6 +111,12 @@ function VerifyOTPContent() {
     const personalInfo = quizData.answers.contact_info;
 
     try {
+      const metaCookies = getMetaCookies();
+      const fbLoginId =
+        typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
+          ? (window as any).FB.getAuthResponse().userID
+          : null;
+
       const response = await fetch('/api/leads/verify-otp-and-send-to-ghl', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -126,7 +133,12 @@ function VerifyOTPContent() {
           stateName: null,
           licensingInfo: null,
           calculatedResults: quizData.calculatedResults,
-          utmParams: quizData.utmParams
+          utmParams: quizData.utmParams,
+          metaCookies: {
+            fbp: metaCookies.fbp,
+            fbc: metaCookies.fbc,
+            fbLoginId,
+          }
         })
       });
 
