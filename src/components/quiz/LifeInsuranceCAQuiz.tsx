@@ -49,34 +49,30 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [])
 
-  // #region agent log - Debug CSS corruption
+  // #region agent log - Debug CSS corruption with visible output
+  const [debugInfo, setDebugInfo] = useState<any>(null);
+  
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setTimeout(() => {
-      const log = (location: string, message: string, data: any, hypothesisId: string) => {
-        fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ location, message, data, timestamp: Date.now(), sessionId: 'debug-session', runId: 'initial', hypothesisId })
-        }).catch(() => {});
-      };
+      const debugData: any = {};
 
-      // Hypothesis A & E: Check if our fixes deployed (classes present)
+      // Hypothesis A: Check if our fixes deployed (classes present)
       const rootDiv = document.querySelector('.life-insurance-ca-quiz');
       const stepP = document.querySelector('p[aria-live="polite"]');
       const mainEl = document.querySelector('main');
-      log('LifeInsuranceCAQuiz.tsx:68', 'Component elements check', {
+      debugData.elements = {
         hasRootClass: !!rootDiv,
         rootClasses: rootDiv?.className || 'NOT_FOUND',
         stepPClasses: stepP?.className || 'NOT_FOUND',
         stepPText: stepP?.textContent || 'NOT_FOUND',
         mainClasses: mainEl?.className || 'NOT_FOUND'
-      }, 'A,E');
+      };
 
       // Hypothesis B & C: Computed styles on step paragraph
       if (stepP) {
         const computed = window.getComputedStyle(stepP);
-        log('LifeInsuranceCAQuiz.tsx:78', 'Step paragraph computed styles', {
+        debugData.stepStyles = {
           display: computed.display,
           flexDirection: computed.flexDirection,
           whiteSpace: computed.whiteSpace,
@@ -84,18 +80,18 @@ export function LifeInsuranceCAQuiz() {
           maxWidth: computed.maxWidth,
           fontSize: computed.fontSize,
           textAlign: computed.textAlign
-        }, 'B,C');
+        };
       }
 
       // Hypothesis B: Computed styles on h1
       const h1 = document.querySelector('.life-insurance-ca-quiz h1');
       if (h1) {
         const computed = window.getComputedStyle(h1);
-        log('LifeInsuranceCAQuiz.tsx:92', 'h1 computed styles', {
+        debugData.h1Styles = {
           fontSize: computed.fontSize,
           lineHeight: computed.lineHeight,
           marginBottom: computed.marginBottom
-        }, 'B');
+        };
       }
 
       // Hypothesis D: Province buttons rendering check
@@ -103,26 +99,27 @@ export function LifeInsuranceCAQuiz() {
       if (provinceContainer && step === 0) {
         const buttons = provinceContainer.querySelectorAll('button');
         const computed = window.getComputedStyle(provinceContainer);
-        log('LifeInsuranceCAQuiz.tsx:105', 'Province options rendering', {
+        debugData.provinces = {
           buttonCount: buttons.length,
           buttonTexts: Array.from(buttons).slice(0, 5).map(b => b.textContent?.trim()),
           containerDisplay: computed.display,
           containerFlexDirection: computed.flexDirection,
           containerGridTemplateColumns: computed.gridTemplateColumns,
           containerPosition: computed.position
-        }, 'D');
+        };
       }
 
       // Hypothesis E: Document stylesheets check
       const sheets = Array.from(document.styleSheets).map(s => ({
         href: s.href || 'inline',
-        disabled: s.disabled,
-        rulesCount: s.cssRules?.length || 0
+        disabled: s.disabled
       }));
-      log('LifeInsuranceCAQuiz.tsx:121', 'Document stylesheets', {
-        sheetCount: sheets.length,
+      debugData.stylesheets = {
+        count: sheets.length,
         sheets: sheets.slice(0, 10)
-      }, 'E');
+      };
+
+      setDebugInfo(debugData);
     }, 500);
   }, [step]);
   // #endregion
@@ -232,7 +229,28 @@ export function LifeInsuranceCAQuiz() {
   if (isDQ) return <LifeInsuranceCADQScreen />
 
   return (
-    <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
+    <>
+      {/* #region agent log - Debug panel */}
+      {debugInfo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          maxHeight: '50vh',
+          overflow: 'auto',
+          background: 'black',
+          color: 'lime',
+          fontSize: '10px',
+          zIndex: 9999,
+          padding: '10px',
+          fontFamily: 'monospace'
+        }}>
+          <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
+        </div>
+      )}
+      {/* #endregion */}
+      <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
       <header className="bg-[#F9F6EF] border-b border-[#9DB89D] sticky top-0 z-50">
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex justify-center">
@@ -452,5 +470,6 @@ export function LifeInsuranceCAQuiz() {
         </div>
       </footer>
     </div>
+    </>
   )
 }
