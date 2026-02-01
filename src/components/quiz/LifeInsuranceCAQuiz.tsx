@@ -191,23 +191,23 @@ export function LifeInsuranceCAQuiz() {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-gray-700 mb-6 text-center text-base leading-relaxed">
+            <p className="text-gray-700 mb-4 text-center text-base leading-relaxed">
               Get coverage for less than a cup of coffee a day — check your eligibility in under 60 seconds.
             </p>
 
-            {/* Trust Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
-                <span className="text-green-600 text-sm">✓</span>
-                <span className="text-sm font-medium text-[#1A2B49]">No Health Exam</span>
+            {/* Trust Pills - under subheadline */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm text-gray-700">No Health Exam</span>
               </div>
-              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
-                <span className="text-green-600 text-sm">✓</span>
-                <span className="text-sm font-medium text-[#1A2B49]">Low Monthly Premiums</span>
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm text-gray-700">Low Monthly Premiums</span>
               </div>
-              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
-                <span className="text-green-600 text-sm">✓</span>
-                <span className="text-sm font-medium text-[#1A2B49]">Best Approvals</span>
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm text-gray-700">Best Approvals</span>
               </div>
             </div>
 
@@ -262,31 +262,9 @@ export function LifeInsuranceCAQuiz() {
             </div>
 
             {/* Social Proof Statement */}
-            <p className="text-center text-sm text-gray-600 mb-4">
+            <p className="text-center text-sm text-gray-600">
               Over <span className="font-bold text-[#1A2B49]">12,500</span> Canadians have found life insurance coverage
             </p>
-
-            {/* Scrolling Logos */}
-            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5]">
-              <p className="text-xs text-gray-500 text-center mb-4">We work with trusted Canadian insurers</p>
-              <div className="overflow-hidden relative">
-                <div className="flex gap-8 items-center animate-scroll">
-                  {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
-                    <Image
-                      key={idx}
-                      src={`/images/life-insurance-funnel/ca-insurer-${num}-${
-                        num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
-                        num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
-                      }.png`}
-                      alt={`Insurer ${num}`}
-                      width={100}
-                      height={40}
-                      className="h-10 w-auto object-contain flex-shrink-0 grayscale hover:grayscale-0 transition-all"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
           </>
         )}
 
@@ -437,19 +415,31 @@ export function LifeInsuranceCAQuiz() {
       </main>
 
       {/* Trust badges */}
-      <footer className="border-t border-[#9DB89D]/40 bg-white/50 py-6 px-6">
-        <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-700">
-          <span className="flex items-center gap-2">
-            <span className="text-[#9DB89D]">🛡</span> No medical exam
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="text-[#9DB89D]">🕐</span> No waiting period
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="text-[#9DB89D]">✓</span> No spam, No pressure
-          </span>
-        </div>
-      </footer>
+      {/* Footer with scrolling logos - only on step 0 */}
+      {step === 0 && (
+        <footer className="border-t border-[#E3E0D5] py-8 px-6" style={{ background: 'transparent' }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-xs text-gray-500 text-center mb-6">We work with trusted Canadian insurers</p>
+            <div className="overflow-hidden relative">
+              <div className="flex gap-8 items-center animate-scroll">
+                {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
+                  <Image
+                    key={idx}
+                    src={`/images/life-insurance-funnel/ca-insurer-${num}-${
+                      num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
+                      num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
+                    }.png`}
+                    alt={`Insurer ${num}`}
+                    width={100}
+                    height={40}
+                    className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
     </div>
   )
 }
