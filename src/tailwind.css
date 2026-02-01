@@ -1,7 +1,9 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
+@layer base {
+  :root {
   /* ParentSimple Brand Colors - Oxford Blue (Primary) */
   --color-primary-50: #F5F8FA;
   --color-primary-100: #E8EDF2;
@@ -62,4 +64,5 @@
   --spacing-3xl: 4rem;    /* 64px */
   --spacing-4xl: 5rem;    /* 80px */
   --spacing-5xl: 6rem;    /* 96px */
+  }
 }
