@@ -339,8 +339,8 @@ export function LifeInsuranceCAQuiz() {
                     type="text"
                     value={contactFirstName}
                     onChange={(e) => setContactFirstName(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white"
-                    placeholder="First name."
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                    placeholder="First name"
                     required
                   />
                 </div>
@@ -350,8 +350,8 @@ export function LifeInsuranceCAQuiz() {
                     type="text"
                     value={contactLastName}
                     onChange={(e) => setContactLastName(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white"
-                    placeholder="Last name."
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                    placeholder="Last name"
                     required
                   />
                 </div>
@@ -362,8 +362,8 @@ export function LifeInsuranceCAQuiz() {
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white"
-                  placeholder="Email address."
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                  placeholder="your.email@example.com"
                   required
                 />
               </div>
@@ -380,35 +380,51 @@ export function LifeInsuranceCAQuiz() {
                       const d = e.target.value.replace(/\D/g, '').slice(0, 10)
                       setContactPhone(d)
                     }}
-                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white"
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
                     placeholder="(XXX) XXX-XXXX"
+                    inputMode="numeric"
                     required
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">We&apos;ll send a verification code to this number.</p>
+                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                  <span>🔒</span> We&apos;ll send a verification code to this number
+                </p>
               </div>
+
               {contactError && (
                 <p className="text-sm text-red-600">{contactError}</p>
               )}
-              <p className="text-xs text-gray-600">
+
+              {/* Submit Now Reinforcement Box */}
+              <div className="bg-white border-2 border-[#36596A] rounded-xl p-4 text-center">
+                <p className="text-sm font-semibold text-[#1A2B49]">
+                  ✅ Your Personalized Quotes Are Ready
+                </p>
+              </div>
+
+              {/* Primary CTA Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#36596A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#2a4a5a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg"
+              >
+                {isSubmitting ? 'Processing...' : 'Get My Quote →'}
+              </button>
+
+              {/* TCPA Compliance */}
+              <p className="text-xs text-gray-600 leading-relaxed">
                 By clicking &quot;Get My Quote&quot; you agree to receive communication from a licensed insurance broker via phone, email, SMS for the purpose of distributing and administering insurance. You may withdraw your consent at any time and you also agree to the{' '}
                 <Link href="/terms-of-service" className="text-[#36596A] hover:underline">Terms of Service</Link>
                 {' '}and{' '}
                 <Link href="/privacy-policy" className="text-[#36596A] hover:underline">Privacy Policy</Link>.
               </p>
-              <div className="bg-white border border-[#E3E0D5] rounded-xl p-4 flex items-center gap-3">
-                <span className="text-[#9DB89D]">🕐</span>
-                <span className="font-medium text-[#1A2B49]">Submit now, get covered in 24 hours</span>
-                <span className="text-[#9DB89D] ml-auto">✓</span>
+
+              {/* Social Proof */}
+              <div className="bg-[#F9F6EF] rounded-lg p-4 text-center border border-[#E3E0D5]">
+                <p className="text-sm text-gray-700">
+                  <span className="font-bold text-[#1A2B49]">2,847 quotes</span> sent this week
+                </p>
               </div>
-              <p className="text-sm text-gray-600 text-center">Your personalized quotes are ready</p>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 rounded-xl font-bold text-white bg-[#36596A] hover:bg-[#2a4a5a] transition-all disabled:opacity-50 shadow-lg"
-              >
-                {isSubmitting ? 'Submitting...' : 'Get My Quote'}
-              </button>
               <button
                 type="button"
                 onClick={handleBack}
