@@ -18,20 +18,36 @@ import crypto from 'crypto';
 // Configuration
 // ============================================================================
 
-// Funnel-specific pixel IDs
-const META_PIXEL_ID_INSURANCE = process.env.META_PIXEL_ID_INSURANCE;
-const META_PIXEL_ID_COLLEGE = process.env.META_PIXEL_ID_COLLEGE;
-const META_PIXEL_ID = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID; // Fallback
-const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || process.env.META_CAPI_ACCESS_TOKEN;
+// Meta CAPI configuration
 const META_CAPI_VERSION = process.env.META_CAPI_VERSION || 'v18.0';
 const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE; // Optional, for testing
 
 /**
- * Get the correct pixel ID based on funnel type
+ * Get Meta CAPI token (read at runtime)
+ */
+function getMetaCapiToken(): string | undefined {
+  return process.env.META_CAPI_TOKEN || process.env.META_CAPI_ACCESS_TOKEN;
+}
+
+/**
+ * Get the correct pixel ID based on funnel type (read at runtime)
  */
 export function getPixelIdForFunnel(funnelType?: string | null): string | undefined {
+  // Read env vars at runtime, not at module load time
+  const META_PIXEL_ID_INSURANCE = process.env.META_PIXEL_ID_INSURANCE;
+  const META_PIXEL_ID_COLLEGE = process.env.META_PIXEL_ID_COLLEGE;
+  const META_PIXEL_ID = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  
   // #region agent log
-  console.log('[DEBUG-H1] getPixelIdForFunnel called:', {funnelType, META_PIXEL_ID_INSURANCE, META_PIXEL_ID_COLLEGE, META_PIXEL_ID});
+  console.log('[DEBUG-H9] getPixelIdForFunnel called (runtime env check):', {
+    funnelType, 
+    META_PIXEL_ID_INSURANCE: META_PIXEL_ID_INSURANCE ? 'SET' : 'MISSING',
+    META_PIXEL_ID_COLLEGE: META_PIXEL_ID_COLLEGE ? 'SET' : 'MISSING',
+    META_PIXEL_ID: META_PIXEL_ID ? 'SET' : 'MISSING',
+    actualInsuranceValue: META_PIXEL_ID_INSURANCE,
+    actualCollegeValue: META_PIXEL_ID_COLLEGE,
+    actualFallbackValue: META_PIXEL_ID
+  });
   // #endregion
   
   if (!funnelType) {
@@ -305,13 +321,21 @@ export async function sendMetaCAPIEvent(
   event: MetaCAPIEvent,
   options: SendCAPIOptions = {}
 ): Promise<SendCAPIResult> {
+  // Read env vars at runtime
+  const META_PIXEL_ID = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const pixelId = options.pixelId || META_PIXEL_ID;
-  const accessToken = options.accessToken || META_CAPI_TOKEN;
+  const accessToken = options.accessToken || getMetaCapiToken();
   const testEventCode = options.testEventCode || META_TEST_EVENT_CODE;
   const maxRetries = options.retries ?? 3;
 
   // #region agent log
-  console.log('[DEBUG-H3] sendMetaCAPIEvent called:', {pixelId: pixelId || 'MISSING', accessToken: accessToken ? 'SET' : 'MISSING', eventId: event.event_id, eventName: event.event_name});
+  console.log('[DEBUG-H3] sendMetaCAPIEvent called:', {
+    pixelId: pixelId || 'MISSING', 
+    accessToken: accessToken ? 'SET' : 'MISSING', 
+    eventId: event.event_id, 
+    eventName: event.event_name,
+    optionsPixelId: options.pixelId ? 'PROVIDED' : 'NOT_PROVIDED'
+  });
   // #endregion
 
   // Validate configuration
@@ -694,6 +718,7 @@ export async function sendLeadEvent(params: {
  */
 export function isMetaCAPIConfigured(funnelType?: string | null): boolean {
   const pixelId = getPixelIdForFunnel(funnelType);
-  return !!(pixelId && META_CAPI_TOKEN);
+  const token = getMetaCapiToken();
+  return !!(pixelId && token);
 }
 
