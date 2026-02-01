@@ -8,7 +8,15 @@ src/lib 2/
 .next/
 .vercel/
 
-# Scripts
+# Example and documentation files
 *.sh
 *.md
 !README.md
+QUIZ_TRACKING_EXAMPLE.tsx
+*_EXAMPLE.*
+*_GUIDE.*
+*_INSTRUCTIONS.*
+*_STATUS.*
+*_SUMMARY.*
+*_CHECKLIST.*
+*_LOG.*
