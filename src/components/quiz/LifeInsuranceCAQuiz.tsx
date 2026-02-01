@@ -352,24 +352,30 @@ export function LifeInsuranceCAQuiz() {
             <input type="hidden" name="xxTrustedFormCertUrl" id="xxTrustedFormCertUrl" />
             <input type="hidden" name="leadid_token" id="leadid_token" />
             
-            {/* Exciting match notification */}
-            <div className="bg-green-50 border-2 border-green-500 rounded-xl p-4 mb-6 text-center">
-              <p className="text-lg font-bold text-green-700 flex items-center justify-center gap-2">
-                <span className="text-2xl">🎉</span>
+            {/* Full-width notification bar */}
+            <div className="bg-green-50 border-l-4 border-green-500 px-6 py-3 mb-6 -mx-6">
+              <p className="text-base font-semibold text-green-700 flex items-center justify-center gap-2">
+                <span className="text-xl">🎉</span>
                 Great! You&apos;re Matched with 13+ Insurers
-                <span className="text-2xl">🎉</span>
               </p>
             </div>
 
-            <h1 className="text-2xl font-bold text-[#1A2B49] mb-6 text-center" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
+            <h1 className="text-2xl font-bold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
               Where should we send your free quote?
             </h1>
+
+            {/* Social proof below headline */}
+            <p className="text-xs text-gray-500 text-center mb-6">
+              <span className="font-semibold text-[#1A2B49]">2,847</span> quotes sent this week
+            </p>
             <form onSubmit={handleContactSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
                   <input
                     type="text"
+                    name="given-name"
+                    autoComplete="given-name"
                     value={contactFirstName}
                     onChange={(e) => setContactFirstName(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
@@ -381,6 +387,8 @@ export function LifeInsuranceCAQuiz() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
                   <input
                     type="text"
+                    name="family-name"
+                    autoComplete="family-name"
                     value={contactLastName}
                     onChange={(e) => setContactLastName(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
@@ -393,6 +401,8 @@ export function LifeInsuranceCAQuiz() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
                 <input
                   type="email"
+                  name="email"
+                  autoComplete="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
@@ -408,6 +418,8 @@ export function LifeInsuranceCAQuiz() {
                   </span>
                   <input
                     type="tel"
+                    name="phone"
+                    autoComplete="tel"
                     value={formatPhoneForInput(contactPhone)}
                     onChange={(e) => {
                       const d = e.target.value.replace(/\D/g, '').slice(0, 10)
@@ -427,13 +439,6 @@ export function LifeInsuranceCAQuiz() {
               {contactError && (
                 <p className="text-sm text-red-600">{contactError}</p>
               )}
-
-              {/* Submit Now Reinforcement Box */}
-              <div className="bg-white border-2 border-[#36596A] rounded-xl p-4 text-center">
-                <p className="text-sm font-semibold text-[#1A2B49]">
-                  ✅ Your Personalized Quotes Are Ready
-                </p>
-              </div>
 
               {/* Primary CTA Button */}
               <button
