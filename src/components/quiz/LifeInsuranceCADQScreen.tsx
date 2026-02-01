@@ -8,8 +8,8 @@ import Link from 'next/link'
  */
 export function LifeInsuranceCADQScreen() {
   return (
-    <div className="min-h-screen bg-[#F9F6EF] flex flex-col items-center justify-center py-12 px-4">
-      <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg border border-[#E3E0D5] p-8">
+    <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz flex flex-col items-center justify-center py-12 px-6">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg border border-[#E3E0D5] p-8">
         <h2 className="text-2xl font-bold text-[#1A2B49] mb-4">
           We&apos;re currently serving Ontario
         </h2>
