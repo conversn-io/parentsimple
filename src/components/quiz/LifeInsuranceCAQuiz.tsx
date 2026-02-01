@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
@@ -155,31 +153,20 @@ export function LifeInsuranceCAQuiz() {
 
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
-      <header className="bg-[#F9F6EF] border-b border-[#9DB89D] sticky top-0 z-50">
+      {/* Progress bar on page - not sticky */}
+      <div className="bg-[#F9F6EF] border-b border-[#E3E0D5]">
         <div className="max-w-2xl mx-auto px-6 py-4">
-          <div className="flex justify-center">
-            <Link href="/" className="inline-flex items-center">
-              <Image
-                src="/images/logos/ParentSimple-header-logo.png"
-                alt="ParentSimple"
-                width={160}
-                height={28}
-                className="h-7 w-auto"
-                priority
-              />
-            </Link>
-          </div>
-          <p className="text-sm text-gray-600 mt-2 text-center whitespace-nowrap" aria-live="polite">
+          <p className="text-sm text-gray-600 mb-3 text-center whitespace-nowrap" aria-live="polite">
             Step {step + 1} of {TOTAL_STEPS}
           </p>
-          <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+          <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
               className="bg-[#1A2B49] h-1.5 rounded-full transition-all duration-300"
               style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
             />
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-2xl mx-auto px-6 py-8 pb-16 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
