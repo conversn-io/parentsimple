@@ -4,6 +4,11 @@ import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatPhoneForGHL, formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
 import { sendLeadEvent } from '@/lib/meta-capi-service';
+import {
+  sendLeadToWebhooks,
+  logWebhookDelivery,
+  buildWebhookPayload
+} from '@/lib/webhook-delivery';
 
 const GHL_WEBHOOK_URL = process.env.PARENT_SIMPLE_GHL_WEBHOOK || process.env.PARENTSIMPLE_GHL_WEBHOOK || "";
 
@@ -498,7 +503,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get contact info for GHL payload
+    // Get contact info for webhook payload
     const { data: contact } = await callreadyQuizDb
       .from('contacts')
       .select('*')
@@ -509,146 +514,68 @@ export async function POST(request: NextRequest) {
       return createCorsResponse({ error: 'Contact not found' }, 404);
     }
 
-    // Prepare GHL webhook payload (only sent if OTP is verified)
-    // Format phone with +1 for GHL webhook
-    const formattedPhone = formatPhoneForGHL(phoneNumber);
+    // Build unified webhook payload (sends to both GHL and Zapier)
     const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
-    const ghlPayload = {
+    const webhookPayload = buildWebhookPayload({
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
       email: email,
-      phone: formattedPhone,
+      phone: formatPhoneForGHL(phoneNumber),
       zipCode: zipCode || lead.zip_code,
       state: state || lead.state,
       stateName: stateName || lead.state_name,
-      householdIncome: householdIncome, // Add household income to GHL payload
-      source: 'ParentSimple Quiz',
-      funnelType: funnelType || lead.funnel_type || 'college_consulting',
+      householdIncome,
+      funnelType: funnelType || lead.funnel_type || 'life_insurance_ca',
       quizAnswers: {
         ...(lead.quiz_answers || quizAnswers),
-        household_income: householdIncome, // Ensure household income is in quizAnswers
+        household_income: householdIncome,
       },
-      calculatedResults: calculatedResults,
-      licensingInfo: licensingInfo,
-      leadScore: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0, // Use calculated readiness score
-      timestamp: new Date().toISOString(),
-      utmParams: utmParams || lead.quiz_answers?.utm_parameters || {} // Include UTM parameters in GHL webhook
-    };
-
-    console.log('📤 Sending to GHL Webhook:', {
-      url: GHL_WEBHOOK_URL,
-      payload: ghlPayload
+      calculatedResults,
+      licensingInfo,
+      leadScore: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
+      utmParams: utmParams || lead.quiz_answers?.utm_parameters || {},
+      sessionId,
+      ipAddress,
+      userAgent
     });
 
-    // Send to GHL webhook with timeout
-    console.log('🚀 Making GHL webhook request...');
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    console.log('📤 Sending to unified webhooks (GHL + Zapier)...');
     
-    let ghlResponse: Response;
-    try {
-      ghlResponse = await fetch(GHL_WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ghlPayload),
-        signal: controller.signal
+    // Send to both GHL and Zapier webhooks in parallel
+    const deliveryResult = await sendLeadToWebhooks(webhookPayload, true);
+    
+    // Log webhook delivery to analytics_events
+    await logWebhookDelivery(
+      lead.id,
+      contact.id,
+      sessionId,
+      deliveryResult,
+      webhookPayload,
+      utmParams
+    );
+
+    // Check if at least one webhook succeeded
+    const hasSuccess = deliveryResult.ghl?.success || deliveryResult.zapier?.success;
+    
+    if (hasSuccess) {
+      console.log('✅ Lead sent to webhooks:', {
+        leadId: lead.id,
+        ghl: deliveryResult.ghl?.success ? 'success' : 'failed',
+        zapier: deliveryResult.zapier?.success ? 'success' : 'failed'
       });
-    } catch (fetchError: any) {
-      clearTimeout(timeoutId);
-      if (fetchError.name === 'AbortError') {
-        console.error('❌ GHL Webhook Timeout:', {
-          url: GHL_WEBHOOK_URL,
-          timeout: '10s',
-          timestamp: new Date().toISOString()
-        });
-        return createCorsResponse({ 
-          error: 'GHL webhook timeout', 
-          timeout: true 
-        }, 504);
-      }
-      throw fetchError;
-    }
-    clearTimeout(timeoutId);
-
-    console.log('📡 GHL Response Status:', ghlResponse.status);
-    console.log('📡 GHL Response Headers:', Object.fromEntries(ghlResponse.headers.entries()));
-
-    // Try to parse response - handle empty responses
-    let ghlResponseData: any = {};
-    try {
-      const text = await ghlResponse.text();
-      if (text) {
-        try {
-          ghlResponseData = JSON.parse(text);
-        } catch {
-          ghlResponseData = { raw: text };
-        }
-      }
-    } catch (parseError) {
-      console.warn('⚠️ Could not parse GHL response:', parseError);
-    }
-    console.log('📡 GHL Response Body:', ghlResponseData);
-
-    // Log webhook attempt to analytics_events
-    console.log('📊 Logging to analytics_events...');
-    await callreadyQuizDb.from('analytics_events').insert({
-      event_name: 'ghl_webhook_sent',
-      event_category: 'lead_distribution',
-      event_label: 'parentsimple_quiz',
-      user_id: phoneNumber,
-      session_id: sessionId,
-      page_url: request.headers.get('referer'),
-      user_agent: request.headers.get('user-agent'),
-      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
-      // Store UTM parameters in top-level fields for easy querying (only columns that exist in schema)
-      utm_source: utmSource,
-      utm_medium: utmMedium,
-      utm_campaign: utmCampaign,
-      utm_term: utmTerm,
-      utm_content: utmContent,
-      // Note: utm_id, gclid, fbclid, msclkid are stored in properties.utm_parameters JSONB
-      // They are not top-level columns in the analytics_events table schema
-      properties: {
-        site_key: 'parentsimple.org',
-        lead_id: lead.id,
-        contact_id: contact.id,
-        webhook_url: GHL_WEBHOOK_URL,
-        request_payload: ghlPayload,
-        response_status: ghlResponse.status,
-        response_body: ghlResponseData,
-        success: ghlResponse.ok,
-        utm_parameters: utmParams || {} // Store full UTM object in properties
-      }
-    });
-
-    if (ghlResponse.ok) {
-      // Update lead status if needed (optional - status already set to 'verified')
-      // Could add ghl_status field update here if needed
-      console.log('✅ Lead Sent to GHL Successfully:', { leadId: lead.id, status: ghlResponse.status });
-      return createCorsResponse({ 
-        success: true, 
+      return createCorsResponse({
+        success: true,
         leadId: lead.id,
         contactId: contact.id,
-        ghlStatus: ghlResponse.status 
+        webhookResults: deliveryResult
       });
     } else {
-      console.error('❌ GHL Webhook Failed:', { 
-        status: ghlResponse.status,
-        statusText: ghlResponse.statusText,
-        response: ghlResponseData,
-        payload: ghlPayload,
-        url: GHL_WEBHOOK_URL,
-        timestamp: new Date().toISOString()
-      });
-      return createCorsResponse({ 
-        error: 'GHL webhook failed', 
+      console.error('❌ All webhooks failed:', deliveryResult);
+      return createCorsResponse({
+        error: 'All webhooks failed',
         leadId: lead.id,
         contactId: contact.id,
-        ghlStatus: ghlResponse.status,
-        ghlStatusText: ghlResponse.statusText,
-        ghlResponse: ghlResponseData
+        webhookResults: deliveryResult
       }, 500);
     }
 
