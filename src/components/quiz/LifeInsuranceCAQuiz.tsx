@@ -249,13 +249,6 @@ export function LifeInsuranceCAQuiz() {
                   className="rounded-full flex-shrink-0 object-cover"
                 />
                 <div className="flex-1">
-                  <div className="flex gap-1 mb-2 items-center">
-                    {[...Array(4)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-lg">★</span>
-                    ))}
-                    <span className="text-yellow-400 text-lg">☆</span>
-                    <span className="text-sm font-semibold text-gray-700 ml-1">4.8</span>
-                  </div>
                   <p className="text-gray-700 text-sm italic mb-2">
                     "Found coverage in minutes! The process was so simple and I got quotes from multiple insurers. Best decision for my family's security."
                   </p>
@@ -264,11 +257,32 @@ export function LifeInsuranceCAQuiz() {
               </div>
             </div>
 
-            {/* Social Proof Statement */}
-            <p className="text-center text-sm text-gray-600 flex items-center justify-center gap-2">
-              <span className="text-xl">👨‍👩‍👧</span>
-              <span className="font-bold text-[#1A2B49]">4.8</span> ratings and reviews
-            </p>
+            {/* Social Proof Statement with Stars */}
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Image
+                  src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
+                  alt="Happy customers"
+                  width={48}
+                  height={48}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">
+                    <span className="font-bold text-[#1A2B49]">4.8</span> ratings and reviews
+                  </p>
+                  <div className="flex gap-0.5 items-center">
+                    {[...Array(4)].map((_, i) => (
+                      <span key={i} className="text-yellow-400 text-base">★</span>
+                    ))}
+                    <span className="relative inline-block text-base">
+                      <span className="text-gray-300">★</span>
+                      <span className="absolute top-0 left-0 overflow-hidden text-yellow-400" style={{ width: '50%' }}>★</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </>
         )}
 
