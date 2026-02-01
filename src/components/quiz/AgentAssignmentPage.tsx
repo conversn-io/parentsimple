@@ -109,7 +109,7 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
           <div className="bg-slate-50 rounded-2xl p-8 mb-8">
             {/* Agent Photo - Full crop, no circle - Reduced spacing by 50% */}
             <img 
-              src="/images/team/professional-advisor.jpg" 
+              src="/images/team/agent-advisor.png" 
               alt="Licensed Insurance Specialist"
               className="w-full max-w-sm mx-auto mb-3 object-cover rounded-lg"
             />
