@@ -78,8 +78,9 @@ function VerifyOTPContent() {
 
       const data = await response.json()
       if (response.ok && data.success) {
-        sessionStorage.removeItem(STORAGE_KEY)
-        setTimeout(() => router.push('/quiz/life-insurance-ca/thank-you'), 2000)
+        // Keep quiz data in storage for results page
+        // sessionStorage.removeItem(STORAGE_KEY)
+        setTimeout(() => router.push('/quiz/life-insurance-ca/results'), 2000)
       } else {
         setShowProcessing(false)
         alert(data?.error || 'Something went wrong. Please try again.')

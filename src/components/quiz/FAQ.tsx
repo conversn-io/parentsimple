@@ -3,7 +3,38 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const faqData = [
+const lifeInsuranceFaqData = [
+  {
+    question: "What is life insurance?",
+    answer: "Life insurance is a contract that provides financial protection to your loved ones when you pass away. It pays out a lump sum (death benefit) to your beneficiaries, helping cover expenses like funeral costs, mortgage payments, outstanding debts, and providing ongoing financial support for your family."
+  },
+  {
+    question: "How much coverage do I need?",
+    answer: "Coverage amounts typically depend on your income, debts, mortgage balance, and family needs. A common rule is 10-12 times your annual income. Our licensed specialist will help you determine the right amount based on your specific situation and family protection goals."
+  },
+  {
+    question: "Do I need a medical exam?",
+    answer: "It depends on the policy type and coverage amount. Many policies require a brief medical exam, while some (like simplified issue or guaranteed issue policies) don't. Our specialist will help you find options that match your health situation and preferences."
+  },
+  {
+    question: "How much does life insurance cost?",
+    answer: "Premiums vary based on your age, health, coverage amount, and policy type. Term life insurance (coverage for a specific period) is typically more affordable than permanent life insurance (lifetime coverage). Our specialist will provide quotes from multiple Canadian insurers to help you find the best rate."
+  },
+  {
+    question: "What's the difference between term and permanent life insurance?",
+    answer: "Term life insurance covers you for a specific period (10, 20, 30 years) and is generally more affordable. Permanent life insurance (whole life, universal life) provides lifelong coverage and can build cash value. Our specialist will explain which type best fits your needs and budget."
+  },
+  {
+    question: "How long does the consultation take?",
+    answer: "The initial consultation typically takes 15-30 minutes. This allows us to understand your family's needs and provide personalized quotes from multiple carriers. Follow-up calls may be scheduled if needed."
+  },
+  {
+    question: "Is there any obligation to purchase?",
+    answer: "Absolutely not. The consultation is completely free with no obligation to purchase anything. We're here to provide information and help you understand your options so you can make the best decision for your family's protection."
+  }
+];
+
+const annuityFaqData = [
   {
     question: "What is an annuity?",
     answer: "An annuity is a financial product that provides guaranteed income payments, typically for retirement. It's designed to help protect against outliving your savings by providing a steady stream of income for life."
@@ -30,7 +61,14 @@ const faqData = [
   }
 ];
 
-export const FAQ = () => {
+interface FAQProps {
+  funnelType?: string;
+}
+
+export const FAQ = ({ funnelType }: FAQProps = {} as FAQProps) => {
+  // Select appropriate FAQ data based on funnel type
+  const isLifeInsurance = funnelType === 'life-insurance-ca';
+  const faqData = isLifeInsurance ? lifeInsuranceFaqData : annuityFaqData;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleFAQ = (index: number) => {
