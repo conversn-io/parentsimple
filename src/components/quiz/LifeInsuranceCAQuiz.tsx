@@ -200,21 +200,21 @@ export function LifeInsuranceCAQuiz() {
         </div>
       )}
 
-      <main className="max-w-2xl mx-auto px-6 py-8 pb-16 w-full min-w-0">
+      <main className="max-w-2xl mx-auto px-6 py-4 pb-8 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
             {/* Main Headline */}
-            <h1 className="text-3xl font-bold text-[#1A2B49] mb-3 text-center" style={{ fontSize: '2rem', lineHeight: 1.2 }}>
+            <h1 className="text-3xl font-bold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '2rem', lineHeight: 1.2 }}>
               Protect Your Family&apos;s Future with up to $2M in Life Insurance
             </h1>
 
             {/* Subheadline */}
-            <p className="text-gray-700 mb-4 text-center text-base leading-relaxed">
+            <p className="text-gray-700 mb-3 text-center text-base leading-relaxed">
               Get coverage for less than a cup of coffee a day — check your eligibility in under 60 seconds.
             </p>
 
             {/* Trust Pills - under subheadline */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-green-600">✓</span>
                 <span className="text-sm text-gray-700">No Health Exam</span>
@@ -237,7 +237,7 @@ export function LifeInsuranceCAQuiz() {
               <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
             )}
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-4 mb-4">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
@@ -256,7 +256,7 @@ export function LifeInsuranceCAQuiz() {
             </div>
 
             {/* Testimonial Section */}
-            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-3">
               <div className="flex gap-4 items-start">
                 <Image
                   src="/images/life-insurance-funnel/testimonial-guy.jpg"
@@ -275,7 +275,7 @@ export function LifeInsuranceCAQuiz() {
             </div>
 
             {/* Social Proof Statement with Stars */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-3">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Image
                   src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
@@ -312,9 +312,9 @@ export function LifeInsuranceCAQuiz() {
               {currentStepDef.title}
             </h1>
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
-              <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
+              <p className="text-gray-600 mb-4 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {((currentStepDef.options as unknown) as { value: string; label: string; sublabel?: string }[]).map((opt) => {
                 const getIcon = () => {
                   // Purpose icons
@@ -396,7 +396,7 @@ export function LifeInsuranceCAQuiz() {
             <input type="hidden" name="leadid_token" id="leadid_token" />
             
             {/* Full-width notification bar */}
-            <div className="bg-green-50 border-l-4 border-green-500 px-6 py-3 mb-6 -mx-6">
+            <div className="bg-green-50 border-l-4 border-green-500 px-6 py-3 mb-4 -mx-6">
               <p className="text-base font-semibold text-green-700 flex items-center justify-center gap-2">
                 <span className="text-xl">🎉</span>
                 Great! You&apos;re Matched with 13+ Insurers
@@ -408,10 +408,10 @@ export function LifeInsuranceCAQuiz() {
             </h1>
 
             {/* Social proof below headline */}
-            <p className="text-xs text-gray-500 text-center mb-6">
+            <p className="text-xs text-gray-500 text-center mb-4">
               <span className="font-semibold text-[#1A2B49]">2,847</span> quotes sent this week
             </p>
-            <form onSubmit={handleContactSubmit} className="space-y-4">
+            <form onSubmit={handleContactSubmit} className="space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
@@ -532,9 +532,9 @@ export function LifeInsuranceCAQuiz() {
       {/* Trust badges */}
       {/* Footer with scrolling logos - only on step 0 */}
       {step === 0 && (
-        <footer className="border-t border-[#E3E0D5] py-8 px-6" style={{ background: 'transparent' }}>
+        <footer className="border-t border-[#E3E0D5] py-4 px-6" style={{ background: 'transparent' }}>
           <div className="max-w-2xl mx-auto">
-            <p className="text-xs text-gray-500 text-center mb-6">We work with trusted Canadian insurers</p>
+            <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
             <div className="overflow-hidden relative">
               <div className="flex gap-8 items-center animate-scroll">
                 {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
