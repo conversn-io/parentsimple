@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
@@ -171,16 +172,35 @@ export function LifeInsuranceCAQuiz() {
       <main className="max-w-2xl mx-auto px-6 py-8 pb-16 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
+            {/* Trust Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+                <span className="text-green-600 text-sm">✓</span>
+                <span className="text-xs font-medium text-[#1A2B49]">Licensed Brokers</span>
+              </div>
+              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+                <span className="text-green-600 text-sm">✓</span>
+                <span className="text-xs font-medium text-[#1A2B49]">No Medical Exam</span>
+              </div>
+              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+                <span className="text-green-600 text-sm">✓</span>
+                <span className="text-xs font-medium text-[#1A2B49]">Fast Approval</span>
+              </div>
+            </div>
+
+            {/* Social Proof Banner */}
             <p className="text-xs text-gray-600 mb-4 text-center bg-white/80 border border-[#9DB89D]/40 rounded-lg py-2 px-3">
               <span className="font-semibold text-[#1A2B49]">250+ Ontarians got quotes this week</span>
             </p>
+
             <h1 className="text-2xl font-bold text-[#1A2B49] mb-2" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
               {currentStepDef.title}
             </h1>
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
               <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
@@ -196,6 +216,57 @@ export function LifeInsuranceCAQuiz() {
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
+            </div>
+
+            {/* Testimonial Section */}
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
+              <div className="flex gap-4 items-start">
+                <Image
+                  src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
+                  alt="Sarah M."
+                  width={64}
+                  height={64}
+                  className="rounded-full flex-shrink-0"
+                />
+                <div className="flex-1">
+                  <div className="flex gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-700 text-sm italic mb-2">
+                    "Found coverage in minutes! The process was so simple and I got quotes from multiple insurers. Best decision for my family's security."
+                  </p>
+                  <p className="text-xs text-gray-500">— Sarah M., Ontario</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Proof Statement */}
+            <p className="text-center text-sm text-gray-600 mb-4">
+              Over <span className="font-bold text-[#1A2B49]">12,500</span> Canadians have found life insurance coverage
+            </p>
+
+            {/* Scrolling Logos */}
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5]">
+              <p className="text-xs text-gray-500 text-center mb-4">We work with trusted Canadian insurers</p>
+              <div className="overflow-hidden relative">
+                <div className="flex gap-8 items-center animate-scroll">
+                  {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
+                    <Image
+                      key={idx}
+                      src={`/images/life-insurance-funnel/ca-insurer-${num}-${
+                        num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
+                        num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
+                      }.png`}
+                      alt={`Insurer ${num}`}
+                      width={100}
+                      height={40}
+                      className="h-10 w-auto object-contain flex-shrink-0 grayscale hover:grayscale-0 transition-all"
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </>
         )}
