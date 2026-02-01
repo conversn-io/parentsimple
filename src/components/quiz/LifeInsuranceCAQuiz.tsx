@@ -180,7 +180,7 @@ export function LifeInsuranceCAQuiz() {
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
               <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
