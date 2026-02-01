@@ -226,10 +226,10 @@ export function LifeInsuranceCAQuiz() {
                   key={opt.value}
                   type="button"
                   onClick={() => handleProvinceSelect(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all w-full min-w-0 ${
+                  className={`flex items-center gap-3 rounded-xl px-5 py-4 text-left transition-all w-full min-w-0 ${
                     answers.province === opt.value
-                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-[#9DB89D] hover:shadow-sm'
+                      ? 'border-2 border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
+                      : 'border border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D] hover:shadow-sm'
                   }`}
                 >
                   <MapPin className={`shrink-0 ${answers.province === opt.value ? 'text-[#9DB89D]' : 'text-gray-400'}`} size={20} />
@@ -313,10 +313,10 @@ export function LifeInsuranceCAQuiz() {
                     key={opt.value}
                     type="button"
                     onClick={() => handleMultipleChoice(opt.value)}
-                    className={`w-full flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all min-w-0 ${
+                    className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 text-left transition-all min-w-0 ${
                       answers[currentStepDef.id] === opt.value
-                        ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                        : 'border-gray-200 bg-white hover:border-[#9DB89D] hover:shadow-sm text-gray-700'
+                        ? 'border-2 border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
+                        : 'border border-gray-300 bg-white hover:border-[#9DB89D] hover:shadow-sm text-gray-700'
                     }`}
                   >
                     {getIcon()}
