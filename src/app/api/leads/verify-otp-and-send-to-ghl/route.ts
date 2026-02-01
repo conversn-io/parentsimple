@@ -535,8 +535,8 @@ export async function POST(request: NextRequest) {
       leadScore: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
       utmParams: utmParams || lead.quiz_answers?.utm_parameters || {},
       sessionId,
-      ipAddress,
-      userAgent
+      ipAddress: ipAddress || undefined,
+      userAgent: userAgent || undefined
     });
 
     console.log('📤 Sending to unified webhooks (GHL + Zapier)...');
