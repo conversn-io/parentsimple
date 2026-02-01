@@ -168,20 +168,22 @@ export function LifeInsuranceCAQuiz() {
         </div>
       )}
 
-      {/* Progress bar on page - not sticky */}
-      <div className="bg-[#F9F6EF] border-b border-[#E3E0D5]">
-        <div className="max-w-2xl mx-auto px-6 py-4">
-          <p className="text-sm text-gray-600 mb-3 text-center whitespace-nowrap" aria-live="polite">
-            Step {step + 1} of {TOTAL_STEPS}
-          </p>
-          <div className="w-full bg-gray-200 rounded-full h-1.5">
-            <div
-              className="bg-[#1A2B49] h-1.5 rounded-full transition-all duration-300"
-              style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
-            />
+      {/* Progress bar on page - not sticky, hidden on landing page */}
+      {step > 0 && (
+        <div className="bg-[#F9F6EF] border-b border-[#E3E0D5]">
+          <div className="max-w-2xl mx-auto px-6 py-4">
+            <p className="text-sm text-gray-600 mb-3 text-center whitespace-nowrap" aria-live="polite">
+              Step {step + 1} of {TOTAL_STEPS}
+            </p>
+            <div className="w-full bg-gray-200 rounded-full h-1.5">
+              <div
+                className="bg-[#1A2B49] h-1.5 rounded-full transition-all duration-300"
+                style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <main className="max-w-2xl mx-auto px-6 py-8 pb-16 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
