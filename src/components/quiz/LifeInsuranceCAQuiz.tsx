@@ -57,16 +57,23 @@ export function LifeInsuranceCAQuiz() {
     setTimeout(() => {
       const debugData: any = {};
 
-      // Hypothesis A: Check if our fixes deployed (classes present)
+      // Hypothesis F: DOM structure check - find main multiple ways
       const rootDiv = document.querySelector('.life-insurance-ca-quiz');
       const stepP = document.querySelector('p[aria-live="polite"]');
       const mainEl = document.querySelector('main');
+      const mainByClass = document.querySelector('.max-w-lg.mx-auto');
+      const allMains = document.querySelectorAll('main');
+      
       debugData.elements = {
         hasRootClass: !!rootDiv,
         rootClasses: rootDiv?.className || 'NOT_FOUND',
         stepPClasses: stepP?.className || 'NOT_FOUND',
         stepPText: stepP?.textContent || 'NOT_FOUND',
-        mainClasses: mainEl?.className || 'NOT_FOUND'
+        mainClasses: mainEl?.className || 'NOT_FOUND',
+        mainCount: allMains.length,
+        mainByClassExists: !!mainByClass,
+        rootChildren: rootDiv?.children.length || 0,
+        bodyChildren: document.body.children.length
       };
 
       // Hypothesis B & C: Computed styles on step paragraph
@@ -94,22 +101,31 @@ export function LifeInsuranceCAQuiz() {
         };
       }
 
-      // Hypothesis D: Province buttons rendering check
-      const provinceContainer = document.querySelector('.life-insurance-ca-quiz main > div > div:last-child');
-      if (provinceContainer && step === 0) {
-        const buttons = provinceContainer.querySelectorAll('button');
-        const computed = window.getComputedStyle(provinceContainer);
-        debugData.provinces = {
-          buttonCount: buttons.length,
-          buttonTexts: Array.from(buttons).slice(0, 5).map(b => b.textContent?.trim()),
-          containerDisplay: computed.display,
-          containerFlexDirection: computed.flexDirection,
-          containerGridTemplateColumns: computed.gridTemplateColumns,
-          containerPosition: computed.position
-        };
+      // Hypothesis D & F: Province buttons rendering check - try multiple selectors
+      const allButtons = Array.from(document.querySelectorAll('button'));
+      const provinceButtons = allButtons.filter(b => b.textContent?.includes('Ontario') || b.textContent?.includes('British'));
+      
+      debugData.provinces = {
+        currentStep: step,
+        totalButtons: allButtons.length,
+        provinceButtonsFound: provinceButtons.length,
+        provinceButtonTexts: provinceButtons.slice(0, 5).map(b => b.textContent?.trim().substring(0, 30)),
+        allButtonTexts: allButtons.slice(0, 8).map(b => b.textContent?.trim().substring(0, 30))
+      };
+      
+      if (provinceButtons.length > 0) {
+        const firstButton = provinceButtons[0];
+        const container = firstButton.parentElement;
+        if (container) {
+          const computed = window.getComputedStyle(container);
+          debugData.provinces.containerTag = container.tagName;
+          debugData.provinces.containerDisplay = computed.display;
+          debugData.provinces.containerFlexDirection = computed.flexDirection;
+          debugData.provinces.containerGridTemplateColumns = computed.gridTemplateColumns;
+        }
       }
 
-      // Hypothesis E: Document stylesheets check
+      // Hypothesis E & B: Document stylesheets and CSS rules check
       const sheets = Array.from(document.styleSheets).map(s => ({
         href: s.href || 'inline',
         disabled: s.disabled
@@ -118,9 +134,53 @@ export function LifeInsuranceCAQuiz() {
         count: sheets.length,
         sheets: sheets.slice(0, 10)
       };
+      
+      // Check if our scoped CSS rule exists
+      let foundOurRule = false;
+      try {
+        for (const sheet of document.styleSheets) {
+          if (!sheet.href) continue;
+          try {
+            const rules = Array.from(sheet.cssRules || []);
+            const ourRule = rules.find((r: any) => 
+              r.selectorText?.includes('.life-insurance-ca-quiz h1')
+            );
+            if (ourRule) {
+              foundOurRule = true;
+              debugData.ourCSSRule = {
+                found: true,
+                selector: (ourRule as CSSStyleRule).selectorText,
+                fontSize: (ourRule as CSSStyleRule).style.fontSize
+              };
+              break;
+            }
+          } catch (e) {
+            // CORS error, skip
+          }
+        }
+      } catch (e) {
+        debugData.cssCheckError = String(e);
+      }
+      
+      if (!foundOurRule) {
+        debugData.ourCSSRule = { found: false, note: 'Scoped CSS not found in stylesheets' };
+      }
+
+      // Visual corruption check
+      if (stepP) {
+        const rect = stepP.getBoundingClientRect();
+        const words = stepP.textContent?.split(' ') || [];
+        debugData.visualCheck = {
+          stepPWidth: Math.round(rect.width),
+          stepPHeight: Math.round(rect.height),
+          expectedWidth: 'should be ~80-100px for "Step 1 of 8"',
+          isCorrupted: rect.height > 30,  // If taller than 30px, text is stacking
+          wordCount: words.length
+        };
+      }
 
       setDebugInfo(debugData);
-    }, 500);
+    }, 1000);  // Increased to 1 second to ensure full hydration
   }, [step]);
   // #endregion
 
