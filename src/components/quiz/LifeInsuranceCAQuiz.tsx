@@ -464,12 +464,7 @@ export function LifeInsuranceCAQuiz() {
                 <Link href="/privacy-policy" className="text-[#36596A] hover:underline">Privacy Policy</Link>.
               </p>
 
-              {/* Social Proof */}
-              <div className="bg-[#F9F6EF] rounded-lg p-4 text-center border border-[#E3E0D5]">
-                <p className="text-sm text-gray-700">
-                  <span className="font-bold text-[#1A2B49]">2,847 quotes</span> sent this week
-                </p>
-              </div>
+              {/* Back Button */}
               <button
                 type="button"
                 onClick={handleBack}
