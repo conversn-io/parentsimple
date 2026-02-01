@@ -18,10 +18,55 @@ import crypto from 'crypto';
 // Configuration
 // ============================================================================
 
-const META_PIXEL_ID = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// Funnel-specific pixel IDs
+const META_PIXEL_ID_INSURANCE = process.env.META_PIXEL_ID_INSURANCE;
+const META_PIXEL_ID_COLLEGE = process.env.META_PIXEL_ID_COLLEGE;
+const META_PIXEL_ID = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID; // Fallback
 const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || process.env.META_CAPI_ACCESS_TOKEN;
 const META_CAPI_VERSION = process.env.META_CAPI_VERSION || 'v18.0';
 const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE; // Optional, for testing
+
+/**
+ * Get the correct pixel ID based on funnel type
+ */
+export function getPixelIdForFunnel(funnelType?: string | null): string | undefined {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:35',message:'getPixelIdForFunnel called',data:{funnelType,META_PIXEL_ID_INSURANCE,META_PIXEL_ID_COLLEGE,META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  // #endregion
+  
+  if (!funnelType) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:39',message:'No funnelType, returning fallback',data:{result:META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
+    return META_PIXEL_ID;
+  }
+
+  const normalized = funnelType.toLowerCase();
+  
+  // Life Insurance funnel
+  if (normalized.includes('insurance') || normalized.includes('life')) {
+    const result = META_PIXEL_ID_INSURANCE || META_PIXEL_ID;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:48',message:'Matched insurance funnel',data:{normalized,result,META_PIXEL_ID_INSURANCE,META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+    return result;
+  }
+  
+  // College Consulting funnel
+  if (normalized.includes('college') || normalized.includes('consulting')) {
+    const result = META_PIXEL_ID_COLLEGE || META_PIXEL_ID;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:57',message:'Matched college funnel',data:{normalized,result},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+    return result;
+  }
+  
+  // Default fallback
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:65',message:'No match, using fallback',data:{normalized,result:META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  // #endregion
+  return META_PIXEL_ID;
+}
 
 // ============================================================================
 // Types & Interfaces
@@ -265,10 +310,17 @@ export async function sendMetaCAPIEvent(
   const testEventCode = options.testEventCode || META_TEST_EVENT_CODE;
   const maxRetries = options.retries ?? 3;
 
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:305',message:'sendMetaCAPIEvent called',data:{pixelId:pixelId?'SET':'MISSING',accessToken:accessToken?'SET':'MISSING',eventId:event.event_id,eventName:event.event_name},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+  // #endregion
+
   // Validate configuration
   if (!pixelId || !accessToken) {
     const error = 'Meta CAPI not configured: Missing META_PIXEL_ID or META_CAPI_TOKEN';
     console.warn(`[Meta CAPI] ${error}`);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:316',message:'Meta CAPI not configured',data:{pixelId:pixelId||'MISSING',accessToken:accessToken?'SET':'MISSING',error},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
     return {
       success: false,
       eventId: event.event_id,
@@ -309,6 +361,10 @@ export async function sendMetaCAPIEvent(
 
       if (response.ok) {
         // Success
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:371',message:'Meta CAPI SUCCESS',data:{eventId:event.event_id,eventName:event.event_name,responseData,pixelId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+        // #endregion
+        
         if (process.env.NODE_ENV === 'development') {
           console.log(`[Meta CAPI] Event sent successfully:`, {
             eventId: event.event_id,
@@ -326,6 +382,9 @@ export async function sendMetaCAPIEvent(
         // API error
         const errorMessage = responseData?.error?.message || responseText || 'Unknown error';
         lastError = new Error(`Meta CAPI error (${response.status}): ${errorMessage}`);
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:391',message:'Meta CAPI ERROR',data:{status:response.status,errorMessage,eventId:event.event_id,pixelId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
+        // #endregion
 
         // Don't retry on certain errors (authentication, invalid data)
         if (response.status === 401 || response.status === 400) {
@@ -561,6 +620,8 @@ export function createCustomEvent(params: {
 /**
  * Send a Lead event with automatic user data building
  * Most common use case - simplifies the API
+ * 
+ * @param params.funnelType - Optional funnel type to select the correct pixel ID (e.g., 'life_insurance_ca', 'college_consulting')
  */
 export async function sendLeadEvent(params: {
   leadId: string;
@@ -577,8 +638,13 @@ export async function sendLeadEvent(params: {
   currency?: string;
   customData?: MetaCustomData;
   eventSourceUrl?: string;
+  funnelType?: string | null; // NEW: Determines which pixel to use
   options?: SendCAPIOptions;
 }): Promise<SendCAPIResult> {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:644',message:'sendLeadEvent called',data:{leadId:params.leadId,funnelType:params.funnelType,email:params.email?'SET':'MISSING'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H7'})}).catch(()=>{});
+  // #endregion
+  
   const userData = buildUserData({
     email: params.email,
     phone: params.phone,
@@ -604,13 +670,30 @@ export async function sendLeadEvent(params: {
     eventSourceUrl: params.eventSourceUrl,
   });
 
-  return sendMetaCAPIEvent(event, params.options);
+  // Determine pixel ID based on funnel type
+  const pixelId = getPixelIdForFunnel(params.funnelType);
+  
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:685',message:'Pixel ID selected',data:{funnelType:params.funnelType,selectedPixelId:pixelId,optionsPixelId:params.options?.pixelId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H8'})}).catch(()=>{});
+  // #endregion
+  
+  // Merge options with funnel-specific pixel ID
+  const finalOptions: SendCAPIOptions = {
+    ...params.options,
+    pixelId: params.options?.pixelId || pixelId, // Allow manual override
+  };
+
+  return sendMetaCAPIEvent(event, finalOptions);
 }
 
 /**
- * Check if Meta CAPI is configured
+ * Check if Meta CAPI is configured for a specific funnel
+ * 
+ * @param funnelType - Optional funnel type to check specific pixel configuration
+ * @returns true if pixel ID and token are configured
  */
-export function isMetaCAPIConfigured(): boolean {
-  return !!(META_PIXEL_ID && META_CAPI_TOKEN);
+export function isMetaCAPIConfigured(funnelType?: string | null): boolean {
+  const pixelId = getPixelIdForFunnel(funnelType);
+  return !!(pixelId && META_CAPI_TOKEN);
 }
 
