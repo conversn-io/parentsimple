@@ -45,19 +45,21 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* Announcement Bar - Directly under header nav */}
-      <div className="w-full bg-green-100 border-b border-green-300 text-green-900 text-sm py-3 px-4 text-center">
-        <h1 className="text-2xl sm:text-3xl font-serif font-semibold text-[#2f6d46]">
-          {isLifeInsurance 
-            ? `Well done, ${firstName}! Your Life Insurance Quote is Now Being Generated...`
-            : `Well done, ${firstName}! Your Personalized Quote is Now Being Generated...`
-          }
-        </h1>
+      {/* Announcement Bar - Directly under header nav - Matches yellow bar height */}
+      <div className="w-full bg-green-100 border-b border-green-300">
+        <div className="max-w-2xl mx-auto px-6 py-3">
+          <p className="text-center text-sm font-semibold text-[#2f6d46]">
+            {isLifeInsurance 
+              ? `Well done, ${firstName}! Your Life Insurance Quote is Now Being Generated...`
+              : `Well done, ${firstName}! Your Personalized Quote is Now Being Generated...`
+            }
+          </p>
+        </div>
       </div>
 
       {/* Hero Section */}
       <section className="bg-white pt-8 pb-3">
-        <div className="max-w-4xl mx-auto px-6" style={{ paddingLeft: 'calc(1.5rem + 2em)', paddingRight: 'calc(1.5rem + 2em)' }}>
+        <div className="max-w-2xl mx-auto px-6">
           {/* Progress Steps - Matching quiz progress bar style */}
           <div className="mb-4">
             {/* Progress Bar - Set to 50% */}
@@ -103,15 +105,17 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
 
       {/* Agent Assignment */}
       <section className="bg-white py-8">
-        <div className="max-w-6xl mx-auto px-6" style={{ paddingLeft: 'calc(1.5rem + 2em)', paddingRight: 'calc(1.5rem + 2em)' }}>
+        <div className="max-w-2xl mx-auto px-6">
           <div className="bg-slate-50 rounded-2xl p-8 mb-8">
-            <div className="max-w-md mx-auto">
-              {/* Agent Photo - Full crop, no circle - Reduced spacing by 50% */}
-              <img 
-                src="/images/team/advisor-headshot.svg" 
-                alt="Licensed Insurance Specialist"
-                className="w-full max-w-sm mx-auto mb-3 object-cover rounded-lg"
-              />
+            {/* Agent Photo - Professional advisor image */}
+            <img 
+              src="/images/team/professional-advisor.jpg" 
+              alt="Licensed Insurance Specialist"
+              className="w-full max-w-sm mx-auto mb-6 object-cover rounded-lg"
+            />
+            
+            {/* What Happens Next - Full width matching site standard */}
+            <div className="space-y-4 text-left">
               
               {/* What Happens Next - Vertical Stack */}
               <div className="space-y-4 text-left">
@@ -146,8 +150,8 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
             </div>
           </div>
 
-          {/* Your Responses Summary */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 text-left mb-8">
+          {/* Your Responses Summary - Updated to match max-w-2xl */}
+          <div className="bg-white border border-slate-200 rounded-xl p-6 text-left mb-8 max-w-2xl mx-auto">
             <h3 className="text-xl font-semibold text-slate-800 mb-4 text-center">
               Your Quiz Responses Summary
             </h3>
