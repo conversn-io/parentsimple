@@ -49,141 +49,6 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [])
 
-  // #region agent log - Debug CSS corruption with visible output
-  const [debugInfo, setDebugInfo] = useState<any>(null);
-  
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    setTimeout(() => {
-      const debugData: any = {};
-
-      // Hypothesis F: DOM structure check - find main multiple ways
-      const rootDiv = document.querySelector('.life-insurance-ca-quiz');
-      const stepP = document.querySelector('p[aria-live="polite"]');
-      const mainEl = document.querySelector('main');
-      const mainByClass = document.querySelector('.max-w-lg.mx-auto');
-      const allMains = document.querySelectorAll('main');
-      
-      debugData.elements = {
-        hasRootClass: !!rootDiv,
-        rootClasses: rootDiv?.className || 'NOT_FOUND',
-        stepPClasses: stepP?.className || 'NOT_FOUND',
-        stepPText: stepP?.textContent || 'NOT_FOUND',
-        mainClasses: mainEl?.className || 'NOT_FOUND',
-        mainCount: allMains.length,
-        mainByClassExists: !!mainByClass,
-        rootChildren: rootDiv?.children.length || 0,
-        bodyChildren: document.body.children.length
-      };
-
-      // Hypothesis B & C: Computed styles on step paragraph
-      if (stepP) {
-        const computed = window.getComputedStyle(stepP);
-        debugData.stepStyles = {
-          display: computed.display,
-          flexDirection: computed.flexDirection,
-          whiteSpace: computed.whiteSpace,
-          wordSpacing: computed.wordSpacing,
-          maxWidth: computed.maxWidth,
-          fontSize: computed.fontSize,
-          textAlign: computed.textAlign
-        };
-      }
-
-      // Hypothesis B: Computed styles on h1
-      const h1 = document.querySelector('.life-insurance-ca-quiz h1');
-      if (h1) {
-        const computed = window.getComputedStyle(h1);
-        debugData.h1Styles = {
-          fontSize: computed.fontSize,
-          lineHeight: computed.lineHeight,
-          marginBottom: computed.marginBottom
-        };
-      }
-
-      // Hypothesis D & F: Province buttons rendering check - try multiple selectors
-      const allButtons = Array.from(document.querySelectorAll('button'));
-      const provinceButtons = allButtons.filter(b => b.textContent?.includes('Ontario') || b.textContent?.includes('British'));
-      
-      debugData.provinces = {
-        currentStep: step,
-        totalButtons: allButtons.length,
-        provinceButtonsFound: provinceButtons.length,
-        provinceButtonTexts: provinceButtons.slice(0, 5).map(b => b.textContent?.trim().substring(0, 30)),
-        allButtonTexts: allButtons.slice(0, 8).map(b => b.textContent?.trim().substring(0, 30))
-      };
-      
-      if (provinceButtons.length > 0) {
-        const firstButton = provinceButtons[0];
-        const container = firstButton.parentElement;
-        if (container) {
-          const computed = window.getComputedStyle(container);
-          debugData.provinces.containerTag = container.tagName;
-          debugData.provinces.containerDisplay = computed.display;
-          debugData.provinces.containerFlexDirection = computed.flexDirection;
-          debugData.provinces.containerGridTemplateColumns = computed.gridTemplateColumns;
-        }
-      }
-
-      // Hypothesis E & B: Document stylesheets and CSS rules check
-      const sheets = Array.from(document.styleSheets).map(s => ({
-        href: s.href || 'inline',
-        disabled: s.disabled
-      }));
-      debugData.stylesheets = {
-        count: sheets.length,
-        sheets: sheets.slice(0, 10)
-      };
-      
-      // Check if our scoped CSS rule exists
-      let foundOurRule = false;
-      try {
-        for (const sheet of document.styleSheets) {
-          if (!sheet.href) continue;
-          try {
-            const rules = Array.from(sheet.cssRules || []);
-            const ourRule = rules.find((r: any) => 
-              r.selectorText?.includes('.life-insurance-ca-quiz h1')
-            );
-            if (ourRule) {
-              foundOurRule = true;
-              debugData.ourCSSRule = {
-                found: true,
-                selector: (ourRule as CSSStyleRule).selectorText,
-                fontSize: (ourRule as CSSStyleRule).style.fontSize
-              };
-              break;
-            }
-          } catch (e) {
-            // CORS error, skip
-          }
-        }
-      } catch (e) {
-        debugData.cssCheckError = String(e);
-      }
-      
-      if (!foundOurRule) {
-        debugData.ourCSSRule = { found: false, note: 'Scoped CSS not found in stylesheets' };
-      }
-
-      // Visual corruption check
-      if (stepP) {
-        const rect = stepP.getBoundingClientRect();
-        const words = stepP.textContent?.split(' ') || [];
-        debugData.visualCheck = {
-          stepPWidth: Math.round(rect.width),
-          stepPHeight: Math.round(rect.height),
-          expectedWidth: 'should be ~80-100px for "Step 1 of 8"',
-          isCorrupted: rect.height > 30,  // If taller than 30px, text is stacking
-          wordCount: words.length
-        };
-      }
-
-      setDebugInfo(debugData);
-    }, 1000);  // Increased to 1 second to ensure full hydration
-  }, [step]);
-  // #endregion
-
   const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
   const isProvinceStep = currentStepDef?.id === 'province'
   const isContactStep = currentStepDef?.id === 'contact_info'
@@ -289,28 +154,7 @@ export function LifeInsuranceCAQuiz() {
   if (isDQ) return <LifeInsuranceCADQScreen />
 
   return (
-    <>
-      {/* #region agent log - Debug panel */}
-      {debugInfo && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          maxHeight: '50vh',
-          overflow: 'auto',
-          background: 'black',
-          color: 'lime',
-          fontSize: '10px',
-          zIndex: 9999,
-          padding: '10px',
-          fontFamily: 'monospace'
-        }}>
-          <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-        </div>
-      )}
-      {/* #endregion */}
-      <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
+    <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
       <header className="bg-[#F9F6EF] border-b border-[#9DB89D] sticky top-0 z-50">
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex justify-center">
@@ -530,6 +374,5 @@ export function LifeInsuranceCAQuiz() {
         </div>
       </footer>
     </div>
-    </>
   )
 }
