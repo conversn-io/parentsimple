@@ -318,10 +318,17 @@ export function LifeInsuranceCAQuiz() {
           <>
             <input type="hidden" name="xxTrustedFormCertUrl" id="xxTrustedFormCertUrl" />
             <input type="hidden" name="leadid_token" id="leadid_token" />
-            <p className="text-sm text-[#1A2B49] font-medium mb-2 flex items-center justify-center gap-1">
-              <span className="text-[#9DB89D]">✓</span> Great, you&apos;re matched with 13+ insurers
-            </p>
-            <h1 className="text-2xl font-bold text-[#1A2B49] mb-6" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
+            
+            {/* Exciting match notification */}
+            <div className="bg-green-50 border-2 border-green-500 rounded-xl p-4 mb-6 text-center">
+              <p className="text-lg font-bold text-green-700 flex items-center justify-center gap-2">
+                <span className="text-2xl">🎉</span>
+                Great! You&apos;re Matched with 13+ Insurers
+                <span className="text-2xl">🎉</span>
+              </p>
+            </div>
+
+            <h1 className="text-2xl font-bold text-[#1A2B49] mb-6 text-center" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
               Where should we send your free quote?
             </h1>
             <form onSubmit={handleContactSubmit} className="space-y-4">
