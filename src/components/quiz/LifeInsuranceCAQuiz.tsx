@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { MapPin, Users, Heart, DollarSign, Calendar, Shield, ArrowRight, Check } from 'lucide-react'
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
@@ -228,10 +229,10 @@ export function LifeInsuranceCAQuiz() {
                   className={`flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all w-full min-w-0 ${
                     answers.province === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-[#9DB89D]'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-[#9DB89D] hover:shadow-sm'
                   }`}
                 >
-                  <span className="text-[#9DB89D] shrink-0" aria-hidden>📍</span>
+                  <MapPin className={`shrink-0 ${answers.province === opt.value ? 'text-[#9DB89D]' : 'text-gray-400'}`} size={20} />
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
@@ -280,27 +281,56 @@ export function LifeInsuranceCAQuiz() {
               <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
             <div className="flex flex-col gap-4">
-              {((currentStepDef.options as unknown) as { value: string; label: string; sublabel?: string }[]).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleMultipleChoice(opt.value)}
-                  className={`w-full flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all min-w-0 ${
-                    answers[currentStepDef.id] === opt.value
-                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                      : 'border-gray-200 bg-white hover:border-[#9DB89D] text-gray-700'
-                  }`}
-                >
-                  {opt.sublabel ? (
-                    <span className="text-gray-900 font-medium min-w-0">
-                      <span className="block">{opt.label}</span>
-                      <span className="block text-sm font-normal text-gray-500">{opt.sublabel}</span>
-                    </span>
-                  ) : (
-                    <span className="text-gray-900 break-words">{opt.label}</span>
-                  )}
-                </button>
-              ))}
+              {((currentStepDef.options as unknown) as { value: string; label: string; sublabel?: string }[]).map((opt) => {
+                const getIcon = () => {
+                  // Purpose icons
+                  if (currentStepDef.id === 'purpose') {
+                    if (opt.value === 'protect_family') return <Heart className="text-red-500 shrink-0" size={20} />
+                    if (opt.value === 'cover_mortgage') return <Shield className="text-blue-500 shrink-0" size={20} />
+                    if (opt.value === 'final_expenses') return <DollarSign className="text-green-500 shrink-0" size={20} />
+                    if (opt.value === 'legacy') return <Users className="text-purple-500 shrink-0" size={20} />
+                    return <Check className="text-gray-400 shrink-0" size={20} />
+                  }
+                  // Coverage icons
+                  if (currentStepDef.id === 'coverage') return <DollarSign className="text-green-600 shrink-0" size={20} />
+                  // Age range icons
+                  if (currentStepDef.id === 'age_range') return <Calendar className="text-blue-500 shrink-0" size={20} />
+                  // Gender icons
+                  if (currentStepDef.id === 'gender') return <Users className="text-indigo-500 shrink-0" size={20} />
+                  // Best time icons
+                  if (currentStepDef.id === 'best_time') return <Calendar className="text-orange-500 shrink-0" size={20} />
+                  // Smoker icons
+                  if (currentStepDef.id === 'smoker') {
+                    return opt.value === 'yes' ? 
+                      <span className="text-red-500 shrink-0 text-lg">🚬</span> : 
+                      <Check className="text-green-500 shrink-0" size={20} />
+                  }
+                  return null
+                }
+                
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleMultipleChoice(opt.value)}
+                    className={`w-full flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all min-w-0 ${
+                      answers[currentStepDef.id] === opt.value
+                        ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
+                        : 'border-gray-200 bg-white hover:border-[#9DB89D] hover:shadow-sm text-gray-700'
+                    }`}
+                  >
+                    {getIcon()}
+                    {opt.sublabel ? (
+                      <span className="text-gray-900 font-medium min-w-0 flex-1">
+                        <span className="block">{opt.label}</span>
+                        <span className="block text-sm font-normal text-gray-500">{opt.sublabel}</span>
+                      </span>
+                    ) : (
+                      <span className="text-gray-900 break-words flex-1">{opt.label}</span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
             <div className="mt-8 flex flex-col items-center gap-2">
               <button
@@ -406,9 +436,16 @@ export function LifeInsuranceCAQuiz() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#36596A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#2a4a5a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg"
+                className="w-full bg-[#36596A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#2a4a5a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg flex items-center justify-center gap-2"
               >
-                {isSubmitting ? 'Processing...' : 'Get My Quote →'}
+                {isSubmitting ? (
+                  'Processing...'
+                ) : (
+                  <>
+                    Get My Quote
+                    <ArrowRight className="inline-block" size={20} />
+                  </>
+                )}
               </button>
 
               {/* TCPA Compliance */}
