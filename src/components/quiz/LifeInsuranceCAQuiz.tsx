@@ -242,7 +242,7 @@ export function LifeInsuranceCAQuiz() {
             <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
               <div className="flex gap-4 items-start">
                 <Image
-                  src="/images/life-insurance-funnel/testimonial-guy.jpeg"
+                  src="/images/life-insurance-funnel/testimonial-guy.jpg"
                   alt="Michael T."
                   width={64}
                   height={64}
