@@ -1,0 +1,379 @@
+/* Mobile-optimized quiz styles for paid traffic */
+
+/* Enhanced touch targets and haptic feedback */
+.quiz-button {
+  -webkit-tap-highlight-color: rgba(54, 89, 106, 0.2);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* Smooth transitions for mobile */
+.quiz-button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Enhanced slider for mobile */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: #e5e7eb;
+  height: 16px;
+  border-radius: 8px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #36596A;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* FIA Allocation Slider Styles */
+.allocation-slider-container {
+  max-width: 2xl;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.slider-section {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.slider-value-display {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.slider-value-display .value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #36596A;
+}
+
+.slider-value-display .amount {
+  font-size: 1.25rem;
+  color: #6b7280;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.allocation-slider {
+  width: 100%;
+  height: 0.75rem;
+  background: #e5e7eb;
+  border-radius: 0.5rem;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.allocation-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #36596A;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.allocation-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.allocation-slider::-moz-range-thumb {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #36596A;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.allocation-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.allocation-preview {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+.preview-item {
+  text-align: center;
+}
+
+.preview-item .amount {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #1f2937;
+}
+
+.btn-continue {
+  width: 100%;
+  background: #36596A;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-continue:hover:not(:disabled) {
+  background: #2a4a5a;
+}
+
+.btn-continue:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile responsiveness for allocation slider */
+@media (max-width: 640px) {
+  .allocation-slider-container {
+    padding: 1rem;
+  }
+  
+  .slider-section {
+    padding: 1rem;
+  }
+  
+  .slider-value-display .value {
+    font-size: 1.875rem;
+  }
+  
+  .slider-value-display .amount {
+    font-size: 1rem;
+  }
+  
+  .allocation-preview {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .preview-item {
+    padding: 0.5rem;
+  }
+}
+
+.slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+
+/* Firefox slider styles */
+.slider::-moz-range-track {
+  background: #e5e7eb;
+  height: 16px;
+  border-radius: 8px;
+  border: none;
+}
+
+.slider::-moz-range-thumb {
+  background: #36596A;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* White background for input fields */
+.quiz-input,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+textarea {
+  background-color: white !important;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.quiz-input:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+  background-color: white !important;
+  border-color: #36596A;
+  outline: 3px solid rgba(59, 130, 246, 0.1);
+  outline-offset: 0px;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Enhanced focus states for accessibility */
+.quiz-button:focus {
+  outline: 3px solid rgba(54, 89, 106, 0.3);
+  outline-offset: 2px;
+}
+
+/* Mobile-optimized spacing */
+@media (max-width: 640px) {
+  .quiz-container {
+    padding: 1rem;
+  }
+  
+  .quiz-button {
+    min-height: 56px;
+    font-size: 18px;
+  }
+  
+  .quiz-input {
+    min-height: 56px;
+    font-size: 18px;
+  }
+}
+
+/* Prevent zoom on input focus for iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .quiz-input {
+    font-size: 16px;
+  }
+}
+
+/* Enhanced button hover states for desktop */
+@media (hover: hover) {
+  .quiz-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(54, 89, 106, 0.3);
+  }
+  
+  .quiz-button:not([disabled]):hover {
+    border-color: #36596A;
+    box-shadow: 0 8px 25px rgba(54, 89, 106, 0.2);
+  }
+}
+
+/* Loading states */
+.quiz-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Success states */
+.quiz-success {
+  border-color: #10b981 !important;
+  background-color: rgba(16, 185, 129, 0.05) !important;
+}
+
+/* Error states */
+.quiz-error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.05) !important;
+}
+
+/* Savings Slider Styles */
+.savings-slider-container {
+  max-width: 2xl;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.savings-slider {
+  width: 100%;
+  height: 0.75rem;
+  background: #e5e7eb;
+  border-radius: 0.5rem;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.savings-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #36596A;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.savings-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.savings-slider::-moz-range-thumb {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #36596A;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.savings-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.savings-context {
+  padding: 1rem;
+  background: #f0f4f7;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Mobile responsiveness for savings slider */
+@media (max-width: 640px) {
+  .savings-slider-container {
+    padding: 1rem;
+  }
+}

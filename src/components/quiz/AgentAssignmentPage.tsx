@@ -45,10 +45,10 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* Announcement Bar - Directly under header nav - Matches yellow bar height */}
-      <div className="w-full bg-green-100 border-b border-green-300">
+      {/* Announcement Bar - Compact style matching landing page */}
+      <div className="w-full bg-green-50 border-b border-green-200">
         <div className="max-w-2xl mx-auto px-6 py-3">
-          <p className="text-center text-sm font-semibold text-[#2f6d46]">
+          <p className="text-sm text-green-800 text-center font-medium">
             {isLifeInsurance 
               ? `Well done, ${firstName}! Your Life Insurance Quote is Now Being Generated...`
               : `Well done, ${firstName}! Your Personalized Quote is Now Being Generated...`
@@ -107,51 +107,47 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
       <section className="bg-white py-8">
         <div className="max-w-2xl mx-auto px-6">
           <div className="bg-slate-50 rounded-2xl p-8 mb-8">
-            {/* Agent Photo - Professional advisor image */}
+            {/* Agent Photo - Full crop, no circle - Reduced spacing by 50% */}
             <img 
               src="/images/team/professional-advisor.jpg" 
               alt="Licensed Insurance Specialist"
-              className="w-full max-w-sm mx-auto mb-6 object-cover rounded-lg"
+              className="w-full max-w-sm mx-auto mb-3 object-cover rounded-lg"
             />
             
-            {/* What Happens Next - Full width matching site standard */}
+            {/* What Happens Next - Vertical Stack */}
             <div className="space-y-4 text-left">
-              
-              {/* What Happens Next - Vertical Stack */}
-              <div className="space-y-4 text-left">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4 text-center">
-                  What Happens Next?
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</div>
-                    <p className="text-slate-600">
-                      <strong>Within 24 hours:</strong> {isLifeInsurance 
-                        ? "Your specialist will call you to discuss your life insurance needs and family protection goals"
-                        : "Your specialist will call you to discuss your needs"
-                      }
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</div>
-                    <p className="text-slate-600">
-                      <strong>Custom Analysis:</strong> {isLifeInsurance
-                        ? "Receive personalized life insurance quotes from multiple top Canadian insurers based on your needs"
-                        : "Receive personalized recommendations based on your quiz"
-                      }
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</div>
-                    <p className="text-slate-600"><strong>Your Decision:</strong> No pressure - take time to review and decide what's right for you</p>
-                  </div>
+              <h3 className="text-xl font-semibold text-slate-800 mb-4 text-center">
+                What Happens Next?
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</div>
+                  <p className="text-slate-600">
+                    <strong>Within 24 hours:</strong> {isLifeInsurance 
+                      ? "Your specialist will call you to discuss your life insurance needs and family protection goals"
+                      : "Your specialist will call you to discuss your needs"
+                    }
+                  </p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</div>
+                  <p className="text-slate-600">
+                    <strong>Custom Analysis:</strong> {isLifeInsurance
+                      ? "Receive personalized life insurance quotes from multiple top Canadian insurers based on your needs"
+                      : "Receive personalized recommendations based on your quiz"
+                    }
+                  </p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</div>
+                  <p className="text-slate-600"><strong>Your Decision:</strong> No pressure - take time to review and decide what's right for you</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Your Responses Summary - Updated to match max-w-2xl */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 text-left mb-8 max-w-2xl mx-auto">
+          {/* Your Responses Summary */}
+          <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-xl p-6 text-left mb-8">
             <h3 className="text-xl font-semibold text-slate-800 mb-4 text-center">
               Your Quiz Responses Summary
             </h3>
