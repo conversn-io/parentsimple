@@ -155,6 +155,18 @@ export function LifeInsuranceCAQuiz() {
 
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
+      {/* Yellow Alert Bar - only show on step 0 */}
+      {step === 0 && (
+        <div className="bg-[#F4D03F] border-b border-[#F1C40F]">
+          <div className="max-w-2xl mx-auto px-6 py-3">
+            <p className="text-center text-sm font-semibold text-[#1A2B49] flex items-center justify-center gap-2">
+              <span className="text-lg">⏰</span>
+              Join 25,000 Ontario Parents Who Just Got Covered Today
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Progress bar on page - not sticky */}
       <div className="bg-[#F9F6EF] border-b border-[#E3E0D5]">
         <div className="max-w-2xl mx-auto px-6 py-4">
@@ -173,32 +185,38 @@ export function LifeInsuranceCAQuiz() {
       <main className="max-w-2xl mx-auto px-6 py-8 pb-16 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
+            {/* Main Headline */}
+            <h1 className="text-3xl font-bold text-[#1A2B49] mb-3 text-center" style={{ fontSize: '2rem', lineHeight: 1.2 }}>
+              Protect Your Family&apos;s Future with up to $2M in Life Insurance
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-gray-700 mb-6 text-center text-base leading-relaxed">
+              Get coverage for less than a cup of coffee a day — check your eligibility in under 60 seconds.
+            </p>
+
             {/* Trust Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
                 <span className="text-green-600 text-sm">✓</span>
-                <span className="text-xs font-medium text-[#1A2B49]">Licensed Brokers</span>
+                <span className="text-sm font-medium text-[#1A2B49]">No Health Exam</span>
               </div>
-              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
                 <span className="text-green-600 text-sm">✓</span>
-                <span className="text-xs font-medium text-[#1A2B49]">No Medical Exam</span>
+                <span className="text-sm font-medium text-[#1A2B49]">Low Monthly Premiums</span>
               </div>
-              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
+              <div className="bg-white/90 border border-[#9DB89D]/30 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
                 <span className="text-green-600 text-sm">✓</span>
-                <span className="text-xs font-medium text-[#1A2B49]">Fast Approval</span>
+                <span className="text-sm font-medium text-[#1A2B49]">Best Approvals</span>
               </div>
             </div>
 
-            {/* Social Proof Banner */}
-            <p className="text-xs text-gray-600 mb-4 text-center bg-white/80 border border-[#9DB89D]/40 rounded-lg py-2 px-3">
-              <span className="font-semibold text-[#1A2B49]">250+ Ontarians got quotes this week</span>
-            </p>
-
-            <h1 className="text-2xl font-bold text-[#1A2B49] mb-2" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
+            {/* Question Title */}
+            <h2 className="text-xl font-semibold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.25rem', lineHeight: 1.3 }}>
               {currentStepDef.title}
-            </h1>
+            </h2>
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
-              <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
+              <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
