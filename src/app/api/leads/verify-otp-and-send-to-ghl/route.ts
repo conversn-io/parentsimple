@@ -471,6 +471,19 @@ export async function POST(request: NextRequest) {
 
     if (lead?.id) {
       try {
+        // #region agent log
+        const resolvedFunnelType = funnelType || lead.funnel_type || 'life_insurance_ca';
+        console.log('[DEBUG-API] Preparing to send Meta CAPI event:', {
+          leadId: lead.id,
+          funnelType: resolvedFunnelType,
+          email: email ? 'SET' : 'MISSING',
+          metaCookies: {
+            fbp: metaCookies?.fbp ? 'SET' : 'MISSING',
+            fbc: metaCookies?.fbc ? 'SET' : 'MISSING'
+          }
+        });
+        // #endregion
+        
         const capiResult = await sendLeadEvent({
           leadId: lead.id,
           email,
@@ -484,6 +497,7 @@ export async function POST(request: NextRequest) {
           userAgent,
           value: 0,
           currency: 'USD',
+          funnelType: resolvedFunnelType, // NEW: Pass funnel type to select correct pixel
           customData: {
             funnel_type: funnelType || 'insurance',
             lead_score: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
@@ -492,6 +506,14 @@ export async function POST(request: NextRequest) {
           },
           eventSourceUrl: request.headers.get('referer') || request.url,
         });
+
+        // #region agent log
+        console.log('[DEBUG-API] Meta CAPI result:', {
+          success: capiResult.success,
+          eventId: capiResult.eventId,
+          error: capiResult.error || 'none'
+        });
+        // #endregion
 
         if (!capiResult.success) {
           console.error('[Meta CAPI] Lead event failed:', capiResult.error);
