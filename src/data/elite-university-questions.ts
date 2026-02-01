@@ -180,6 +180,20 @@ export const ELITE_UNIVERSITY_QUESTIONS = [
     helpText: 'This provides context but is not a primary factor in admissions',
   },
   {
+    id: 'household_income',
+    title: 'What is your household income?',
+    subtitle: 'This helps us provide personalized financial planning recommendations',
+    type: 'multiple-choice' as const,
+    options: [
+      { value: 'below_100k', label: 'Below $100K' },
+      { value: '100k_150k', label: '$100K - $150K' },
+      { value: '150k_200k', label: '$150K - $200K' },
+      { value: '200k_plus', label: '$200K+' },
+    ],
+    required: true,
+    helpText: 'This information helps tailor financial planning recommendations',
+  },
+  {
     id: 'financial_planning',
     title: 'How prepared is your family for the financial aspects of elite university education?',
     subtitle: 'Financial planning doesn\'t affect admissions but is important for family readiness',

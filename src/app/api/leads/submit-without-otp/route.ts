@@ -3,6 +3,7 @@ import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatPhoneForGHL, formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
+import { sendLeadEvent } from '@/lib/meta-capi-service';
 
 const GHL_WEBHOOK_URL = process.env.PARENT_SIMPLE_GHL_WEBHOOK || process.env.PARENTSIMPLE_GHL_WEBHOOK || "";
 
@@ -49,7 +50,6 @@ async function upsertContact(email: string, firstName: string | null, lastName: 
     if (lastName && !existing.last_name) updateData.last_name = lastName;
     if (normalizedPhone && !existing.phone) {
       updateData.phone = normalizedPhone;
-      updateData.phone_e164 = normalizedPhone;
       updateData.phone_hash = phoneHash(normalizedPhone);
     }
     
@@ -75,7 +75,6 @@ async function upsertContact(email: string, firstName: string | null, lastName: 
       first_name: firstName,
       last_name: lastName,
       phone: normalizedPhone,
-      phone_e164: normalizedPhone,
       phone_hash: normalizedPhone ? phoneHash(normalizedPhone) : null,
     })
     .select('*')
@@ -169,13 +168,13 @@ async function upsertLead(
   // Get contact data for contact JSONB field
   const { data: contact } = await callreadyQuizDb
     .from('contacts')
-    .select('email, phone_e164, first_name, last_name, zip_code')
+    .select('email, phone, first_name, last_name, zip_code')
     .eq('id', contactId)
     .maybeSingle();
   
   const contactData = contact ? {
     email: contact.email,
-    phone: contact.phone_e164 || null,
+    phone: contact.phone || null,
     first_name: contact.first_name,
     last_name: contact.last_name,
     zip_code: contact.zip_code || zipCode || null
@@ -268,7 +267,8 @@ export async function POST(request: NextRequest) {
       stateName,
       licensingInfo,
       calculatedResults,
-      utmParams 
+      utmParams,
+      metaCookies
     } = body;
 
     console.log('📊 Extracted Data:', {
@@ -284,6 +284,12 @@ export async function POST(request: NextRequest) {
     if (!email || !phoneNumber) {
       return createCorsResponse({ error: 'Email and phone number are required' }, 400);
     }
+
+    const ipAddress =
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      null;
+    const userAgent = request.headers.get('user-agent') || null;
 
     // Find or create contact
     console.log('👤 Upserting contact...');
@@ -302,6 +308,7 @@ export async function POST(request: NextRequest) {
       {
         ...quizAnswers,
         student_first_name: studentFirstName || null,
+        household_income: quizAnswers?.household_income || null,
       },
       calculatedResults,
       licensingInfo,
@@ -310,9 +317,42 @@ export async function POST(request: NextRequest) {
     );
     console.log('✅ Lead upserted:', lead.id);
 
+    try {
+      const capiResult = await sendLeadEvent({
+        leadId: lead.id,
+        email,
+        phone: phoneNumber,
+        firstName,
+        lastName,
+        fbp: metaCookies?.fbp || null,
+        fbc: metaCookies?.fbc || null,
+        fbLoginId: metaCookies?.fbLoginId || null,
+        ipAddress,
+        userAgent,
+        value: 0,
+        currency: 'USD',
+        customData: {
+          funnel_type: funnelType || 'college_consulting',
+          lead_score: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
+          state,
+          zip_code: zipCode,
+        },
+        eventSourceUrl: request.headers.get('referer') || request.url,
+      });
+
+      if (!capiResult.success) {
+        console.error('[Meta CAPI] Lead event failed:', capiResult.error);
+      } else {
+        console.log('[Meta CAPI] Lead event sent:', capiResult.eventId);
+      }
+    } catch (capiError) {
+      console.error('[Meta CAPI] Error:', capiError);
+    }
+
     // Prepare GHL webhook payload
     const formattedPhone = formatPhoneForGHL(phoneNumber);
     const leadScore = calculatedResults?.totalScore || calculatedResults?.readiness_score || 0;
+    const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
     const ghlPayload = {
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
@@ -322,9 +362,13 @@ export async function POST(request: NextRequest) {
       zipCode: zipCode || lead.zip_code,
       state: state || lead.state,
       stateName: stateName || lead.state_name,
+      householdIncome: householdIncome, // Add household income to GHL payload
       source: 'ParentSimple Quiz',
       funnelType: funnelType || lead.funnel_type || 'college_consulting',
-      quizAnswers: lead.quiz_answers || quizAnswers,
+      quizAnswers: {
+        ...(lead.quiz_answers || quizAnswers),
+        household_income: householdIncome, // Ensure household income is in quizAnswers
+      },
       calculatedResults: calculatedResults,
       licensingInfo: licensingInfo,
       leadScore: leadScore,

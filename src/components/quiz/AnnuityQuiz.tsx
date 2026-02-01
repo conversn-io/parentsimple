@@ -25,6 +25,7 @@ import {
   LeadData
 } from '@/lib/temp-tracking';
 import { formatPhoneForGHL } from '@/utils/phone-utils';
+import { getMetaCookies } from '@/lib/meta-capi-cookies';
 
 interface QuizAnswer {
   [key: string]: any;
@@ -344,6 +345,12 @@ export const AnnuityQuiz = ({ skipOTP = false }: AnnuityQuizProps) => {
     if (currentQuestion.id === 'personalInfo') {
       console.log('📧 Personal Info Submitted - Capturing Email for Retargeting');
       
+      const metaCookies = getMetaCookies();
+      const fbLoginId =
+        typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
+          ? (window as any).FB.getAuthResponse().userID
+          : null;
+
       const emailCaptureData = {
         email: answer.email,
         firstName: answer.firstName,
@@ -356,7 +363,12 @@ export const AnnuityQuiz = ({ skipOTP = false }: AnnuityQuizProps) => {
         state: updatedAnswers.locationInfo?.state,
         stateName: updatedAnswers.locationInfo?.stateName,
         licensingInfo: updatedAnswers.locationInfo?.licensing,
-        utmParams: utmParams // Include UTM parameters
+        utmParams: utmParams, // Include UTM parameters
+        metaCookies: {
+          fbp: metaCookies.fbp,
+          fbc: metaCookies.fbc,
+          fbLoginId,
+        }
       };
 
       try {
@@ -570,6 +582,12 @@ export const AnnuityQuiz = ({ skipOTP = false }: AnnuityQuizProps) => {
         timestamp: new Date().toISOString()
       });
 
+      const metaCookies = getMetaCookies();
+      const fbLoginId =
+        typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
+          ? (window as any).FB.getAuthResponse().userID
+          : null;
+
       const edgeResponse = await fetch(edgeFunctionUrl, {
         method: 'POST',
         headers: { 
@@ -594,7 +612,12 @@ export const AnnuityQuiz = ({ skipOTP = false }: AnnuityQuizProps) => {
           zip_code: data.zipCode,
           state: data.state,
           state_name: data.stateName,
-          consent: true
+          consent: true,
+          metaCookies: {
+            fbp: metaCookies.fbp,
+            fbc: metaCookies.fbc,
+            fbLoginId,
+          }
         })
       });
 

@@ -23,6 +23,7 @@ import {
   sendCAPIViewContentEventMultiSite,
   LeadData
 } from '@/lib/temp-tracking';
+import { getMetaCookies } from '@/lib/meta-capi-cookies';
 
 interface QuizAnswer {
   [key: string]: any;
@@ -240,6 +241,12 @@ export const FIAQuoteQuiz = () => {
     if (currentQuestion.id === 'personalInfo') {
       console.log('📧 Personal Info Submitted - Capturing Email for Retargeting');
       
+      const metaCookies = getMetaCookies();
+      const fbLoginId =
+        typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
+          ? (window as any).FB.getAuthResponse().userID
+          : null;
+
       const emailCaptureData = {
         email: answer.email,
         firstName: answer.firstName,
@@ -251,7 +258,12 @@ export const FIAQuoteQuiz = () => {
         state: updatedAnswers.locationInfo?.state,
         stateName: updatedAnswers.locationInfo?.stateName,
         licensingInfo: updatedAnswers.locationInfo?.licensing,
-        utmParams: utmParams
+        utmParams: utmParams,
+        metaCookies: {
+          fbp: metaCookies.fbp,
+          fbc: metaCookies.fbc,
+          fbLoginId,
+        }
       };
 
       try {

@@ -1,24 +1,24 @@
 'use client'
 
 import { Suspense, useEffect } from 'react'
-import { EliteUniversityReadinessResultsSimplified } from '@/components/quiz/EliteUniversityReadinessResultsSimplified'
+import { EliteUniversityReadinessResultsVideo } from '@/components/quiz/EliteUniversityReadinessResultsVideo'
 import { useEliteReadinessResults } from '@/hooks/useEliteReadinessResults'
 import { trackPageView } from '@/lib/temp-tracking'
 
-function ResultsContent() {
+function ResultsVideoContent() {
   const { results, isLoading } = useEliteReadinessResults()
 
   // Track route-specific analytics
   useEffect(() => {
     if (!isLoading) {
-      trackPageView('Results Page - Simplified', '/quiz/elite-university-readiness/results')
+      trackPageView('Results Page - Video', '/quiz/elite-university-readiness/results-video')
       
       // GA4 custom event
       if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
         window.gtag('event', 'results_page_view', {
           event_category: 'quiz_interaction',
-          event_label: 'results_layout_simplified',
-          page_path: '/quiz/elite-university-readiness/results',
+          event_label: 'results_layout_video',
+          page_path: '/quiz/elite-university-readiness/results-video',
           score: results.totalScore,
           category: results.category,
         })
@@ -27,9 +27,9 @@ function ResultsContent() {
       // Meta Pixel PageView
       if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
         window.fbq('track', 'PageView', {
-          content_name: 'Results Page - Simplified',
+          content_name: 'Results Page - Video',
           content_category: 'quiz_results',
-          page_path: '/quiz/elite-university-readiness/results'
+          page_path: '/quiz/elite-university-readiness/results-video'
         })
       }
     }
@@ -47,14 +47,14 @@ function ResultsContent() {
   }
 
   return (
-    <EliteUniversityReadinessResultsSimplified
+    <EliteUniversityReadinessResultsVideo
       score={results.totalScore}
       category={results.category}
     />
   )
 }
 
-export default function EliteUniversityReadinessResultsPage() {
+export default function EliteUniversityReadinessResultsVideoPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#F9F6EF] flex items-center justify-center">
@@ -64,7 +64,7 @@ export default function EliteUniversityReadinessResultsPage() {
         </div>
       </div>
     }>
-      <ResultsContent />
+      <ResultsVideoContent />
     </Suspense>
   )
 }

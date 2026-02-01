@@ -9,7 +9,8 @@ const addEmpowerlyUTM = (url: string): string => {
     utm_campaign: 'parent-simple',
     utm_source: 'leadgen',
     utm_medium: 'referral',
-    utm_content: 'social'
+    utm_content: 'social',
+    utm_term: 'results'
   });
   const separator = url.includes('?') ? '&' : '?';
   const finalUrl = `${url}${separator}${utmParams.toString()}`;
