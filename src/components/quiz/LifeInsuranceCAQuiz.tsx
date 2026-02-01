@@ -440,25 +440,24 @@ export function LifeInsuranceCAQuiz() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mobile number</label>
-                <div className="flex gap-2">
-                  <span className="inline-flex items-center px-3 py-3 border-2 border-gray-300 rounded-xl bg-gray-50 text-gray-600 text-sm">
-                    +1
-                  </span>
-                  <input
-                    type="tel"
-                    name="phone"
-                    autoComplete="tel"
-                    value={formatPhoneForInput(contactPhone)}
-                    onChange={(e) => {
-                      const d = e.target.value.replace(/\D/g, '').slice(0, 10)
-                      setContactPhone(d)
-                    }}
-                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
-                    placeholder="(XXX) XXX-XXXX"
-                    inputMode="numeric"
-                    required
-                  />
-                </div>
+                <input
+                  type="tel"
+                  name="phone"
+                  autoComplete="tel"
+                  value={formatPhoneForInput(contactPhone)}
+                  onChange={(e) => {
+                    // Strip all non-digits, remove leading 1 if present (from autofill), limit to 10 digits
+                    let digits = e.target.value.replace(/\D/g, '')
+                    if (digits.startsWith('1') && digits.length === 11) {
+                      digits = digits.slice(1)
+                    }
+                    setContactPhone(digits.slice(0, 10))
+                  }}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                  placeholder="(XXX) XXX-XXXX"
+                  inputMode="numeric"
+                  required
+                />
                 <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
                   <span>🔒</span> We&apos;ll send a verification code to this number
                 </p>
