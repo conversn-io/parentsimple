@@ -69,7 +69,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Life Insurance CA quiz: prevent global typography from breaking layout */
+/* Life Insurance CA quiz: prevent global typography from breaking layout and match Elite quiz spacing */
 .life-insurance-ca-quiz h1 {
   font-size: 1.5rem !important;
   line-height: 1.3 !important;
@@ -78,6 +78,9 @@ body {
 .life-insurance-ca-quiz main {
   width: 100%;
   min-width: 0;
+}
+.life-insurance-ca-quiz .max-w-2xl {
+  max-width: 42rem !important; /* 672px - matches Elite quiz */
 }
 
 /* Container width fixes - ensure max-width utilities work correctly */

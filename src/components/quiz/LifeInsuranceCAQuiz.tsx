@@ -156,7 +156,7 @@ export function LifeInsuranceCAQuiz() {
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
       <header className="bg-[#F9F6EF] border-b border-[#9DB89D] sticky top-0 z-50">
-        <div className="max-w-lg mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto px-6 py-4">
           <div className="flex justify-center">
             <Link href="/" className="inline-flex items-center">
               <Image
@@ -181,7 +181,7 @@ export function LifeInsuranceCAQuiz() {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-8 pb-16 w-full min-w-0">
+      <main className="max-w-2xl mx-auto px-6 py-8 pb-16 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
             <p className="text-xs text-gray-600 mb-4 text-center bg-white/80 border border-[#9DB89D]/40 rounded-lg py-2 px-3">
@@ -193,13 +193,13 @@ export function LifeInsuranceCAQuiz() {
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
               <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => handleProvinceSelect(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all w-full min-w-0 ${
+                  className={`flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all w-full min-w-0 ${
                     answers.province === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-200 bg-white text-gray-700 hover:border-[#9DB89D]'
@@ -224,13 +224,13 @@ export function LifeInsuranceCAQuiz() {
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
               <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {((currentStepDef.options as unknown) as { value: string; label: string; sublabel?: string }[]).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => handleMultipleChoice(opt.value)}
-                  className={`w-full flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all min-w-0 ${
+                  className={`w-full flex items-center gap-3 rounded-xl border-2 px-5 py-4 text-left transition-all min-w-0 ${
                     answers[currentStepDef.id] === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-200 bg-white hover:border-[#9DB89D] text-gray-700'
@@ -360,8 +360,8 @@ export function LifeInsuranceCAQuiz() {
       </main>
 
       {/* Trust badges */}
-      <footer className="border-t border-[#9DB89D]/40 bg-white/50 py-6 px-4">
-        <div className="max-w-lg mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-700">
+      <footer className="border-t border-[#9DB89D]/40 bg-white/50 py-6 px-6">
+        <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-700">
           <span className="flex items-center gap-2">
             <span className="text-[#9DB89D]">🛡</span> No medical exam
           </span>
