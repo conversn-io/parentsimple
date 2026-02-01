@@ -242,29 +242,32 @@ export function LifeInsuranceCAQuiz() {
             <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
               <div className="flex gap-4 items-start">
                 <Image
-                  src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
-                  alt="Sarah M."
+                  src="/images/life-insurance-funnel/testimonial-guy.jpeg"
+                  alt="Michael T."
                   width={64}
                   height={64}
-                  className="rounded-full flex-shrink-0"
+                  className="rounded-full flex-shrink-0 object-cover"
                 />
                 <div className="flex-1">
-                  <div className="flex gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">★</span>
+                  <div className="flex gap-1 mb-2 items-center">
+                    {[...Array(4)].map((_, i) => (
+                      <span key={i} className="text-yellow-400 text-lg">★</span>
                     ))}
+                    <span className="text-yellow-400 text-lg">☆</span>
+                    <span className="text-sm font-semibold text-gray-700 ml-1">4.8</span>
                   </div>
                   <p className="text-gray-700 text-sm italic mb-2">
                     "Found coverage in minutes! The process was so simple and I got quotes from multiple insurers. Best decision for my family's security."
                   </p>
-                  <p className="text-xs text-gray-500">— Sarah M., Ontario</p>
+                  <p className="text-xs text-gray-500">— Michael T., Ontario</p>
                 </div>
               </div>
             </div>
 
             {/* Social Proof Statement */}
-            <p className="text-center text-sm text-gray-600">
-              Over <span className="font-bold text-[#1A2B49]">12,500</span> Canadians have found life insurance coverage
+            <p className="text-center text-sm text-gray-600 flex items-center justify-center gap-2">
+              <span className="text-xl">👨‍👩‍👧</span>
+              <span className="font-bold text-[#1A2B49]">4.8</span> ratings and reviews
             </p>
           </>
         )}
