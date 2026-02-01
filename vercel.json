@@ -1,6 +1,3 @@
 {
-  "buildCommand": "next build",
-  "framework": "nextjs",
-  "installCommand": "npm ci",
-  "crons": []
+  "installCommand": "npm install"
 }
