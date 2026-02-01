@@ -1,0 +1,14 @@
+# Backup folders
+03-ParentSimple/
+src/app 2/
+src/components 2/
+src/lib 2/
+
+# Build artifacts
+.next/
+.vercel/
+
+# Scripts
+*.sh
+*.md
+!README.md
