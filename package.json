@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "npm rebuild lightningcss",
     "test:db": "tsx src/scripts/test-database-connection.ts",
     "migrate:db": "tsx src/scripts/migrate-database.ts",
     "migrate:rollback": "tsx src/scripts/migrate-database.ts rollback",
