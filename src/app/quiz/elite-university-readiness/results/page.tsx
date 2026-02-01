@@ -1,39 +1,11 @@
 'use client'
 
-import { Suspense, useEffect } from 'react'
-import { EliteUniversityReadinessResultsSimplified } from '@/components/quiz/EliteUniversityReadinessResultsSimplified'
+import { Suspense } from 'react'
+import { EliteUniversityReadinessResults } from '@/components/quiz/EliteUniversityReadinessResults'
 import { useEliteReadinessResults } from '@/hooks/useEliteReadinessResults'
-import { trackPageView } from '@/lib/temp-tracking'
 
 function ResultsContent() {
   const { results, isLoading } = useEliteReadinessResults()
-
-  // Track route-specific analytics
-  useEffect(() => {
-    if (!isLoading) {
-      trackPageView('Results Page - Simplified', '/quiz/elite-university-readiness/results')
-      
-      // GA4 custom event
-      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-        window.gtag('event', 'results_page_view', {
-          event_category: 'quiz_interaction',
-          event_label: 'results_layout_simplified',
-          page_path: '/quiz/elite-university-readiness/results',
-          score: results.totalScore,
-          category: results.category,
-        })
-      }
-
-      // Meta Pixel PageView
-      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-        window.fbq('track', 'PageView', {
-          content_name: 'Results Page - Simplified',
-          content_category: 'quiz_results',
-          page_path: '/quiz/elite-university-readiness/results'
-        })
-      }
-    }
-  }, [isLoading, results.totalScore, results.category])
 
   if (isLoading) {
     return (
@@ -47,10 +19,17 @@ function ResultsContent() {
   }
 
   return (
-    <EliteUniversityReadinessResultsSimplified
-      score={results.totalScore}
-      category={results.category}
-    />
+    <div className="min-h-screen bg-[#F9F6EF]">
+      <EliteUniversityReadinessResults
+        score={results.totalScore}
+        category={results.category}
+        breakdown={results.breakdown}
+        strengths={results.strengths}
+        improvements={results.improvements}
+        recommendations={results.recommendations}
+        graduationYear={results.graduationYear}
+      />
+    </div>
   )
 }
 

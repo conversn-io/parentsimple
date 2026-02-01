@@ -154,7 +154,7 @@ export function LifeInsuranceCAQuiz() {
   if (isDQ) return <LifeInsuranceCADQScreen />
 
   return (
-    <div className="min-h-screen bg-[#F9F6EF]">
+    <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
       <header className="bg-[#F9F6EF] border-b border-[#9DB89D] sticky top-0 z-50">
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex justify-center">
@@ -169,7 +169,7 @@ export function LifeInsuranceCAQuiz() {
               />
             </Link>
           </div>
-          <p className="text-sm text-gray-600 mt-2 text-center">
+          <p className="text-sm text-gray-600 mt-2 text-center whitespace-nowrap" aria-live="polite">
             Step {step + 1} of {TOTAL_STEPS}
           </p>
           <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
@@ -181,32 +181,32 @@ export function LifeInsuranceCAQuiz() {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-8 pb-16">
+      <main className="max-w-lg mx-auto px-4 py-8 pb-16 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
-            <p className="text-xs text-gray-600 mb-2 text-center bg-white/80 border border-[#9DB89D]/40 rounded-lg py-2 px-3">
+            <p className="text-xs text-gray-600 mb-4 text-center bg-white/80 border border-[#9DB89D]/40 rounded-lg py-2 px-3">
               <span className="font-semibold text-[#1A2B49]">250+ Ontarians got quotes this week</span>
             </p>
-            <h1 className="text-2xl font-bold text-[#1A2B49] mb-2">
+            <h1 className="text-2xl font-bold text-[#1A2B49] mb-2" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
               {currentStepDef.title}
             </h1>
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
-              <p className="text-gray-600 mb-6">{currentStepDef.subtitle}</p>
+              <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-3">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => handleProvinceSelect(opt.value)}
-                  className={`flex items-center gap-2 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                  className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all w-full min-w-0 ${
                     answers.province === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-200 bg-white text-gray-700 hover:border-[#9DB89D]'
                   }`}
                 >
-                  <span className="text-[#9DB89D]">📍</span>
-                  {opt.label}
+                  <span className="text-[#9DB89D] shrink-0" aria-hidden>📍</span>
+                  <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -218,31 +218,31 @@ export function LifeInsuranceCAQuiz() {
             {step === 6 && (
               <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>
             )}
-            <h1 className="text-2xl font-bold text-[#1A2B49] mb-2">
+            <h1 className="text-2xl font-bold text-[#1A2B49] mb-2" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
               {currentStepDef.title}
             </h1>
             {'subtitle' in currentStepDef && currentStepDef.subtitle && (
-              <p className="text-gray-600 mb-6">{currentStepDef.subtitle}</p>
+              <p className="text-gray-600 mb-6 text-sm">{currentStepDef.subtitle}</p>
             )}
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {((currentStepDef.options as unknown) as { value: string; label: string; sublabel?: string }[]).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => handleMultipleChoice(opt.value)}
-                  className={`w-full flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                  className={`w-full flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all min-w-0 ${
                     answers[currentStepDef.id] === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-200 bg-white hover:border-[#9DB89D] text-gray-700'
                   }`}
                 >
                   {opt.sublabel ? (
-                    <span className="text-gray-900 font-medium">
-                      {opt.label}
+                    <span className="text-gray-900 font-medium min-w-0">
+                      <span className="block">{opt.label}</span>
                       <span className="block text-sm font-normal text-gray-500">{opt.sublabel}</span>
                     </span>
                   ) : (
-                    <span className="text-gray-900">{opt.label}</span>
+                    <span className="text-gray-900 break-words">{opt.label}</span>
                   )}
                 </button>
               ))}
@@ -266,7 +266,7 @@ export function LifeInsuranceCAQuiz() {
             <p className="text-sm text-[#1A2B49] font-medium mb-2 flex items-center justify-center gap-1">
               <span className="text-[#9DB89D]">✓</span> Great, you&apos;re matched with 13+ insurers
             </p>
-            <h1 className="text-2xl font-bold text-[#1A2B49] mb-6">
+            <h1 className="text-2xl font-bold text-[#1A2B49] mb-6" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
               Where should we send your free quote?
             </h1>
             <form onSubmit={handleContactSubmit} className="space-y-4">

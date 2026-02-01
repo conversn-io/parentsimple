@@ -4,38 +4,9 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { OTPVerification } from '@/components/quiz/OTPVerification';
 import { ProcessingState } from '@/components/quiz/ProcessingState';
-import { getMetaCookies } from '@/lib/meta-capi-cookies';
 
 const EMBED_CONTEXT_STORAGE_KEY = 'elite_university_embed_context';
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
-const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
-
-// Helper function to get A/B test results route
-const getResultsRoute = (): string => {
-  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results';
-  
-  // Check if already assigned in this session
-  const stored = sessionStorage.getItem(RESULTS_LAYOUT_VARIANT_KEY);
-  if (stored === 'video') return '/quiz/elite-university-readiness/results-video';
-  if (stored === 'simplified') return '/quiz/elite-university-readiness/results';
-  
-  // Random assignment (50/50)
-  const variant = Math.random() < 0.5 ? 'video' : 'simplified';
-  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, variant);
-  
-  // Track assignment to analytics
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', 'ab_test_assignment', {
-      event_category: 'ab_testing',
-      event_label: `results_layout_${variant}`,
-      variant: variant
-    });
-  }
-  
-  return variant === 'video' 
-    ? '/quiz/elite-university-readiness/results-video'
-    : '/quiz/elite-university-readiness/results';
-};
 
 type ContactInfo = {
   firstName: string;
@@ -111,12 +82,6 @@ function VerifyOTPContent() {
     const personalInfo = quizData.answers.contact_info;
 
     try {
-      const metaCookies = getMetaCookies();
-      const fbLoginId =
-        typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
-          ? (window as any).FB.getAuthResponse().userID
-          : null;
-
       const response = await fetch('/api/leads/verify-otp-and-send-to-ghl', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -133,12 +98,7 @@ function VerifyOTPContent() {
           stateName: null,
           licensingInfo: null,
           calculatedResults: quizData.calculatedResults,
-          utmParams: quizData.utmParams,
-          metaCookies: {
-            fbp: metaCookies.fbp,
-            fbc: metaCookies.fbc,
-            fbLoginId,
-          }
+          utmParams: quizData.utmParams
         })
       });
 
@@ -217,11 +177,10 @@ function VerifyOTPContent() {
             ? sessionStorage.getItem(RESULT_VARIANT_STORAGE_KEY)
             : null;
 
-        // Use embed route if specified, otherwise use A/B test routing
         const baseResultsRoute =
           resultVariant === 'embed'
             ? '/quiz/elite-university-readiness/results-embed'
-            : getResultsRoute();
+            : '/quiz/elite-university-readiness/results';
 
         // Redirect to appropriate results page
         setTimeout(() => {

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { formatPhoneForInput, formatPhoneForGHL, extractUSPhoneNumber } from '@/utils/phone-utils';
 import { buildApiUrl } from '@/lib/api-config';
-import { Check, Users, UserCircle, MessageCircle } from 'lucide-react';
 
 interface QuizQuestionProps {
   question: {
@@ -30,10 +29,6 @@ interface QuizQuestionProps {
   onAnswer: (answer: any) => void;
   currentAnswer?: any;
   isLoading?: boolean;
-  /** When 'gameplan', contact step uses "You're Almost There" headline + benefits footer */
-  formVariant?: 'default' | 'gameplan';
-  /** When true, phone helper text says connect with counselor instead of verification code */
-  skipOTP?: boolean;
 }
 
 interface ZipValidationResult {
@@ -82,7 +77,7 @@ const formatSliderLabel = (
   return `$${value.toLocaleString()}`;
 };
 
-export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading, formVariant = 'default', skipOTP = false }: QuizQuestionProps) => {
+export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading }: QuizQuestionProps) => {
   const [selectedAnswer, setSelectedAnswer] = useState<any>(currentAnswer || question.defaultValue);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(currentAnswer || []);
   const [sliderValue, setSliderValue] = useState((question.defaultValue as number) ?? question.min ?? 0);
@@ -381,9 +376,8 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading, for
           </div>
         );
 
-      case 'personal-info': {
-        const isGameplan = formVariant === 'gameplan';
-        const personalInfoForm = (
+      case 'personal-info':
+        return (
           <form onSubmit={handlePersonalInfoSubmit} className="space-y-8">
             <div className="flex flex-col gap-6 md:flex-row md:gap-4">
               <div className="md:w-1/2">
@@ -474,7 +468,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading, for
                 />
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                {skipOTP ? "We'll use this to connect you with an Empowerly counselor" : "We'll send a verification code to this number"}
+                We'll send a verification code to this number
               </p>
             </div>
             {phoneError && (
@@ -489,7 +483,7 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading, for
               disabled={!firstName || !lastName || !email || !phone || isLoading}
               style={{ minHeight: '64px' }}
             >
-              {formVariant === 'gameplan' ? 'Claim My Game Plan' : 'Continue'}
+              Continue
             </button>
             
             <p className="text-xs text-gray-600 text-center mt-4 leading-relaxed">
@@ -509,59 +503,6 @@ export const QuizQuestion = ({ question, onAnswer, currentAnswer, isLoading, for
             </p>
           </form>
         );
-
-        if (isGameplan) {
-          return (
-            <div className="space-y-8">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-2">
-                  You&apos;re Almost There — Get Your Personalized Game Plan
-                </h2>
-                <p className="text-lg text-gray-700">
-                  We&apos;ll use this to send you your Readiness Score and connect you with Empowerly&apos;s expert counselors.
-                </p>
-              </div>
-              {personalInfoForm}
-              <section className="mt-12 pt-8 border-t border-gray-200">
-                <h3 className="text-xl font-serif font-bold text-[#1A2B49] mb-6">
-                  Your Next Step: Claim Your Free Elite Admissions Game Plan
-                </h3>
-                <div className="grid md:grid-cols-2 gap-8">
-                  <ul className="space-y-3">
-                    {[
-                      'Get your personalized Elite Readiness Score',
-                      'Receive a free strategy session to increase acceptance odds',
-                      'And discover the best path to your student\'s dream school',
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
-                        <span className="text-gray-800">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm">
-                    <ul className="space-y-4">
-                      <li className="flex items-start gap-3">
-                        <Users className="w-6 h-6 text-gray-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">Used by 25,000+ families planning for college</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <UserCircle className="w-6 h-6 text-gray-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">Backed by former admissions officers & top college counselors</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <MessageCircle className="w-6 h-6 text-gray-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">Trusted partner of ParentSimple</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </section>
-            </div>
-          );
-        }
-        return personalInfoForm;
-      }
 
       case 'location-info':
         return (
