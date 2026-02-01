@@ -222,7 +222,7 @@ export function LifeInsuranceCAQuiz() {
               <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-4 mb-8">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
