@@ -50,6 +50,21 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [])
 
+  // Clean up phone number after browser autofill
+  useEffect(() => {
+    if (contactPhone) {
+      let digits = contactPhone.replace(/\D/g, '')
+      // Remove leading 1 if it's an 11-digit number (North American format with country code)
+      if (digits.startsWith('1') && digits.length === 11) {
+        digits = digits.slice(1)
+      }
+      const cleaned = digits.slice(0, 10)
+      if (cleaned !== contactPhone) {
+        setContactPhone(cleaned)
+      }
+    }
+  }, [contactPhone])
+
   const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
   const isProvinceStep = currentStepDef?.id === 'province'
   const isContactStep = currentStepDef?.id === 'contact_info'
@@ -228,10 +243,10 @@ export function LifeInsuranceCAQuiz() {
                   key={opt.value}
                   type="button"
                   onClick={() => handleProvinceSelect(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl px-5 py-4 text-left transition-all w-full min-w-0 ${
+                  className={`flex items-center gap-3 rounded-xl px-5 py-4 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
                     answers.province === opt.value
-                      ? 'border-2 border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                      : 'border border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D] hover:shadow-sm'
+                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
                   }`}
                 >
                   <MapPin className={`shrink-0 ${answers.province === opt.value ? 'text-[#9DB89D]' : 'text-gray-400'}`} size={20} />
@@ -344,10 +359,10 @@ export function LifeInsuranceCAQuiz() {
                     key={opt.value}
                     type="button"
                     onClick={() => handleMultipleChoice(opt.value)}
-                    className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 text-left transition-all min-w-0 ${
+                    className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 text-left min-w-0 border-2 transition-colors duration-150 ${
                       answers[currentStepDef.id] === opt.value
-                        ? 'border-2 border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                        : 'border border-gray-300 bg-white hover:border-[#9DB89D] hover:shadow-sm text-gray-700'
+                        ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
+                        : 'border-gray-300 bg-white hover:border-[#9DB89D] text-gray-700'
                     }`}
                   >
                     {getIcon()}
@@ -367,7 +382,7 @@ export function LifeInsuranceCAQuiz() {
               <button
                 type="button"
                 onClick={handleBack}
-                className="text-gray-500 text-sm hover:underline"
+                className="text-gray-500 text-sm hover:underline transition-colors duration-150"
               >
                 ← Back
               </button>
@@ -406,7 +421,7 @@ export function LifeInsuranceCAQuiz() {
                     autoComplete="given-name"
                     value={contactFirstName}
                     onChange={(e) => setContactFirstName(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-1 focus:ring-[#36596A]/30 focus:border-[#36596A] bg-white transition-colors"
                     placeholder="First name"
                     required
                   />
@@ -419,7 +434,7 @@ export function LifeInsuranceCAQuiz() {
                     autoComplete="family-name"
                     value={contactLastName}
                     onChange={(e) => setContactLastName(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-1 focus:ring-[#36596A]/30 focus:border-[#36596A] bg-white transition-colors"
                     placeholder="Last name"
                     required
                   />
@@ -433,7 +448,7 @@ export function LifeInsuranceCAQuiz() {
                   autoComplete="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-1 focus:ring-[#36596A]/30 focus:border-[#36596A] bg-white transition-colors"
                   placeholder="your.email@example.com"
                   required
                 />
@@ -445,15 +460,25 @@ export function LifeInsuranceCAQuiz() {
                   name="phone"
                   autoComplete="tel"
                   value={formatPhoneForInput(contactPhone)}
-                  onChange={(e) => {
-                    // Strip all non-digits, remove leading 1 if present (from autofill), limit to 10 digits
-                    let digits = e.target.value.replace(/\D/g, '')
-                    if (digits.startsWith('1') && digits.length === 11) {
+                  onInput={(e) => {
+                    // Strip all non-digits and any leading country code
+                    const target = e.target as HTMLInputElement
+                    let digits = target.value.replace(/\D/g, '')
+                    // Remove leading 1 or +1 from autofill
+                    if (digits.startsWith('1')) {
                       digits = digits.slice(1)
                     }
                     setContactPhone(digits.slice(0, 10))
                   }}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#36596A]/20 focus:border-[#36596A] bg-white transition-colors"
+                  onChange={(e) => {
+                    // Backup handler for onChange events
+                    let digits = e.target.value.replace(/\D/g, '')
+                    if (digits.startsWith('1')) {
+                      digits = digits.slice(1)
+                    }
+                    setContactPhone(digits.slice(0, 10))
+                  }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-1 focus:ring-[#36596A]/30 focus:border-[#36596A] bg-white transition-colors"
                   placeholder="(XXX) XXX-XXXX"
                   inputMode="numeric"
                   required
@@ -471,7 +496,7 @@ export function LifeInsuranceCAQuiz() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#36596A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#2a4a5a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg flex items-center justify-center gap-2"
+                className="w-full bg-[#36596A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#2a4a5a] transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   'Processing...'
@@ -486,16 +511,16 @@ export function LifeInsuranceCAQuiz() {
               {/* TCPA Compliance */}
               <p className="text-xs text-gray-600 leading-relaxed">
                 By clicking &quot;Get My Quote&quot; you agree to receive communication from a licensed insurance broker via phone, email, SMS for the purpose of distributing and administering insurance. You may withdraw your consent at any time and you also agree to the{' '}
-                <Link href="/terms-of-service" className="text-[#36596A] hover:underline">Terms of Service</Link>
+                <Link href="/terms-of-service" className="text-[#36596A] hover:underline transition-colors duration-150">Terms of Service</Link>
                 {' '}and{' '}
-                <Link href="/privacy-policy" className="text-[#36596A] hover:underline">Privacy Policy</Link>.
+                <Link href="/privacy-policy" className="text-[#36596A] hover:underline transition-colors duration-150">Privacy Policy</Link>.
               </p>
 
               {/* Back Button */}
               <button
                 type="button"
                 onClick={handleBack}
-                className="block w-full text-center text-gray-500 text-sm hover:underline"
+                className="block w-full text-center text-gray-500 text-sm hover:underline transition-colors duration-150"
               >
                 ← Back
               </button>
