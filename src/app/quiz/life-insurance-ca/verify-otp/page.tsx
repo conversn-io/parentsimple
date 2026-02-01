@@ -94,8 +94,8 @@ function VerifyOTPContent() {
 
   if (showProcessing) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
-        <div className="w-full max-w-xl">
+      <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz flex justify-center items-start px-6 pt-8 pb-10">
+        <div className="w-full max-w-2xl">
           <ProcessingState
             message="We're preparing your personalized quotes..."
             isComplete={false}
@@ -107,7 +107,7 @@ function VerifyOTPContent() {
 
   if (!phoneNumber) {
     return (
-      <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
+      <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz flex justify-center items-start px-6 pt-8 pb-10">
         <div className="text-center bg-white rounded-xl px-6 py-6 border border-[#E3E0D5]">
           <p className="text-gray-600">Loading...</p>
         </div>
@@ -116,8 +116,8 @@ function VerifyOTPContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-start px-4 pt-8 pb-10">
-      <div className="w-full max-w-xl">
+    <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz flex justify-center items-start px-6 pt-8 pb-10">
+      <div className="w-full max-w-2xl">
         <OTPVerification
           phoneNumber={phoneNumber}
           onVerificationComplete={handleOTPVerification}
@@ -132,7 +132,7 @@ export default function LifeInsuranceCAVerifyOTPPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F9F6EF] flex justify-center items-center">
+        <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz flex justify-center items-center">
           <p className="text-gray-600">Loading...</p>
         </div>
       }
