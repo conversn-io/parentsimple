@@ -49,6 +49,84 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [])
 
+  // #region agent log - Debug CSS corruption
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setTimeout(() => {
+      const log = (location: string, message: string, data: any, hypothesisId: string) => {
+        fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ location, message, data, timestamp: Date.now(), sessionId: 'debug-session', runId: 'initial', hypothesisId })
+        }).catch(() => {});
+      };
+
+      // Hypothesis A & E: Check if our fixes deployed (classes present)
+      const rootDiv = document.querySelector('.life-insurance-ca-quiz');
+      const stepP = document.querySelector('p[aria-live="polite"]');
+      const mainEl = document.querySelector('main');
+      log('LifeInsuranceCAQuiz.tsx:68', 'Component elements check', {
+        hasRootClass: !!rootDiv,
+        rootClasses: rootDiv?.className || 'NOT_FOUND',
+        stepPClasses: stepP?.className || 'NOT_FOUND',
+        stepPText: stepP?.textContent || 'NOT_FOUND',
+        mainClasses: mainEl?.className || 'NOT_FOUND'
+      }, 'A,E');
+
+      // Hypothesis B & C: Computed styles on step paragraph
+      if (stepP) {
+        const computed = window.getComputedStyle(stepP);
+        log('LifeInsuranceCAQuiz.tsx:78', 'Step paragraph computed styles', {
+          display: computed.display,
+          flexDirection: computed.flexDirection,
+          whiteSpace: computed.whiteSpace,
+          wordSpacing: computed.wordSpacing,
+          maxWidth: computed.maxWidth,
+          fontSize: computed.fontSize,
+          textAlign: computed.textAlign
+        }, 'B,C');
+      }
+
+      // Hypothesis B: Computed styles on h1
+      const h1 = document.querySelector('.life-insurance-ca-quiz h1');
+      if (h1) {
+        const computed = window.getComputedStyle(h1);
+        log('LifeInsuranceCAQuiz.tsx:92', 'h1 computed styles', {
+          fontSize: computed.fontSize,
+          lineHeight: computed.lineHeight,
+          marginBottom: computed.marginBottom
+        }, 'B');
+      }
+
+      // Hypothesis D: Province buttons rendering check
+      const provinceContainer = document.querySelector('.life-insurance-ca-quiz main > div > div:last-child');
+      if (provinceContainer && step === 0) {
+        const buttons = provinceContainer.querySelectorAll('button');
+        const computed = window.getComputedStyle(provinceContainer);
+        log('LifeInsuranceCAQuiz.tsx:105', 'Province options rendering', {
+          buttonCount: buttons.length,
+          buttonTexts: Array.from(buttons).slice(0, 5).map(b => b.textContent?.trim()),
+          containerDisplay: computed.display,
+          containerFlexDirection: computed.flexDirection,
+          containerGridTemplateColumns: computed.gridTemplateColumns,
+          containerPosition: computed.position
+        }, 'D');
+      }
+
+      // Hypothesis E: Document stylesheets check
+      const sheets = Array.from(document.styleSheets).map(s => ({
+        href: s.href || 'inline',
+        disabled: s.disabled,
+        rulesCount: s.cssRules?.length || 0
+      }));
+      log('LifeInsuranceCAQuiz.tsx:121', 'Document stylesheets', {
+        sheetCount: sheets.length,
+        sheets: sheets.slice(0, 10)
+      }, 'E');
+    }, 500);
+  }, [step]);
+  // #endregion
+
   const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
   const isProvinceStep = currentStepDef?.id === 'province'
   const isContactStep = currentStepDef?.id === 'contact_info'
