@@ -3,6 +3,7 @@ import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
+import { sendLeadEvent } from '@/lib/meta-capi-service';
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -127,7 +128,8 @@ export async function POST(request: NextRequest) {
       stateName,
       licensingInfo,
       calculatedResults,
-      utmParams 
+      utmParams,
+      metaCookies
     } = body;
 
     if (!email) {
@@ -165,6 +167,11 @@ export async function POST(request: NextRequest) {
     // Get referrer and landing page from request headers
     const referrer = request.headers.get('referer') || request.headers.get('referrer') || null;
     const landingPage = request.headers.get('x-forwarded-url') || request.url || referrer || null;
+    const ipAddress =
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      null;
+    const userAgent = request.headers.get('user-agent') || null;
     
     // Get user_id from analytics_events if available (for this session)
     let userId = null;
@@ -212,6 +219,7 @@ export async function POST(request: NextRequest) {
       quiz_answers: {
         ...quizAnswers,
         student_first_name: studentFirstName || null,
+        household_income: quizAnswers?.household_income || null,
         calculated_results: calculatedResults,
         licensing_info: licensingInfo,
         utm_parameters: utmParams || {}, // Ensure UTM is stored even if empty object
@@ -337,6 +345,76 @@ export async function POST(request: NextRequest) {
       } else {
         lead = newLead;
         console.log('✅ Lead created:', lead.id);
+      }
+    }
+
+    // Send Meta CAPI Lead event with funnel-specific pixel
+    if (lead?.id) {
+      try {
+        const isLifeInsurance = funnelType === 'life_insurance_ca';
+        const isCollege = funnelType === 'elite_university_readiness' || funnelType === 'college_consulting';
+        
+        // Determine which pixel to use
+        const pixelId = isLifeInsurance
+          ? process.env.META_PIXEL_ID_LIFE_INSURANCE
+          : isCollege
+          ? process.env.META_PIXEL_ID_COLLEGE
+          : undefined;
+        
+        const accessToken = isLifeInsurance
+          ? process.env.META_CAPI_TOKEN_LIFE_INSURANCE
+          : isCollege
+          ? process.env.META_CAPI_TOKEN_COLLEGE
+          : undefined;
+        
+        const testEventCode = isLifeInsurance
+          ? process.env.META_TEST_EVENT_CODE_LIFE_INSURANCE
+          : isCollege
+          ? process.env.META_TEST_EVENT_CODE_COLLEGE
+          : undefined;
+
+        console.log(`[Meta CAPI] Sending Lead event for funnel: ${funnelType}`, {
+          leadId: lead.id,
+          pixelId: pixelId ? `${pixelId.slice(0, 4)}...` : 'not configured',
+          hasAccessToken: !!accessToken,
+        });
+
+        const capiResult = await sendLeadEvent({
+          leadId: lead.id.toString(),
+          email,
+          phone: phoneNumber || null,
+          firstName,
+          lastName,
+          fbp: metaCookies?.fbp || null,
+          fbc: metaCookies?.fbc || null,
+          fbLoginId: metaCookies?.fbLoginId || null,
+          ipAddress,
+          userAgent,
+          value: 0,
+          currency: isLifeInsurance ? 'CAD' : 'USD',
+          customData: {
+            content_name: isLifeInsurance ? 'Life Insurance Lead' : 'College Readiness Lead',
+            content_category: isLifeInsurance ? 'life_insurance' : 'education',
+            funnel_type: funnelType || 'college_consulting',
+            lead_status: phoneNumber ? 'phone_captured' : 'email_captured',
+            state,
+            zip_code: zipCode,
+          },
+          eventSourceUrl: landingPage || `https://parentsimple.org/quiz/${funnelType}`,
+          options: {
+            pixelId,
+            accessToken,
+            testEventCode,
+          },
+        });
+
+        if (!capiResult.success) {
+          console.error('[Meta CAPI] Lead event failed:', capiResult.error);
+        } else {
+          console.log('[Meta CAPI] Lead event sent successfully:', capiResult.eventId);
+        }
+      } catch (capiError) {
+        console.error('[Meta CAPI] Error:', capiError);
       }
     }
 

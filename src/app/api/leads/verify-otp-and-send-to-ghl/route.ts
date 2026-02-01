@@ -3,6 +3,12 @@ import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatPhoneForGHL, formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
+import { 
+  buildUserData, 
+  createCompleteRegistrationEvent, 
+  sendMetaCAPIEvent,
+  isMetaCAPIConfigured 
+} from '@/lib/meta-capi-service';
 
 const GHL_WEBHOOK_URL = process.env.PARENT_SIMPLE_GHL_WEBHOOK || process.env.PARENTSIMPLE_GHL_WEBHOOK || "";
 
@@ -181,13 +187,13 @@ async function upsertLead(
   // Get contact data for contact JSONB field
   const { data: contact } = await callreadyQuizDb
     .from('contacts')
-    .select('email, phone_e164, first_name, last_name, zip_code')
+    .select('email, phone, first_name, last_name, zip_code')
     .eq('id', contactId)
     .maybeSingle();
   
   const contactData = contact ? {
     email: contact.email,
-    phone: contact.phone_e164 || null,
+      phone: contact.phone || null,
     first_name: contact.first_name,
     last_name: contact.last_name,
     zip_code: contact.zip_code || zipCode || null
@@ -301,7 +307,8 @@ export async function POST(request: NextRequest) {
       stateName,
       licensingInfo,
       calculatedResults,
-      utmParams 
+      utmParams,
+      metaCookies
     } = body;
 
     console.log('📊 Extracted Data:', {
@@ -316,6 +323,12 @@ export async function POST(request: NextRequest) {
     if (!email || !phoneNumber) {
       return createCorsResponse({ error: 'Email and phone number are required' }, 400);
     }
+
+    const ipAddress =
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      null;
+    const userAgent = request.headers.get('user-agent') || null;
 
     // Extract UTM parameters - use null instead of defaults to clearly indicate missing UTM data
     const utmSource = utmParams?.utm_source || null;
@@ -456,6 +469,82 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Send Meta CAPI CompleteRegistration event with funnel-specific pixel
+    if (lead?.id && isMetaCAPIConfigured()) {
+      try {
+        const isLifeInsurance = funnelType === 'life_insurance_ca';
+        const isCollege = funnelType === 'elite_university_readiness' || funnelType === 'college_consulting';
+        
+        // Determine which pixel to use
+        const pixelId = isLifeInsurance
+          ? process.env.META_PIXEL_ID_LIFE_INSURANCE
+          : isCollege
+          ? process.env.META_PIXEL_ID_COLLEGE
+          : undefined;
+        
+        const accessToken = isLifeInsurance
+          ? process.env.META_CAPI_TOKEN_LIFE_INSURANCE
+          : isCollege
+          ? process.env.META_CAPI_TOKEN_COLLEGE
+          : undefined;
+        
+        const testEventCode = isLifeInsurance
+          ? process.env.META_TEST_EVENT_CODE_LIFE_INSURANCE
+          : isCollege
+          ? process.env.META_TEST_EVENT_CODE_COLLEGE
+          : undefined;
+
+        console.log(`[Meta CAPI] Sending CompleteRegistration event for funnel: ${funnelType}`, {
+          leadId: lead.id,
+          pixelId: pixelId ? `${pixelId.slice(0, 4)}...` : 'not configured',
+          hasAccessToken: !!accessToken,
+        });
+
+        const userData = buildUserData({
+          email,
+          phone: phoneNumber,
+          first_name: firstName,
+          last_name: lastName,
+          fbp: metaCookies?.fbp || null,
+          fbc: metaCookies?.fbc || null,
+          fb_login_id: metaCookies?.fbLoginId || null,
+          ip_address: ipAddress,
+          user_agent: userAgent,
+          state,
+          zip_code: zipCode,
+        });
+
+        const event = createCompleteRegistrationEvent({
+          leadId: lead.id.toString(),
+          userData,
+          customData: {
+            content_name: isLifeInsurance ? 'Life Insurance Registration' : 'College Quiz Registration',
+            content_category: isLifeInsurance ? 'life_insurance' : 'education',
+            funnel_type: funnelType || 'college_consulting',
+            value: 0,
+            currency: isLifeInsurance ? 'CAD' : 'USD',
+            status: 'completed',
+            lead_score: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
+          },
+          eventSourceUrl: `https://parentsimple.org/quiz/${funnelType}/results`,
+        });
+
+        const capiResult = await sendMetaCAPIEvent(event, {
+          pixelId,
+          accessToken,
+          testEventCode,
+        });
+
+        if (!capiResult.success) {
+          console.error('[Meta CAPI] CompleteRegistration event failed:', capiResult.error);
+        } else {
+          console.log('[Meta CAPI] CompleteRegistration event sent successfully:', capiResult.eventId);
+        }
+      } catch (capiError) {
+        console.error('[Meta CAPI] Error:', capiError);
+      }
+    }
+
     // Get contact info for GHL payload
     const { data: contact } = await callreadyQuizDb
       .from('contacts')
@@ -470,6 +559,7 @@ export async function POST(request: NextRequest) {
     // Prepare GHL webhook payload (only sent if OTP is verified)
     // Format phone with +1 for GHL webhook
     const formattedPhone = formatPhoneForGHL(phoneNumber);
+    const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
     const ghlPayload = {
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
@@ -478,9 +568,13 @@ export async function POST(request: NextRequest) {
       zipCode: zipCode || lead.zip_code,
       state: state || lead.state,
       stateName: stateName || lead.state_name,
+      householdIncome: householdIncome, // Add household income to GHL payload
       source: 'ParentSimple Quiz',
       funnelType: funnelType || lead.funnel_type || 'college_consulting',
-      quizAnswers: lead.quiz_answers || quizAnswers,
+      quizAnswers: {
+        ...(lead.quiz_answers || quizAnswers),
+        household_income: householdIncome, // Ensure household income is in quizAnswers
+      },
       calculatedResults: calculatedResults,
       licensingInfo: licensingInfo,
       leadScore: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0, // Use calculated readiness score
