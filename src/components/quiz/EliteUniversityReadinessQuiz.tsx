@@ -20,6 +20,7 @@ import { trackUTMParameters } from '@/utils/utm-tracker';
 import { ELITE_UNIVERSITY_QUESTIONS } from '@/data/elite-university-questions';
 import { calculateEliteUniversityReadinessScore, type EliteUniversityReadinessResults } from '@/utils/elite-university-scoring';
 import { getMetaCookies } from '@/lib/meta-capi-cookies';
+import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm';
 
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
 const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
@@ -69,9 +70,10 @@ type QuizAnswerValue = string | number | string[] | ContactInfoAnswer | undefine
 interface EliteUniversityReadinessQuizProps {
   resultVariant?: QuizVariant;
   skipOTP?: boolean; // If true, skip OTP verification and submit directly to GHL
+  formVariant?: 'default' | 'gameplan'; // If 'gameplan', contact step uses "You're Almost There" layout + benefits footer
 }
 
-export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOTP = false }: EliteUniversityReadinessQuizProps) => {
+export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOTP = false, formVariant = 'default' }: EliteUniversityReadinessQuizProps) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
@@ -79,6 +81,8 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
   const [quizSessionId, setQuizSessionId] = useState<string | null>(null);
   const [utmParams, setUtmParams] = useState<UTMParameters | null>(null);
   const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
+
+  useTrustedForm({ enabled: true });
 
   const questions = ELITE_UNIVERSITY_QUESTIONS;
   const totalSteps = questions.length;
@@ -227,6 +231,8 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
       
       const readinessScore = calculatedResults?.totalScore || 0;
       
+      const trustedFormCertUrl = getTrustedFormCertUrl() || '';
+      const jornayaLeadId = getLeadIdToken() || null;
       const metaCookies = getMetaCookies();
       const fbLoginId =
         typeof window !== 'undefined' && (window as any).FB?.getAuthResponse?.()?.userID
@@ -249,6 +255,10 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
         calculatedResults: calculatedResults,
         utmParams: utmParams,
         leadScore: readinessScore,
+        trustedFormCertUrl: trustedFormCertUrl || null,
+        trustedform_cert_url: trustedFormCertUrl || null,
+        jornayaLeadId: jornayaLeadId,
+        jornaya_lead_id: jornayaLeadId,
         metaCookies: {
           fbp: metaCookies.fbp,
           fbc: metaCookies.fbc,
@@ -344,7 +354,12 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
               licensingInfo: null,
               utmParams: utmParams,
               sessionId: quizSessionId || 'unknown',
-              funnelType: 'college_consulting'
+              funnelType: 'college_consulting',
+              trustedFormCertUrl: getTrustedFormCertUrl() || null,
+              trustedform_cert_url: getTrustedFormCertUrl() || null,
+              jornayaLeadId: getLeadIdToken() || null,
+              jornaya_lead_id: getLeadIdToken() || null,
+              metaCookies: getMetaCookies(),
             })
           });
 
@@ -418,14 +433,16 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
         timestamp: new Date().toISOString()
       });
       
-      // Store all necessary data for OTP page
+      // Store all necessary data for OTP page (include TrustedForm/Jornaya for verify-otp-and-send-to-ghl)
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.setItem('elite_university_quiz_data', JSON.stringify({
           answers: updatedAnswers,
           calculatedResults: calculatedResults,
           quizSessionId: quizSessionId,
           utmParams: utmParams,
-          quizStartTime: quizStartTime
+          quizStartTime: quizStartTime,
+          trustedFormCertUrl: getTrustedFormCertUrl() || null,
+          jornayaLeadId: getLeadIdToken() || null
         }));
       }
       
@@ -468,12 +485,18 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
 
   return (
     <div className="max-w-2xl mx-auto p-6 min-h-screen bg-[#F9F6EF]">
+      {/* TrustedForm & Journaya hidden inputs - MUST be uncontrolled (no value attribute) */}
+      <input type="hidden" name="xxTrustedFormCertUrl" id="xxTrustedFormCertUrl" />
+      <input type="hidden" name="leadid_token" id="leadid_token" />
+      <input type="hidden" name="universal_leadid" id="universal_leadid" />
       <QuizProgress currentStep={currentStep} totalSteps={totalSteps} />
       <div className="mt-8">
         <QuizQuestion
           question={currentQuestion}
           onAnswer={handleAnswer}
           currentAnswer={answers[currentQuestion.id]}
+          formVariant={formVariant}
+          skipOTP={skipOTP}
         />
       </div>
     </div>
