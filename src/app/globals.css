@@ -83,6 +83,24 @@ body {
   max-width: 42rem !important; /* 672px - matches Elite quiz */
 }
 
+/* Scrolling logo animation for Life Insurance CA quiz */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
 /* Container width fixes - ensure max-width utilities work correctly */
 .max-w-7xl {
   max-width: 80rem !important; /* 1280px */
