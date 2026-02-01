@@ -31,12 +31,12 @@ const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE; // Optional, for 
  */
 export function getPixelIdForFunnel(funnelType?: string | null): string | undefined {
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:35',message:'getPixelIdForFunnel called',data:{funnelType,META_PIXEL_ID_INSURANCE,META_PIXEL_ID_COLLEGE,META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  console.log('[DEBUG-H1] getPixelIdForFunnel called:', {funnelType, META_PIXEL_ID_INSURANCE, META_PIXEL_ID_COLLEGE, META_PIXEL_ID});
   // #endregion
   
   if (!funnelType) {
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:39',message:'No funnelType, returning fallback',data:{result:META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    console.log('[DEBUG-H1] No funnelType, returning fallback:', {result: META_PIXEL_ID});
     // #endregion
     return META_PIXEL_ID;
   }
@@ -47,7 +47,7 @@ export function getPixelIdForFunnel(funnelType?: string | null): string | undefi
   if (normalized.includes('insurance') || normalized.includes('life')) {
     const result = META_PIXEL_ID_INSURANCE || META_PIXEL_ID;
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:48',message:'Matched insurance funnel',data:{normalized,result,META_PIXEL_ID_INSURANCE,META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    console.log('[DEBUG-H2] Matched insurance funnel:', {normalized, result, META_PIXEL_ID_INSURANCE, META_PIXEL_ID});
     // #endregion
     return result;
   }
@@ -56,14 +56,14 @@ export function getPixelIdForFunnel(funnelType?: string | null): string | undefi
   if (normalized.includes('college') || normalized.includes('consulting')) {
     const result = META_PIXEL_ID_COLLEGE || META_PIXEL_ID;
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:57',message:'Matched college funnel',data:{normalized,result},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    console.log('[DEBUG-H2] Matched college funnel:', {normalized, result});
     // #endregion
     return result;
   }
   
   // Default fallback
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:65',message:'No match, using fallback',data:{normalized,result:META_PIXEL_ID},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  console.log('[DEBUG-H1] No match, using fallback:', {normalized, result: META_PIXEL_ID});
   // #endregion
   return META_PIXEL_ID;
 }
@@ -311,7 +311,7 @@ export async function sendMetaCAPIEvent(
   const maxRetries = options.retries ?? 3;
 
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:305',message:'sendMetaCAPIEvent called',data:{pixelId:pixelId?'SET':'MISSING',accessToken:accessToken?'SET':'MISSING',eventId:event.event_id,eventName:event.event_name},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+  console.log('[DEBUG-H3] sendMetaCAPIEvent called:', {pixelId: pixelId || 'MISSING', accessToken: accessToken ? 'SET' : 'MISSING', eventId: event.event_id, eventName: event.event_name});
   // #endregion
 
   // Validate configuration
@@ -319,7 +319,7 @@ export async function sendMetaCAPIEvent(
     const error = 'Meta CAPI not configured: Missing META_PIXEL_ID or META_CAPI_TOKEN';
     console.warn(`[Meta CAPI] ${error}`);
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:316',message:'Meta CAPI not configured',data:{pixelId:pixelId||'MISSING',accessToken:accessToken?'SET':'MISSING',error},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
+    console.log('[DEBUG-H4] Meta CAPI not configured:', {pixelId: pixelId || 'MISSING', accessToken: accessToken ? 'SET' : 'MISSING', error});
     // #endregion
     return {
       success: false,
@@ -362,7 +362,7 @@ export async function sendMetaCAPIEvent(
       if (response.ok) {
         // Success
         // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:371',message:'Meta CAPI SUCCESS',data:{eventId:event.event_id,eventName:event.event_name,responseData,pixelId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+        console.log('[DEBUG-H5] Meta CAPI SUCCESS:', {eventId: event.event_id, eventName: event.event_name, responseData, pixelId});
         // #endregion
         
         if (process.env.NODE_ENV === 'development') {
@@ -383,7 +383,7 @@ export async function sendMetaCAPIEvent(
         const errorMessage = responseData?.error?.message || responseText || 'Unknown error';
         lastError = new Error(`Meta CAPI error (${response.status}): ${errorMessage}`);
         // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:391',message:'Meta CAPI ERROR',data:{status:response.status,errorMessage,eventId:event.event_id,pixelId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
+        console.log('[DEBUG-H6] Meta CAPI ERROR:', {status: response.status, errorMessage, eventId: event.event_id, pixelId});
         // #endregion
 
         // Don't retry on certain errors (authentication, invalid data)
@@ -642,7 +642,7 @@ export async function sendLeadEvent(params: {
   options?: SendCAPIOptions;
 }): Promise<SendCAPIResult> {
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:644',message:'sendLeadEvent called',data:{leadId:params.leadId,funnelType:params.funnelType,email:params.email?'SET':'MISSING'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H7'})}).catch(()=>{});
+  console.log('[DEBUG-H7] sendLeadEvent called:', {leadId: params.leadId, funnelType: params.funnelType, email: params.email ? 'SET' : 'MISSING'});
   // #endregion
   
   const userData = buildUserData({
@@ -674,7 +674,7 @@ export async function sendLeadEvent(params: {
   const pixelId = getPixelIdForFunnel(params.funnelType);
   
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/7d9fe2a8-b715-40c6-93e5-adf63dd00fbe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'meta-capi-service.ts:685',message:'Pixel ID selected',data:{funnelType:params.funnelType,selectedPixelId:pixelId,optionsPixelId:params.options?.pixelId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H8'})}).catch(()=>{});
+  console.log('[DEBUG-H8] Pixel ID selected:', {funnelType: params.funnelType, selectedPixelId: pixelId, optionsPixelId: params.options?.pixelId});
   // #endregion
   
   // Merge options with funnel-specific pixel ID
