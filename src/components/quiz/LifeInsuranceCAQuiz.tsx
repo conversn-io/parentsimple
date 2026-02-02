@@ -16,6 +16,14 @@ import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, type UTMParameters } from '@/utils/utm-utils'
 import { useFunnelLayout } from '@/hooks/useFunnelFooter'
+import {
+  trackQuizStart,
+  trackQuizStepViewed,
+  trackQuestionAnswer,
+  trackEmailCapture,
+  trackLeadFormSubmit,
+  getSessionId as getTrackingSessionId
+} from '@/lib/unified-tracking'
 
 const STORAGE_KEY = 'life_insurance_ca_quiz_data'
 
@@ -50,6 +58,9 @@ export function LifeInsuranceCAQuiz() {
         setUtmParams(utm)
       }
     }
+    
+    // Track quiz start
+    trackQuizStart(id, 'life_insurance_ca')
   }, [])
 
   // Clean up phone number after browser autofill
@@ -67,12 +78,32 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [contactPhone])
 
+  // Track step views
+  useEffect(() => {
+    if (sessionId && currentStepDef) {
+      trackQuizStepViewed(
+        step + 1,
+        currentStepDef.id,
+        sessionId,
+        'life_insurance_ca',
+        step > 0 ? LIFE_INSURANCE_CA_STEPS[step - 1]?.id : undefined,
+        TOTAL_STEPS
+      )
+    }
+  }, [step, sessionId, currentStepDef])
+
   const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
   const isProvinceStep = currentStepDef?.id === 'province'
   const isContactStep = currentStepDef?.id === 'contact_info'
 
   const handleProvinceSelect = (value: string) => {
     setAnswers((prev) => ({ ...prev, province: value }))
+    
+    // Track answer
+    if (sessionId) {
+      trackQuestionAnswer('province', value, 1, TOTAL_STEPS, sessionId, 'life_insurance_ca')
+    }
+    
     const regionCode = value
     if (regionCode !== ONTARIO_REGION_CODE) {
       setIsDQ(true)
@@ -84,6 +115,12 @@ export function LifeInsuranceCAQuiz() {
   const handleMultipleChoice = (value: string) => {
     if (!currentStepDef) return
     setAnswers((prev) => ({ ...prev, [currentStepDef.id]: value }))
+    
+    // Track answer
+    if (sessionId) {
+      trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_STEPS, sessionId, 'life_insurance_ca')
+    }
+    
     if (step < TOTAL_STEPS - 1) setStep(step + 1)
   }
 
@@ -109,6 +146,12 @@ export function LifeInsuranceCAQuiz() {
       phone: phoneE164,
     }
     const fullAnswers = { ...answers, contact_info: contactInfo }
+
+    // Track email capture
+    if (sessionId) {
+      trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_ca')
+      trackLeadFormSubmit(sessionId, 'life_insurance_ca', fullAnswers)
+    }
 
     try {
       const metaCookies = getMetaCookies()
