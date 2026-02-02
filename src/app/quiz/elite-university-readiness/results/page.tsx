@@ -4,9 +4,12 @@ import { Suspense, useEffect } from 'react'
 import { EliteUniversityReadinessResultsSimplified } from '@/components/quiz/EliteUniversityReadinessResultsSimplified'
 import { useEliteReadinessResults } from '@/hooks/useEliteReadinessResults'
 import { trackPageView } from '@/lib/temp-tracking'
+import { useFunnelLayout } from '@/hooks/useFunnelFooter'
 
 function ResultsContent() {
   const { results, isLoading } = useEliteReadinessResults()
+
+  useFunnelLayout() // Enable funnel header and footer
 
   // Track route-specific analytics
   useEffect(() => {

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { OTPVerification } from '@/components/quiz/OTPVerification';
 import { ProcessingState } from '@/components/quiz/ProcessingState';
 import { getMetaCookies } from '@/lib/meta-capi-cookies';
+import { useFunnelLayout } from '@/hooks/useFunnelFooter';
 
 const EMBED_CONTEXT_STORAGE_KEY = 'elite_university_embed_context';
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
@@ -72,6 +73,8 @@ function VerifyOTPContent() {
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [quizData, setQuizData] = useState<QuizSessionData | null>(null);
   const [showProcessing, setShowProcessing] = useState(false);
+
+  useFunnelLayout(); // Enable funnel header and footer
 
   useEffect(() => {
     // Retrieve quiz data from sessionStorage

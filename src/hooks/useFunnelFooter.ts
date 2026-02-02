@@ -5,14 +5,17 @@ import { useFooter, useHeader } from '../contexts/FooterContext';
 
 export const useFunnelLayout = () => {
   const { setHeaderType } = useHeader();
+  const { setFooterType } = useFooter();
 
   useEffect(() => {
-    // Only set header to funnel, keep footer as standard
+    // Set both header and footer to funnel for quiz pages
     setHeaderType('funnel');
+    setFooterType('funnel');
     return () => {
       setHeaderType('standard');
+      setFooterType('standard');
     };
-  }, [setHeaderType]);
+  }, [setHeaderType, setFooterType]);
 };
 
 // Keep the old hook for backward compatibility

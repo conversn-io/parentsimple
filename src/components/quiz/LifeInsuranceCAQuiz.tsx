@@ -15,6 +15,7 @@ import { formatPhoneForInput } from '@/utils/phone-utils'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, type UTMParameters } from '@/utils/utm-utils'
+import { useFunnelLayout } from '@/hooks/useFunnelFooter'
 
 const STORAGE_KEY = 'life_insurance_ca_quiz_data'
 
@@ -35,6 +36,7 @@ export function LifeInsuranceCAQuiz() {
   const [contactError, setContactError] = useState('')
 
   useTrustedForm({ enabled: true })
+  useFunnelLayout() // Enable funnel header and footer
 
   useEffect(() => {
     const id = `li_ca_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`

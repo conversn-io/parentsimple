@@ -21,6 +21,7 @@ import { ELITE_UNIVERSITY_QUESTIONS } from '@/data/elite-university-questions';
 import { calculateEliteUniversityReadinessScore, type EliteUniversityReadinessResults } from '@/utils/elite-university-scoring';
 import { getMetaCookies } from '@/lib/meta-capi-cookies';
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm';
+import { useFunnelLayout } from '@/hooks/useFunnelFooter';
 
 const RESULT_VARIANT_STORAGE_KEY = 'elite_university_result_variant';
 const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
@@ -83,6 +84,7 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
   const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
 
   useTrustedForm({ enabled: true });
+  useFunnelLayout(); // Enable funnel header and footer
 
   const questions = ELITE_UNIVERSITY_QUESTIONS;
   const totalSteps = questions.length;

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { OTPVerification } from '@/components/quiz/OTPVerification'
 import { ProcessingState } from '@/components/quiz/ProcessingState'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
+import { useFunnelLayout } from '@/hooks/useFunnelFooter'
 
 const STORAGE_KEY = 'life_insurance_ca_quiz_data'
 
@@ -22,6 +23,8 @@ function VerifyOTPContent() {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [quizData, setQuizData] = useState<QuizSessionData | null>(null)
   const [showProcessing, setShowProcessing] = useState(false)
+
+  useFunnelLayout() // Enable funnel header and footer
 
   useEffect(() => {
     if (typeof sessionStorage === 'undefined') return
