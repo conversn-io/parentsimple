@@ -206,16 +206,11 @@ export function LifeInsuranceCAQuiz() {
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
             {/* Main Headline */}
-            <h1 className="text-3xl font-bold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '2rem', lineHeight: 1.2 }}>
+            <h1 className="text-3xl font-bold text-[#1A2B49] mb-4 text-center" style={{ fontSize: '2rem', lineHeight: 1.2 }}>
               Protect Your Family&apos;s Future with up to $2M in Life Insurance
             </h1>
 
-            {/* Subheadline */}
-            <p className="text-gray-700 mb-3 text-center text-base leading-relaxed">
-              Get coverage for less than a cup of coffee a day — check your eligibility in under 60 seconds.
-            </p>
-
-            {/* Trust Pills - under subheadline */}
+            {/* Trust Pills */}
             <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-green-600">✓</span>
