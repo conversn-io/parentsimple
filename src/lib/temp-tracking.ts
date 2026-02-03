@@ -276,6 +276,13 @@ async function sendPageViewToSupabase(
     // Get UTM parameters
     const utmParams = getUTMParams();
 
+    console.log('🔄 Sending pageview to Supabase API:', {
+      page_title: pageName,
+      page_path: pagePath,
+      session_id: sessionId,
+      utm_params: utmParams
+    });
+
     // Send to Supabase via API route (more reliable than direct client insert)
     const response = await fetch('/api/analytics/track-pageview', {
       method: 'POST',
@@ -306,12 +313,19 @@ async function sendPageViewToSupabase(
     });
 
     if (!response.ok) {
-      console.warn('⚠️ Supabase PageView tracking failed:', response.statusText);
+      const errorText = await response.text();
+      console.warn('⚠️ Supabase PageView tracking failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
     } else {
-      console.log('✅ PageView sent to Supabase');
+      const result = await response.json();
+      console.log('✅ PageView sent to Supabase successfully:', result);
     }
   } catch (error) {
     console.error('❌ Failed to send PageView to Supabase:', error);
+    console.error('❌ Error details:', error instanceof Error ? error.message : String(error));
   }
 }
 

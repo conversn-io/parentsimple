@@ -8,8 +8,13 @@ import { callreadyQuizDb } from '@/lib/callready-quiz-db';
  * Used by temp-tracking.ts to send page_view events.
  */
 export async function POST(request: NextRequest) {
+  console.log('📊 PageView Tracking API Called');
+  console.log('⏰ Timestamp:', new Date().toISOString());
+  
   try {
     const body = await request.json();
+    console.log('📥 PageView Data:', JSON.stringify(body, null, 2));
+    
     const {
       event_name = 'page_view',
       page_title,
@@ -26,6 +31,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     if (!session_id) {
+      console.warn('⚠️ Missing session_id in pageview request');
       return NextResponse.json(
         { error: 'session_id is required' },
         { status: 400 }
@@ -43,6 +49,16 @@ export async function POST(request: NextRequest) {
     const gclid = utmParameters?.gclid || null;
     const fbclid = utmParameters?.fbclid || null;
     const msclkid = utmParameters?.msclkid || null;
+
+    console.log('💾 Inserting pageview to analytics_events:', {
+      event_name,
+      session_id,
+      page_url: page_url || page_path,
+      page_title,
+      utm_source: utmSource,
+      utm_medium: utmMedium,
+      utm_campaign: utmCampaign
+    });
 
     // Insert into analytics_events with UTM parameters
     const { data, error } = await callreadyQuizDb
@@ -78,13 +94,19 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('❌ Supabase PageView insert error:', error);
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
       return NextResponse.json(
         { error: 'Failed to save PageView event', details: error.message },
         { status: 500 }
       );
     }
 
-    console.log('✅ PageView saved to Supabase:', data.id);
+    console.log('✅ PageView saved to Supabase successfully:', {
+      id: data.id,
+      event_name: data.event_name,
+      session_id: data.session_id,
+      page_url: data.page_url
+    });
 
     return NextResponse.json({
       success: true,
@@ -92,7 +114,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ PageView tracking error:', error);
+    console.error('💥 PageView Tracking Exception:', error);
+    console.error('💥 Stack trace:', error.stack);
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
