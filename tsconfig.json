@@ -23,5 +23,16 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "QUIZ_TRACKING_EXAMPLE.tsx",
+    "*_EXAMPLE.tsx",
+    "*_GUIDE.*",
+    "*_INSTRUCTIONS.*",
+    "03-ParentSimple/**",
+    "**/*_backup/**",
+    "src/components 2/**",
+    "src/app 2/**",
+    "src/lib 2/**"
+  ]
 }

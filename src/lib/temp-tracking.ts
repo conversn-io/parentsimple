@@ -46,7 +46,7 @@ export interface LeadData {
   leadScore?: number;
   riskLevel?: string;
   recommendedProducts?: string[];
-  householdIncome?: string | null; // Household income from quiz
+  householdIncome?: string;
 }
 
 // Bot detection utility
@@ -205,25 +205,23 @@ export function trackQuizComplete(
 }
 
 export function trackGraduationYearSelected(sessionId: string, graduationYear: string): void {
-  console.log('📊 Tracking graduation year selected:', graduationYear);
+  console.log('📊 Tracking graduation year selected:', sessionId, graduationYear);
   
-  trackGA4Event('quiz_graduation_year_selected', {
+  trackGA4Event('graduation_year_selected', {
     session_id: sessionId,
     graduation_year: graduationYear,
-    event_category: 'quiz_interaction',
-    event_label: 'elite_university_readiness'
+    event_category: 'quiz_interaction'
   });
 }
 
-export function trackScoreCalculated(sessionId: string, score: number, category: string): void {
-  console.log('📊 Tracking score calculated:', score, category);
+export function trackScoreCalculated(sessionId: string, score: number, category?: string): void {
+  console.log('📊 Tracking score calculated:', sessionId, score, category);
   
-  trackGA4Event('quiz_score_calculated', {
+  trackGA4Event('score_calculated', {
     session_id: sessionId,
-    readiness_score: score,
-    readiness_category: category,
-    event_category: 'quiz_interaction',
-    event_label: 'elite_university_readiness'
+    score: score,
+    category: category,
+    event_category: 'quiz_interaction'
   });
 }
 
@@ -241,17 +239,11 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
     zip_code: leadData.zipCode
   });
   
-  // Only track SubmitApplication event for Meta Pixel (removed Lead event to avoid double counting)
-  const householdIncome = leadData.householdIncome || leadData.quizAnswers?.household_income || null;
-  trackMetaEvent('SubmitApplication', {
-    content_name: 'Elite University Readiness Quiz',
-    content_category: 'quiz_submission',
+  trackMetaEvent('Lead', {
+    content_name: 'ParentSimple College Planning Lead',
+    content_category: 'lead_generation',
     value: leadData.leadScore || 0,
-    currency: 'USD',
-    status: 'completed',
-    household_income: householdIncome, // Add household income for Meta targeting
-    // Custom parameter for high-income targeting ($200K+)
-    custom_parameter_1: householdIncome === '200k_plus' ? 'high_income' : (householdIncome || 'unknown')
+    currency: 'USD'
   });
   
   // ❌ REMOVED: sendToGHL() to prevent duplicate GHL submissions
@@ -301,16 +293,15 @@ async function sendPageViewToSupabase(
         properties: {
           site_key: 'parentsimple.org',
           funnel_type: 'college_consulting',
-          utm_parameters: utmParams || {}, // Store full UTM object
+          utm_parameters: utmParams,
           contact: {
             ga_client_id: gaClientId,
             ...metaIds
           }
         },
-        utmParams: utmParams || {}, // Pass full UTM object
-        utm_source: utmParams?.utm_source || null,
-        utm_medium: utmParams?.utm_medium || null,
-        utm_campaign: utmParams?.utm_campaign || null
+        utm_source: utmParams.utm_source || null,
+        utm_medium: utmParams.utm_medium || null,
+        utm_campaign: utmParams.utm_campaign || null
       })
     });
 
@@ -361,29 +352,16 @@ function getMetaPixelIds(): { fbc?: string; fbp?: string } {
   return result;
 }
 
-// Get UTM parameters - use utm-utils for consistency
-import { extractUTMParameters, getStoredUTMParameters, storeUTMParameters, UTMParameters } from '@/utils/utm-utils';
-
-function getUTMParams(): Record<string, string | undefined> {
+// Get UTM parameters
+function getUTMParams(): Record<string, string> {
   if (typeof window === 'undefined') return {};
   
-  // Try to get stored UTM parameters first (persisted across page navigations)
-  const stored = getStoredUTMParameters();
-  if (stored && Object.keys(stored).length > 0) {
-    // Convert UTMParameters to Record<string, string | undefined>
-    return stored as Record<string, string | undefined>;
-  }
-  
-  // Extract from URL if available
-  const urlParams = extractUTMParameters();
-  if (urlParams && Object.keys(urlParams).length > 0) {
-    // Store for future page views
-    storeUTMParameters(urlParams);
-    // Convert UTMParameters to Record<string, string | undefined>
-    return urlParams as Record<string, string | undefined>;
-  }
-  
-  return {};
+  const urlParams = new URLSearchParams(window.location.search);
+  return {
+    utm_source: urlParams.get('utm_source') || '',
+    utm_medium: urlParams.get('utm_medium') || '',
+    utm_campaign: urlParams.get('utm_campaign') || ''
+  };
 }
 
 // Page view tracking
@@ -411,15 +389,6 @@ export function trackPageView(pageName: string, pagePath: string): void {
       page_title: pageName,
       page_location: pagePath,
       event_category: 'navigation'
-    });
-  }
-  
-  // Track to Meta Pixel
-  if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-    trackMetaEvent('PageView', {
-      content_name: pageName,
-      content_category: 'page_view',
-      page_path: pagePath
     });
   }
   

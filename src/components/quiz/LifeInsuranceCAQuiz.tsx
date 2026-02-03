@@ -78,6 +78,10 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [contactPhone])
 
+  const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
+  const isProvinceStep = currentStepDef?.id === 'province'
+  const isContactStep = currentStepDef?.id === 'contact_info'
+
   // Track step views
   useEffect(() => {
     if (sessionId && currentStepDef) {
@@ -91,10 +95,6 @@ export function LifeInsuranceCAQuiz() {
       )
     }
   }, [step, sessionId, currentStepDef])
-
-  const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
-  const isProvinceStep = currentStepDef?.id === 'province'
-  const isContactStep = currentStepDef?.id === 'contact_info'
 
   const handleProvinceSelect = (value: string) => {
     setAnswers((prev) => ({ ...prev, province: value }))
@@ -150,7 +150,18 @@ export function LifeInsuranceCAQuiz() {
     // Track email capture
     if (sessionId) {
       trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_ca')
-      trackLeadFormSubmit(sessionId, 'life_insurance_ca', fullAnswers)
+      trackLeadFormSubmit({
+        firstName: contactInfo.firstName,
+        lastName: contactInfo.lastName,
+        email: contactInfo.email,
+        phone: phoneE164,
+        zipCode: '',
+        state: '',
+        stateName: '',
+        quizAnswers: fullAnswers,
+        sessionId: sessionId,
+        funnelType: 'life_insurance_ca'
+      })
     }
 
     try {
