@@ -306,8 +306,45 @@ export function LifeInsuranceCAQuizVariantB() {
               </div>
             </div>
 
-            {/* Testimonial Section */}
-            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-3">
+            {/* Trusted Insurers Logo Scroller */}
+            <div className="mb-6 overflow-hidden">
+              <p className="text-center text-xs text-gray-500 mb-3">Trusted Canadian Insurers</p>
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
+                  <span className="text-xs font-semibold text-gray-600">Manulife</span>
+                </div>
+                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
+                  <span className="text-xs font-semibold text-gray-600">Sun Life</span>
+                </div>
+                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
+                  <span className="text-xs font-semibold text-gray-600">Canada Life</span>
+                </div>
+                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
+                  <span className="text-xs font-semibold text-gray-600">iA Financial</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Happy Customers Image - Centered */}
+            <div className="text-center mb-3">
+              <Image
+                src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
+                alt="Happy customers"
+                width={48}
+                height={48}
+                className="rounded-full mx-auto"
+              />
+            </div>
+
+            {/* Join 40,000 Canadians */}
+            <div className="text-center mb-6">
+              <p className="text-sm text-gray-600">
+                Join 40,000 Canadians who found coverage with us
+              </p>
+            </div>
+
+            {/* Michael T. Testimonial */}
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
               <div className="flex gap-4 items-start">
                 <Image
                   src="/images/life-insurance-funnel/testimonial-guy.jpg"
@@ -325,32 +362,8 @@ export function LifeInsuranceCAQuizVariantB() {
               </div>
             </div>
 
-            {/* Social Proof Statement - Centered */}
-            <div className="text-center mb-6">
-              <div className="flex flex-col items-center gap-2">
-                <Image
-                  src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
-                  alt="Happy customers"
-                  width={48}
-                  height={48}
-                  className="rounded-full"
-                />
-                <p className="text-sm text-gray-600">
-                  Join 40,000 Canadians who found coverage with us
-                </p>
-              </div>
-            </div>
-
-            {/* About ParentSimple */}
-            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
-              <h4 className="text-sm font-semibold text-[#1A2B49] mb-2">About ParentSimple</h4>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                ParentSimple is part of the Simple Media Network. We offer trusted resources to parents, preparing them for every aspect of their journey—from education planning to financial security. We don't sell insurance directly; instead, we partner with the best providers in every area to help you make informed decisions and find the right coverage for your family.
-              </p>
-            </div>
-
             {/* Scroll to Top Button */}
-            <div className="text-center">
+            <div className="text-center mb-6">
               <button
                 type="button"
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -359,6 +372,14 @@ export function LifeInsuranceCAQuizVariantB() {
                 <ArrowRight className="rotate-[-90deg]" size={18} />
                 Back to Top
               </button>
+            </div>
+
+            {/* About ParentSimple */}
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
+              <h4 className="text-sm font-semibold text-[#1A2B49] mb-2">About ParentSimple</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                ParentSimple is part of the Simple Media Network. We offer trusted resources to parents, preparing them for every aspect of their journey—from education planning to financial security. We don't sell insurance directly; instead, we partner with the best providers in every area to help you make informed decisions and find the right coverage for your family.
+              </p>
             </div>
           </>
         )}
