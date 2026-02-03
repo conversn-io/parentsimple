@@ -3,10 +3,11 @@
  * 
  * Sends verified leads to multiple destinations:
  * 1. GoHighLevel (GHL) CRM
- * 2. Zapier webhook (third-party client)
+ * 2. Funnel-specific Zapier webhooks (third-party client)
  * 3. Supabase database
  * 
  * Key Features:
+ * - Funnel-specific webhook routing (Life Insurance CA vs Elite University)
  * - Parallel webhook delivery for speed
  * - Comprehensive error handling
  * - Timeout protection
@@ -17,10 +18,31 @@
 
 import { callreadyQuizDb } from './callready-quiz-db';
 
-// Configuration
+// Configuration - Funnel-specific webhooks
 const GHL_WEBHOOK_URL = process.env.PARENT_SIMPLE_GHL_WEBHOOK || process.env.PARENTSIMPLE_GHL_WEBHOOK || '';
-const ZAPIER_WEBHOOK_URL = process.env.PARENTSIMPLE_ZAPIER_WEBHOOK || 'https://hooks.zapier.com/hooks/catch/19194179/ulrctz4/';
+const LIFE_INSURANCE_ZAPIER_WEBHOOK = process.env.PARENTSIMPLE_LIFE_INSURANCE_ZAPIER_WEBHOOK || '';
+const ELITE_UNIVERSITY_ZAPIER_WEBHOOK = process.env.PARENTSIMPLE_ELITE_UNIVERSITY_ZAPIER_WEBHOOK || '';
 const WEBHOOK_TIMEOUT_MS = 10000; // 10 seconds
+
+/**
+ * Get appropriate Zapier webhook URL based on funnel type
+ */
+function getZapierWebhookUrl(funnelType: string): string {
+  console.log('🔀 Routing webhook for funnel:', funnelType);
+  
+  if (funnelType === 'life_insurance_ca') {
+    console.log('📍 Using Life Insurance Zapier webhook');
+    return LIFE_INSURANCE_ZAPIER_WEBHOOK;
+  }
+  
+  if (funnelType === 'elite_university_readiness') {
+    console.log('📍 Using Elite University Zapier webhook');
+    return ELITE_UNIVERSITY_ZAPIER_WEBHOOK;
+  }
+  
+  console.warn('⚠️ Unknown funnel type, no Zapier webhook configured:', funnelType);
+  return '';
+}
 
 // ============================================================================
 // INTERFACES
@@ -209,12 +231,15 @@ export async function sendLeadToWebhooks(
     };
   }
 
+  // Get funnel-specific Zapier webhook URL
+  const zapierWebhookUrl = getZapierWebhookUrl(payload.funnelType);
+
   // Check webhook URLs are configured
   if (!GHL_WEBHOOK_URL) {
     console.warn('⚠️ GHL webhook URL not configured');
   }
-  if (!ZAPIER_WEBHOOK_URL) {
-    console.warn('⚠️ Zapier webhook URL not configured');
+  if (!zapierWebhookUrl) {
+    console.warn(`⚠️ No Zapier webhook configured for funnel: ${payload.funnelType}`);
   }
 
   // Send to both webhooks in parallel for speed
@@ -226,9 +251,9 @@ export async function sendLeadToWebhooks(
     );
   }
 
-  if (ZAPIER_WEBHOOK_URL) {
+  if (zapierWebhookUrl) {
     webhookPromises.push(
-      sendWebhookWithTimeout(ZAPIER_WEBHOOK_URL, payload, 'Zapier')
+      sendWebhookWithTimeout(zapierWebhookUrl, payload, `Zapier (${payload.funnelType})`)
     );
   }
 
@@ -242,17 +267,19 @@ export async function sendLeadToWebhooks(
     error: 'GHL webhook not configured'
   };
 
-  const zapierResult = results.find(r => r.destination === 'Zapier') || {
+  const zapierResult = results.find(r => r.destination.includes('Zapier')) || {
     destination: 'Zapier',
     success: false,
-    error: 'Zapier webhook not configured'
+    error: `No Zapier webhook configured for funnel: ${payload.funnelType}`
   };
 
   const allSuccessful = ghlResult.success && zapierResult.success;
 
   console.log('📊 Webhook Delivery Summary:', {
+    funnel: payload.funnelType,
     ghl: ghlResult.success ? '✅ Success' : '❌ Failed',
     zapier: zapierResult.success ? '✅ Success' : '❌ Failed',
+    zapierUrl: zapierWebhookUrl ? 'configured' : 'not_configured',
     allSuccessful: allSuccessful ? '✅ All Successful' : '⚠️ Some Failed'
   });
 
@@ -277,6 +304,9 @@ export async function logWebhookDelivery(
 ): Promise<void> {
   try {
     console.log('📊 Logging webhook delivery to analytics_events...');
+    
+    // Get the Zapier webhook URL that was used for this funnel
+    const zapierWebhookUrl = getZapierWebhookUrl(payload.funnelType);
 
     await callreadyQuizDb.from('analytics_events').insert({
       event_name: 'webhook_delivery',
@@ -304,7 +334,9 @@ export async function logWebhookDelivery(
             duration: deliveryResult.ghl.duration
           },
           zapier: {
-            url: ZAPIER_WEBHOOK_URL ? 'configured' : 'not_configured',
+            url: zapierWebhookUrl ? 'configured' : 'not_configured',
+            funnel_type: payload.funnelType,
+            webhook_used: zapierWebhookUrl ? 'funnel_specific' : 'none',
             success: deliveryResult.zapier.success,
             status: deliveryResult.zapier.status,
             duration: deliveryResult.zapier.duration
@@ -380,18 +412,37 @@ export function buildWebhookPayload(data: {
 }
 
 /**
- * Check if webhook URLs are configured
+ * Check if webhook URLs are configured for a specific funnel
  */
-export function areWebhooksConfigured(): {
+export function areWebhooksConfigured(funnelType?: string): {
   ghl: boolean;
   zapier: boolean;
+  zapierUrl?: string;
   any: boolean;
   all: boolean;
 } {
+  const zapierUrl = funnelType ? getZapierWebhookUrl(funnelType) : '';
+  
   return {
     ghl: !!GHL_WEBHOOK_URL,
-    zapier: !!ZAPIER_WEBHOOK_URL,
-    any: !!(GHL_WEBHOOK_URL || ZAPIER_WEBHOOK_URL),
-    all: !!(GHL_WEBHOOK_URL && ZAPIER_WEBHOOK_URL)
+    zapier: !!zapierUrl,
+    zapierUrl: zapierUrl || undefined,
+    any: !!(GHL_WEBHOOK_URL || zapierUrl),
+    all: !!(GHL_WEBHOOK_URL && zapierUrl)
+  };
+}
+
+/**
+ * Get webhook configuration info (for debugging)
+ */
+export function getWebhookConfig(): {
+  ghl: string;
+  lifeInsuranceZapier: string;
+  eliteUniversityZapier: string;
+} {
+  return {
+    ghl: GHL_WEBHOOK_URL ? 'configured' : 'not_configured',
+    lifeInsuranceZapier: LIFE_INSURANCE_ZAPIER_WEBHOOK ? 'configured' : 'not_configured',
+    eliteUniversityZapier: ELITE_UNIVERSITY_ZAPIER_WEBHOOK ? 'configured' : 'not_configured'
   };
 }
