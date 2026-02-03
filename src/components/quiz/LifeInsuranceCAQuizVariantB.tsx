@@ -227,12 +227,12 @@ export function LifeInsuranceCAQuizVariantB() {
 
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
-      {/* Yellow Alert Bar - only show on step 0 */}
+      {/* Subtle Green Social Proof Bar - only show on step 0 */}
       {step === 0 && (
-        <div className="bg-[#F4D03F] border-b border-[#F1C40F]">
-          <div className="max-w-2xl mx-auto px-6 py-3">
-            <p className="text-center text-sm font-semibold text-[#1A2B49] flex items-center justify-center gap-2">
-              <span className="text-lg">⏰</span>
+        <div className="bg-green-50 border-b border-green-100">
+          <div className="max-w-2xl mx-auto px-6 py-2">
+            <p className="text-center text-xs text-green-700 flex items-center justify-center gap-1.5">
+              <span className="text-sm">✓</span>
               Join 25,000 Ontario Parents Who Just Got Covered Today
             </p>
           </div>
@@ -259,26 +259,10 @@ export function LifeInsuranceCAQuizVariantB() {
       <main className="max-w-2xl mx-auto px-6 py-4 pb-8 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
-            {/* Simple Top Text - Variant B */}
-            <p className="text-sm text-center text-gray-600 mb-6 mt-2">
+            {/* H3 Headline - Variant B */}
+            <h3 className="text-lg font-semibold text-center text-gray-800 mb-6 mt-2">
               Compare Insurance Quotes
-            </p>
-
-            {/* Trust Pills - Centered */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
-              <div className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span className="text-sm text-gray-700">No Health Exam</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span className="text-sm text-gray-700">Low Monthly Premiums</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span className="text-sm text-gray-700">Best Approvals</span>
-              </div>
-            </div>
+            </h3>
 
             {/* Question Title */}
             <h2 className="text-xl font-semibold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.25rem', lineHeight: 1.3 }}>
@@ -288,7 +272,7 @@ export function LifeInsuranceCAQuizVariantB() {
               <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
             )}
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-4 mb-6">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
@@ -304,6 +288,27 @@ export function LifeInsuranceCAQuizVariantB() {
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
+            </div>
+
+            {/* Trust Pills - Below Questions */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm text-gray-700">No Health Exam</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm text-gray-700">Low Monthly Premiums</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm text-gray-700">Best Approvals</span>
+              </div>
+            </div>
+
+            {/* Inline Scroller - Below Trust Pills */}
+            <div className="text-center mb-6 text-xs text-gray-500 italic">
+              Join 25,000 Ontario Parents Who Just Got Covered Today
             </div>
 
             {/* Testimonial Section */}
