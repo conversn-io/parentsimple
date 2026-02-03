@@ -16,8 +16,6 @@ export const CA_PROVINCES = [
   { value: 'QC', label: 'Quebec', regionCode: 'QC' },
   { value: 'NB', label: 'New Brunswick', regionCode: 'NB' },
   { value: 'NS', label: 'Nova Scotia', regionCode: 'NS' },
-  { value: 'PE', label: 'Prince Edward Island', regionCode: 'PE' },
-  { value: 'NL', label: 'Newfoundland and Labrador', regionCode: 'NL' },
 ] as const;
 
 export const LIFE_INSURANCE_CA_STEPS = [

@@ -272,13 +272,13 @@ export function LifeInsuranceCAQuizVariantB() {
               <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
             )}
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="flex flex-col gap-3 mb-6">
               {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => handleProvinceSelect(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl px-5 py-4 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
+                  className={`flex items-center gap-3 rounded-xl px-5 py-3 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
                     answers.province === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
