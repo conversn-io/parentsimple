@@ -30,7 +30,8 @@ const WEBHOOK_TIMEOUT_MS = 10000; // 10 seconds
 function getZapierWebhookUrl(funnelType: string): string {
   console.log('🔀 Routing webhook for funnel:', funnelType);
   
-  if (funnelType === 'life_insurance_ca') {
+  // Life Insurance CA (control and variant B use same webhook)
+  if (funnelType === 'life_insurance_ca' || funnelType === 'life_insurance_ca_variant_b') {
     console.log('📍 Using Life Insurance Zapier webhook');
     return LIFE_INSURANCE_ZAPIER_WEBHOOK;
   }

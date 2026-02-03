@@ -1,0 +1,616 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-02-03 06:30:00",
+  "containerVersion": {
+    "name": "www.parentsimple.org",
+    "container": {
+      "name": "www.parentsimple.org",
+      "usageContext": ["WEB"]
+    },
+    "tag": [
+      {
+        "name": "GA4 Configuration - ParentSimple",
+        "type": "googtag",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "tagId",
+            "value": "{{GA4 Measurement ID - ParentSimple}}"
+          }
+        ],
+        "firingTriggerId": ["2147479553"]
+      },
+      {
+        "name": "GA4 Quiz Start",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "quiz_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Quiz Type}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "session_id"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Session ID}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "funnel_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Funnel Type}}"}
+                ]
+              }
+            ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "quiz_start"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID - ParentSimple}}"
+          }
+        ],
+        "firingTriggerId": ["quiz_start_trigger"]
+      },
+      {
+        "name": "GA4 Quiz Step Viewed",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "step_number"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Step Number}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "step_name"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Step Name}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "session_id"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Session ID}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "funnel_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Funnel Type}}"}
+                ]
+              }
+            ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "quiz_step_viewed"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID - ParentSimple}}"
+          }
+        ],
+        "firingTriggerId": ["quiz_step_viewed_trigger"]
+      },
+      {
+        "name": "GA4 Question Answer",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "question_id"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Question ID}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "question_text"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Question Text}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "answer_value"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Answer Value}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "question_number"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Question Number}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "session_id"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Session ID}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "funnel_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Funnel Type}}"}
+                ]
+              }
+            ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "question_answer"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID - ParentSimple}}"
+          }
+        ],
+        "firingTriggerId": ["question_answer_trigger"]
+      },
+      {
+        "name": "GA4 Quiz Complete",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "quiz_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Quiz Type}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "session_id"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Session ID}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "funnel_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Funnel Type}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "completion_time"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Completion Time}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "lead_score"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Lead Score}}"}
+                ]
+              }
+            ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "quiz_complete"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID - ParentSimple}}"
+          }
+        ],
+        "firingTriggerId": ["quiz_complete_trigger"]
+      },
+      {
+        "name": "GA4 Lead Form Submit",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "event_category"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Event Category}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "event_label"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Event Label}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "value"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Value}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "session_id"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Session ID}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "funnel_type"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Funnel Type}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "lead_score"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Lead Score}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "graduation_year"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Graduation Year}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "gpa"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - GPA}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "parameter", "value": "household_income"},
+                  {"type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - Household Income}}"}
+                ]
+              }
+            ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "lead_form_submit"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID - ParentSimple}}"
+          }
+        ],
+        "firingTriggerId": ["lead_form_submit_trigger"]
+      },
+      {
+        "name": "Meta Pixel - PageView",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'PageView');\n}\n</script>"
+          }
+        ],
+        "firingTriggerId": ["2147479553"]
+      },
+      {
+        "name": "Meta Pixel - Lead",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Lead', {\n    content_name: '{{DLV - Event Label}}',\n    content_category: '{{DLV - Event Category}}',\n    value: {{DLV - Value}},\n    currency: 'USD',\n    lead_source: 'parentsimple_platform',\n    session_id: '{{DLV - Session ID}}',\n    funnel_type: '{{DLV - Funnel Type}}',\n    lead_score: {{DLV - Lead Score}}\n  });\n}\n</script>"
+          }
+        ],
+        "firingTriggerId": ["lead_form_submit_trigger"]
+      }
+    ],
+    "trigger": [
+      {
+        "triggerId": "2147479553",
+        "name": "All Pages",
+        "type": "PAGEVIEW"
+      },
+      {
+        "triggerId": "quiz_start_trigger",
+        "name": "Quiz Start",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "quiz_start"}
+            ]
+          }
+        ]
+      },
+      {
+        "triggerId": "quiz_step_viewed_trigger",
+        "name": "Quiz Step Viewed",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "quiz_step_viewed"}
+            ]
+          }
+        ]
+      },
+      {
+        "triggerId": "question_answer_trigger",
+        "name": "Question Answer",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "question_answer"}
+            ]
+          }
+        ]
+      },
+      {
+        "triggerId": "quiz_complete_trigger",
+        "name": "Quiz Complete",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "quiz_complete"}
+            ]
+          }
+        ]
+      },
+      {
+        "triggerId": "lead_form_submit_trigger",
+        "name": "Lead Form Submit",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "lead_form_submit"}
+            ]
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "variableId": "ga4_measurement_id",
+        "name": "GA4 Measurement ID - ParentSimple",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "G-ZC29XQ0W2J"
+          }
+        ]
+      },
+      {
+        "variableId": "meta_pixel_id",
+        "name": "Meta Pixel ID - ParentSimple",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "799755069642014"
+          }
+        ]
+      },
+      {
+        "variableId": "dlv_session_id",
+        "name": "DLV - Session ID",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "session_id"}
+        ]
+      },
+      {
+        "variableId": "dlv_funnel_type",
+        "name": "DLV - Funnel Type",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "funnel_type"}
+        ]
+      },
+      {
+        "variableId": "dlv_quiz_type",
+        "name": "DLV - Quiz Type",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "quiz_type"}
+        ]
+      },
+      {
+        "variableId": "dlv_step_number",
+        "name": "DLV - Step Number",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "step_number"}
+        ]
+      },
+      {
+        "variableId": "dlv_step_name",
+        "name": "DLV - Step Name",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "step_name"}
+        ]
+      },
+      {
+        "variableId": "dlv_question_id",
+        "name": "DLV - Question ID",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "question_id"}
+        ]
+      },
+      {
+        "variableId": "dlv_question_text",
+        "name": "DLV - Question Text",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "question_text"}
+        ]
+      },
+      {
+        "variableId": "dlv_question_number",
+        "name": "DLV - Question Number",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "question_number"}
+        ]
+      },
+      {
+        "variableId": "dlv_answer_value",
+        "name": "DLV - Answer Value",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "answer_value"}
+        ]
+      },
+      {
+        "variableId": "dlv_completion_time",
+        "name": "DLV - Completion Time",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "completion_time"}
+        ]
+      },
+      {
+        "variableId": "dlv_lead_score",
+        "name": "DLV - Lead Score",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "lead_score"}
+        ]
+      },
+      {
+        "variableId": "dlv_event_category",
+        "name": "DLV - Event Category",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "event_category"}
+        ]
+      },
+      {
+        "variableId": "dlv_event_label",
+        "name": "DLV - Event Label",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "event_label"}
+        ]
+      },
+      {
+        "variableId": "dlv_value",
+        "name": "DLV - Value",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "value"}
+        ]
+      },
+      {
+        "variableId": "dlv_graduation_year",
+        "name": "DLV - Graduation Year",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "graduation_year"}
+        ]
+      },
+      {
+        "variableId": "dlv_gpa",
+        "name": "DLV - GPA",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "gpa"}
+        ]
+      },
+      {
+        "variableId": "dlv_household_income",
+        "name": "DLV - Household Income",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "TEMPLATE", "key": "name", "value": "household_income"}
+        ]
+      }
+    ],
+    "builtInVariable": [
+      {"type": "PAGE_URL", "name": "Page URL"},
+      {"type": "PAGE_HOSTNAME", "name": "Page Hostname"},
+      {"type": "PAGE_PATH", "name": "Page Path"},
+      {"type": "REFERRER", "name": "Referrer"},
+      {"type": "EVENT", "name": "Event"}
+    ]
+  }
+}
