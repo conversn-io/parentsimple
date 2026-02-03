@@ -15,6 +15,7 @@ import {
   trackScoreCalculated,
   LeadData,
 } from '@/lib/temp-tracking';
+import { trackQuizStepViewed } from '@/lib/unified-tracking';
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, UTMParameters } from '@/utils/utm-utils';
 import { trackUTMParameters } from '@/utils/utm-tracker';
 import { ELITE_UNIVERSITY_QUESTIONS } from '@/data/elite-university-questions';
@@ -97,6 +98,29 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
       sessionStorage.removeItem(RESULT_VARIANT_STORAGE_KEY);
     }
   }, [resultVariant]);
+
+  // Track quiz step changes
+  useEffect(() => {
+    if (quizSessionId && currentStep < totalSteps) {
+      const currentQuestion = questions[currentStep];
+      const previousQuestion = currentStep > 0 ? questions[currentStep - 1] : null;
+      
+      trackQuizStepViewed(
+        currentStep + 1, // 1-indexed for display
+        currentQuestion.id,
+        quizSessionId,
+        'elite_university_readiness',
+        previousQuestion?.id || null,
+        totalSteps
+      );
+      
+      console.log('📊 Step viewed:', {
+        step: currentStep + 1,
+        question: currentQuestion.id,
+        sessionId: quizSessionId
+      });
+    }
+  }, [currentStep, quizSessionId, totalSteps, questions]);
 
   useEffect(() => {
     // Generate unique session ID for tracking

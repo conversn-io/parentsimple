@@ -97,6 +97,12 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
       const queryVariant = searchParams.get(queryParamName);
       if (queryVariant && variants[queryVariant]) {
         const redirectUrl = new URL(variants[queryVariant], request.url);
+        
+        // CRITICAL: Don't redirect if already on the target path (prevents infinite loops)
+        if (pathname === variants[queryVariant]) {
+          return null; // Pass through
+        }
+        
         return {
           status: 307,
           url: redirectUrl.toString(),
@@ -114,6 +120,12 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
     const existingVariant = request.cookies?.get?.(cookieName);
     if (existingVariant?.value && variants[existingVariant.value]) {
       const redirectUrl = new URL(variants[existingVariant.value], request.url);
+      
+      // CRITICAL: Don't redirect if already on the target path (prevents infinite loops)
+      if (pathname === variants[existingVariant.value]) {
+        return null; // Pass through
+      }
+      
       return {
         status: 307,
         url: redirectUrl.toString(),
@@ -124,6 +136,12 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
     // Assign variant based on weights or equal split
     const assignedVariant = assignVariant(variants, weights, defaultVariant);
     const redirectUrl = new URL(variants[assignedVariant], request.url);
+    
+    // CRITICAL: Don't redirect if already on the target path (prevents infinite loops)
+    if (pathname === variants[assignedVariant]) {
+      // Set cookie but don't redirect
+      return null; // Pass through - middleware.ts will set the cookie
+    }
     
     return {
       status: 307,
