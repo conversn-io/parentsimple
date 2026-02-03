@@ -3,7 +3,7 @@
 import { createContext, useContext, ReactNode, useState } from 'react';
 
 type FooterType = 'standard' | 'funnel';
-type HeaderType = 'standard' | 'funnel';
+type HeaderType = 'standard' | 'funnel' | 'none';
 
 interface LayoutContextType {
   footerType: FooterType;

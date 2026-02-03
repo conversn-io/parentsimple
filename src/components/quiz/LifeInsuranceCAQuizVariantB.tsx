@@ -15,7 +15,7 @@ import { formatPhoneForInput } from '@/utils/phone-utils'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, type UTMParameters } from '@/utils/utm-utils'
-import { useFunnelLayout } from '@/hooks/useFunnelFooter'
+import { useNoHeaderLayout } from '@/hooks/useFunnelFooter'
 import {
   trackQuizStart,
   trackQuizStepViewed,
@@ -44,7 +44,7 @@ export function LifeInsuranceCAQuizVariantB() {
   const [contactError, setContactError] = useState('')
 
   useTrustedForm({ enabled: true })
-  useFunnelLayout() // Enable funnel header and footer
+  useNoHeaderLayout() // No header, funnel footer only
 
   useEffect(() => {
     const id = `li_ca_b_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
@@ -233,7 +233,7 @@ export function LifeInsuranceCAQuizVariantB() {
           <div className="max-w-2xl mx-auto px-6 py-2">
             <p className="text-center text-xs text-green-700 flex items-center justify-center gap-1.5">
               <span className="text-sm">✓</span>
-              Join 25,000 Ontario Parents Who Just Got Covered Today
+              Join 250+ Ontario Parents who got quotes today
             </p>
           </div>
         </div>
@@ -291,7 +291,7 @@ export function LifeInsuranceCAQuizVariantB() {
             </div>
 
             {/* Trust Pills - Below Questions */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
               <div className="flex items-center gap-2">
                 <span className="text-green-600">✓</span>
                 <span className="text-sm text-gray-700">No Health Exam</span>
@@ -304,11 +304,6 @@ export function LifeInsuranceCAQuizVariantB() {
                 <span className="text-green-600">✓</span>
                 <span className="text-sm text-gray-700">Best Approvals</span>
               </div>
-            </div>
-
-            {/* Inline Scroller - Below Trust Pills */}
-            <div className="text-center mb-6 text-xs text-gray-500 italic">
-              Join 25,000 Ontario Parents Who Just Got Covered Today
             </div>
 
             {/* Testimonial Section */}
@@ -330,9 +325,9 @@ export function LifeInsuranceCAQuizVariantB() {
               </div>
             </div>
 
-            {/* Social Proof Statement with Stars */}
-            <div className="text-center mb-3">
-              <div className="flex items-center justify-center gap-2 mb-2">
+            {/* Social Proof Statement - Centered */}
+            <div className="text-center mb-6">
+              <div className="flex flex-col items-center gap-2">
                 <Image
                   src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
                   alt="Happy customers"
@@ -340,21 +335,30 @@ export function LifeInsuranceCAQuizVariantB() {
                   height={48}
                   className="rounded-full"
                 />
-                <div>
-                  <p className="text-sm font-semibold text-gray-700">
-                    <span className="font-bold text-[#1A2B49]">4.8</span> ratings and reviews
-                  </p>
-                  <div className="flex gap-0.5 items-center">
-                    {[...Array(4)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-base">★</span>
-                    ))}
-                    <span className="relative inline-block text-base">
-                      <span className="text-gray-300">★</span>
-                      <span className="absolute top-0 left-0 overflow-hidden text-yellow-400" style={{ width: '50%' }}>★</span>
-                    </span>
-                  </div>
-                </div>
+                <p className="text-sm text-gray-600">
+                  Join 40,000 Canadians who found coverage with us
+                </p>
               </div>
+            </div>
+
+            {/* About ParentSimple */}
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
+              <h4 className="text-sm font-semibold text-[#1A2B49] mb-2">About ParentSimple</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                ParentSimple is part of the Simple Media Network. We offer trusted resources to parents, preparing them for every aspect of their journey—from education planning to financial security. We don't sell insurance directly; instead, we partner with the best providers in every area to help you make informed decisions and find the right coverage for your family.
+              </p>
+            </div>
+
+            {/* Scroll to Top Button */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A2B49] text-white rounded-lg hover:bg-[#2A3B59] transition-colors duration-200"
+              >
+                <ArrowRight className="rotate-[-90deg]" size={18} />
+                Back to Top
+              </button>
             </div>
           </>
         )}
