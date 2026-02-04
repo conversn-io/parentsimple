@@ -3,7 +3,7 @@ import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
-import { sendLeadEvent } from '@/lib/meta-capi-service';
+// Removed Meta CAPI import - conversion should only fire on OTP verification, not email capture
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -348,38 +348,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Meta CAPI removed from email capture - conversion event should only fire on OTP verification
+    // This prevents double-firing of conversion events
     if (lead?.id) {
-      try {
-        const capiResult = await sendLeadEvent({
-          leadId: lead.id,
-          email,
-          phone: phoneNumber || null,
-          firstName,
-          lastName,
-          fbp: metaCookies?.fbp || null,
-          fbc: metaCookies?.fbc || null,
-          fbLoginId: metaCookies?.fbLoginId || null,
-          ipAddress,
-          userAgent,
-          value: 0,
-          currency: 'USD',
-          customData: {
-            funnel_type: funnelType || 'college_consulting',
-            lead_status: phoneNumber ? 'lead_captured' : 'email_captured',
-            state,
-            zip_code: zipCode,
-          },
-          eventSourceUrl: landingPage || undefined,
-        });
-
-        if (!capiResult.success) {
-          console.error('[Meta CAPI] Lead event failed:', capiResult.error);
-        } else {
-          console.log('[Meta CAPI] Lead event sent:', capiResult.eventId);
-        }
-      } catch (capiError) {
-        console.error('[Meta CAPI] Error:', capiError);
-      }
+      console.log('[Email Capture] Lead created, Meta CAPI will fire on OTP verification:', lead.id);
     }
 
     // Save to analytics_events for retargeting
