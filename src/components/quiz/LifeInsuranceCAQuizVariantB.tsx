@@ -307,20 +307,23 @@ export function LifeInsuranceCAQuizVariantB() {
             </div>
 
             {/* Trusted Insurers Logo Scroller */}
-            <div className="mb-6 overflow-hidden">
-              <p className="text-center text-xs text-gray-500 mb-3">Trusted Canadian Insurers</p>
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
-                  <span className="text-xs font-semibold text-gray-600">Manulife</span>
-                </div>
-                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
-                  <span className="text-xs font-semibold text-gray-600">Sun Life</span>
-                </div>
-                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
-                  <span className="text-xs font-semibold text-gray-600">Canada Life</span>
-                </div>
-                <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg">
-                  <span className="text-xs font-semibold text-gray-600">iA Financial</span>
+            <div className="mb-6">
+              <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
+              <div className="overflow-hidden relative">
+                <div className="flex gap-8 items-center justify-center flex-wrap">
+                  {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                    <Image
+                      key={num}
+                      src={`/images/life-insurance-funnel/ca-insurer-${num}-${
+                        num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
+                        num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
+                      }.png`}
+                      alt={`Insurer ${num}`}
+                      width={100}
+                      height={40}
+                      className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                    />
+                  ))}
                 </div>
               </div>
             </div>
