@@ -610,32 +610,6 @@ export function LifeInsuranceCAQuizVariantB() {
         )}
       </main>
 
-      {/* Trust badges */}
-      {/* Footer with scrolling logos - only on step 0 */}
-      {step === 0 && (
-        <footer className="border-t border-[#E3E0D5] py-4 px-6" style={{ background: 'transparent' }}>
-          <div className="max-w-2xl mx-auto">
-            <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
-            <div className="overflow-hidden relative">
-              <div className="flex gap-8 items-center animate-scroll">
-                {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
-                  <Image
-                    key={idx}
-                    src={`/images/life-insurance-funnel/ca-insurer-${num}-${
-                      num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
-                      num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
-                    }.png`}
-                    alt={`Insurer ${num}`}
-                    width={100}
-                    height={40}
-                    className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </footer>
-      )}
     </div>
   )
 }
