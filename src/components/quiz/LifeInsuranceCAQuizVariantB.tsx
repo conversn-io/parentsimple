@@ -306,14 +306,14 @@ export function LifeInsuranceCAQuizVariantB() {
               </div>
             </div>
 
-            {/* Trusted Insurers Logo Scroller */}
+            {/* Trusted Insurers Logo Scroller - Scrolling Marquee */}
             <div className="mb-6">
               <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
               <div className="overflow-hidden relative">
-                <div className="flex gap-8 items-center justify-center flex-wrap">
-                  {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                <div className="flex gap-8 items-center animate-scroll">
+                  {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
                     <Image
-                      key={num}
+                      key={idx}
                       src={`/images/life-insurance-funnel/ca-insurer-${num}-${
                         num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
                         num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
@@ -340,10 +340,21 @@ export function LifeInsuranceCAQuizVariantB() {
             </div>
 
             {/* Join 40,000 Canadians */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <p className="text-sm text-gray-600">
                 Join 40,000 Canadians who found coverage with us
               </p>
+            </div>
+
+            {/* Trustpilot Rating */}
+            <div className="text-center mb-6">
+              <Image
+                src="/images/life-insurance-funnel/trustpilot-proof.png"
+                alt="Trustpilot rating - 4.6 out of 5 based on 3563 reviews"
+                width={600}
+                height={50}
+                className="mx-auto h-auto w-full max-w-md object-contain"
+              />
             </div>
 
             {/* Michael T. Testimonial */}
@@ -378,7 +389,7 @@ export function LifeInsuranceCAQuizVariantB() {
             </div>
 
             {/* About ParentSimple */}
-            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
+            <div className="bg-transparent rounded-xl p-6 mb-6">
               <h4 className="text-sm font-semibold text-[#1A2B49] mb-2">About ParentSimple</h4>
               <p className="text-xs text-gray-600 leading-relaxed">
                 ParentSimple is part of the Simple Media Network. We offer trusted resources to parents, preparing them for every aspect of their journey—from education planning to financial security. We don't sell insurance directly; instead, we partner with the best providers in every area to help you make informed decisions and find the right coverage for your family.
