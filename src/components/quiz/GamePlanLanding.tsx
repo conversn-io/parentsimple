@@ -28,7 +28,7 @@ export function GamePlanLanding() {
       </header>
 
       {/* Hero Section with Floating Student */}
-      <section className="relative bg-white py-12 lg:py-16 overflow-visible">
+      <section className="relative bg-white py-12 lg:py-16 overflow-visible pb-0">
         <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
           <div className="relative text-center space-y-6 pb-16 md:pb-0">
             {/* Headline */}
@@ -50,19 +50,19 @@ export function GamePlanLanding() {
                 Get My Game Plan Now
               </Link>
             </div>
-
-            {/* Floating Student Image - Positioned to align bottom with trust bar */}
-            <div className="absolute -right-4 lg:right-0 bottom-0 w-[280px] sm:w-[320px] lg:w-[380px] pointer-events-none hidden md:block">
-              <Image
-                src="/images/students/latina-student-point.png"
-                alt="Student pointing to button"
-                width={600}
-                height={800}
-                className="w-full h-auto"
-                priority
-              />
-            </div>
           </div>
+        </div>
+        
+        {/* Floating Student Image - Positioned to align bottom with section edge/trust bar */}
+        <div className="absolute right-0 lg:right-8 xl:right-16 bottom-0 w-[280px] sm:w-[320px] lg:w-[400px] xl:w-[450px] pointer-events-none hidden md:block">
+          <Image
+            src="/images/students/latina-student-point.png"
+            alt="Student pointing to button"
+            width={600}
+            height={800}
+            className="w-full h-auto"
+            priority
+          />
         </div>
       </section>
 
