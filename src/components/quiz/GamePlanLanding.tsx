@@ -200,21 +200,6 @@ export function GamePlanLanding() {
           </ul>
         </div>
       </section>
-
-      {/* Why A Readiness (beige box) - 60% width centered */}
-      <section className="py-16">
-        <div className="max-w-[600px] mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-6">
-            Why A Readiness in Your Elite Admissions Game Plan:
-          </h2>
-          <div className="bg-[#F9F6EF] border border-[#E3E0D5] rounded-2xl p-8">
-            <p className="text-lg text-gray-700">
-              Admissions today are more competitive than ever — top universities now expect more than great grades or test scores. You need:
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Why A Readiness Score Alone - 60% width centered */}
       <section className="py-16">
         <div className="max-w-[700px] mx-auto px-4 sm:px-6">
