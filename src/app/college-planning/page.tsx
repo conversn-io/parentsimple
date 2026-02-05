@@ -15,7 +15,7 @@ const quizOptions = [
       "Assess your student’s readiness for top-tier universities with a data-backed look at academics, extracurriculars, and admissions strategy.",
     action: {
       label: "Take the Elite Readiness Quiz",
-      href: "/quiz/elite-university-readiness",
+      href: "/gameplan",
     },
     status: "available",
   },
@@ -25,7 +25,7 @@ const quizOptions = [
       "Understand how life insurance and estate planning can support your student’s long-term financial security and educational goals.",
     action: {
       label: "Start Legacy Readiness",
-      href: "/quiz/legacy-readiness",
+      href: "/quiz/life-insurance-ca",
     },
     status: "available",
   },
