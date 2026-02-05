@@ -8,7 +8,7 @@ const GAME_PLAN_START_URL = '/gameplan?start=1'
 
 export function GamePlanLanding() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       {/* Header - logo only */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
@@ -26,6 +26,18 @@ export function GamePlanLanding() {
           </div>
         </div>
       </header>
+
+      {/* Sticky Bottom CTA - Mobile Only */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 shadow-lg">
+        <div className="px-4 py-3">
+          <Link
+            href={GAME_PLAN_START_URL}
+            className="flex items-center justify-center w-full bg-[#1A2B49] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#152238] transition-all shadow-lg"
+          >
+            Get My Game Plan Now
+          </Link>
+        </div>
+      </div>
 
       {/* Hero Section with Floating Student */}
       <section className="relative bg-white py-12 lg:py-16 overflow-visible pb-0 max-w-[1550px] mx-auto">
