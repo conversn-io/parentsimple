@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Users, Heart, DollarSign, Calendar, Shield, ArrowRight, Check, Sunrise, Sun, Moon, Cigarette, Ban } from 'lucide-react'
+// Removed Lucide icons - using emojis instead
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
@@ -284,7 +284,7 @@ export function LifeInsuranceCAQuizVariantB() {
                       : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
                   }`}
                 >
-                  <MapPin className={`shrink-0 ${answers.province === opt.value ? 'text-[#9DB89D]' : 'text-gray-400'}`} size={20} />
+                  <span className="shrink-0 text-xl">📍</span>
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
@@ -383,7 +383,7 @@ export function LifeInsuranceCAQuizVariantB() {
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A2B49] text-white rounded-lg hover:bg-[#2A3B59] transition-colors duration-200"
               >
-                <ArrowRight className="rotate-[-90deg]" size={18} />
+                <span className="text-lg">⬆️</span>
                 Back to Top
               </button>
             </div>
@@ -414,37 +414,35 @@ export function LifeInsuranceCAQuizVariantB() {
                 const getIcon = () => {
                   // Purpose icons
                   if (currentStepDef.id === 'purpose') {
-                    if (opt.value === 'protect_family') return <Heart className="text-red-500 shrink-0" size={20} />
-                    if (opt.value === 'cover_mortgage') return <Shield className="text-blue-500 shrink-0" size={20} />
-                    if (opt.value === 'final_expenses') return <DollarSign className="text-green-500 shrink-0" size={20} />
-                    if (opt.value === 'legacy') return <Users className="text-purple-500 shrink-0" size={20} />
-                    return <Check className="text-gray-400 shrink-0" size={20} />
+                    if (opt.value === 'protect_family') return <span className="shrink-0 text-xl">❤️</span>
+                    if (opt.value === 'cover_mortgage') return <span className="shrink-0 text-xl">🏠</span>
+                    if (opt.value === 'final_expenses') return <span className="shrink-0 text-xl">💰</span>
+                    if (opt.value === 'legacy') return <span className="shrink-0 text-xl">👨‍👩‍👧‍👦</span>
+                    return <span className="shrink-0 text-xl">✅</span>
                   }
                   // Coverage icons
-                  if (currentStepDef.id === 'coverage') return <DollarSign className="text-green-600 shrink-0" size={20} />
+                  if (currentStepDef.id === 'coverage') return <span className="shrink-0 text-xl">💵</span>
                   // Age range icons
-                  if (currentStepDef.id === 'age_range') return <Calendar className="text-blue-500 shrink-0" size={20} />
+                  if (currentStepDef.id === 'age_range') return <span className="shrink-0 text-xl">📅</span>
                   // Gender icons - use symbols
                   if (currentStepDef.id === 'gender') {
                     if (opt.value === 'male') return <span className="text-blue-500 shrink-0 text-xl font-bold">♂</span>
                     if (opt.value === 'female') return <span className="text-pink-500 shrink-0 text-xl font-bold">♀</span>
-                    return <Users className="text-indigo-500 shrink-0" size={20} />
+                    return <span className="shrink-0 text-xl">👥</span>
                   }
                   // Best time icons - specific for each time
                   if (currentStepDef.id === 'best_time') {
-                    if (opt.value === 'morning') return <Sunrise className="text-orange-400 shrink-0" size={20} />
-                    if (opt.value === 'afternoon') return <Sun className="text-yellow-500 shrink-0" size={20} />
-                    if (opt.value === 'evening') return <Moon className="text-indigo-500 shrink-0" size={20} />
-                    if (opt.value === 'anytime') return <Calendar className="text-gray-500 shrink-0" size={20} />
-                    return <Calendar className="text-orange-500 shrink-0" size={20} />
+                    if (opt.value === 'morning') return <span className="shrink-0 text-xl">🌅</span>
+                    if (opt.value === 'afternoon') return <span className="shrink-0 text-xl">☀️</span>
+                    if (opt.value === 'evening') return <span className="shrink-0 text-xl">🌙</span>
+                    if (opt.value === 'anytime') return <span className="shrink-0 text-xl">🕐</span>
+                    return <span className="shrink-0 text-xl">📞</span>
                   }
                   // Smoker icons - no smoking sign for "no"
                   if (currentStepDef.id === 'smoker') {
                     return opt.value === 'yes' ? 
-                      <Cigarette className="text-gray-500 shrink-0" size={20} /> : 
-                      <div className="relative shrink-0">
-                        <Ban className="text-red-500" size={20} />
-                      </div>
+                      <span className="shrink-0 text-xl">🚬</span> : 
+                      <span className="shrink-0 text-xl">🚫</span>
                   }
                   return null
                 }
@@ -598,7 +596,7 @@ export function LifeInsuranceCAQuizVariantB() {
                 ) : (
                   <>
                     Get My Quote
-                    <ArrowRight className="inline-block" size={20} />
+                    <span className="inline-block text-lg ml-2">➡️</span>
                   </>
                 )}
               </button>
