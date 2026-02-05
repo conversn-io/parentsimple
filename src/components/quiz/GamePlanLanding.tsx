@@ -54,7 +54,7 @@ export function GamePlanLanding() {
         </div>
         
         {/* Floating Student Image - Positioned to align bottom with section edge/trust bar */}
-        <div className="absolute right-0 lg:right-8 xl:right-16 bottom-0 w-[280px] sm:w-[320px] lg:w-[400px] xl:w-[450px] pointer-events-none hidden md:block">
+        <div className="absolute right-8 lg:right-16 xl:right-24 bottom-0 w-[280px] sm:w-[320px] lg:w-[380px] xl:w-[420px] pointer-events-none hidden md:block">
           <Image
             src="/images/students/latina-student-point.png"
             alt="Student pointing to button"
