@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Check, ArrowRight, Users, UserCircle, MessageCircle } from 'lucide-react'
+import { Check, Users, UserCircle, MessageCircle } from 'lucide-react'
 
 const GAME_PLAN_START_URL = '/gameplan?start=1'
 
@@ -216,15 +216,49 @@ export function GamePlanLanding() {
       </section>
 
       {/* Why A Readiness Score Alone - 60% width centered */}
-      <section className="py-8">
-        <div className="max-w-[600px] mx-auto px-4 sm:px-6">
+      <section className="py-16">
+        <div className="max-w-[700px] mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-6">
-            Why A Readiness Score Alone Isn&apos;t Enough
+            Why a Readiness Score Alone Isn&apos;t Enough
           </h2>
-          <p className="text-lg text-gray-700 flex items-center gap-2">
-            Admissions today are more competitive than ever — top universities now expect more than great grades or test scores. You need:
-            <ArrowRight className="w-6 h-6 text-[#1A2B49] flex-shrink-0" />
-          </p>
+          <p className="text-lg font-semibold text-gray-800 mb-6">You Need:</p>
+          <ul className="space-y-4">
+            <li className="flex items-start gap-3">
+              <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-gray-900">Expert Interpretation</span>
+                <span className="text-gray-700"> – Know what your student's score actually means at top schools, from real admissions pros.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-gray-900">Gap Analysis</span>
+                <span className="text-gray-700"> – Uncover hidden weaknesses (or missed strengths) that could make or break an application.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-gray-900">Tailored Action Plan</span>
+                <span className="text-gray-700"> – Get a step-by-step strategy to boost competitiveness before deadlines hit.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-gray-900">School Targeting Guidance</span>
+                <span className="text-gray-700"> – Align your student's profile with the right reach, match, and safety schools.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-gray-900">Insider Insights</span>
+                <span className="text-gray-700"> – Understand what matters most post-DEI, from essays to extracurricular positioning.</span>
+              </div>
+            </li>
+          </ul>
         </div>
       </section>
 
