@@ -69,30 +69,60 @@ export function GamePlanLanding() {
       {/* Trust Bar - Elite Schools */}
       <section className="bg-[#F9F6EF] py-8 border-t border-b border-gray-200">
         <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
-          <p className="text-sm text-gray-600 text-center mb-5 font-medium">
+          <p className="text-sm text-gray-600 text-center mb-6 font-medium">
             Students accepted to elite universities including:
           </p>
           <div className="overflow-hidden relative">
-            <div className="flex gap-4 sm:gap-6 items-center justify-center">
-              {[
-                'UCLA',
-                'Dartmouth',
-                'NYU',
-                'UT Austin',
-                'UChicago',
-                'Stanford',
-                'Cornell',
-                'Johns Hopkins',
-              ].map((school, i) => (
-                <div
-                  key={i}
-                  className="px-3 sm:px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
-                >
-                  <span className="text-xs sm:text-sm font-serif font-semibold text-[#1A2B49] whitespace-nowrap">
-                    {school}
-                  </span>
-                </div>
-              ))}
+            <div className="flex gap-8 lg:gap-12 items-center justify-center flex-wrap">
+              <Image
+                src="/images/elite-schools/berkeley-logo.png"
+                alt="UC Berkeley"
+                width={140}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
+              <Image
+                src="/images/elite-schools/ucla-logo.png"
+                alt="UCLA"
+                width={100}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
+              <Image
+                src="/images/elite-schools/cornell-logo.png"
+                alt="Cornell University"
+                width={140}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
+              <Image
+                src="/images/elite-schools/uchicago-logo.png"
+                alt="University of Chicago"
+                width={160}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
+              <Image
+                src="/images/elite-schools/stanford-logo.png"
+                alt="Stanford University"
+                width={120}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
+              <Image
+                src="/images/elite-schools/ut-austin-logo.png"
+                alt="UT Austin"
+                width={140}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
+              <Image
+                src="/images/elite-schools/nyu-logo.png"
+                alt="New York University"
+                width={160}
+                height={50}
+                className="h-8 lg:h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+              />
             </div>
           </div>
         </div>
