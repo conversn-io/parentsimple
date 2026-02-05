@@ -28,7 +28,7 @@ export function GamePlanLanding() {
       </header>
 
       {/* Hero Section with Floating Student */}
-      <section className="relative bg-white py-12 lg:py-16 overflow-visible pb-0">
+      <section className="relative bg-white py-12 lg:py-16 overflow-visible pb-0 max-w-[1550px] mx-auto">
         <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
           <div className="relative text-center space-y-6 pb-16 md:pb-0">
             {/* Headline */}
