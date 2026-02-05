@@ -346,14 +346,14 @@ export function LifeInsuranceCAQuizVariantB() {
               </p>
             </div>
 
-            {/* Trustpilot Rating */}
+            {/* Trustpilot Rating - 25% larger */}
             <div className="text-center mb-6">
               <Image
                 src="/images/life-insurance-funnel/trustpilot-proof.png"
                 alt="Trustpilot rating - 4.6 out of 5 based on 3563 reviews"
-                width={600}
-                height={50}
-                className="mx-auto h-auto w-full max-w-md object-contain"
+                width={750}
+                height={63}
+                className="mx-auto h-auto w-full max-w-lg object-contain"
               />
             </div>
 
