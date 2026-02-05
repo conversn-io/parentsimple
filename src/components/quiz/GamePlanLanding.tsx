@@ -73,7 +73,7 @@ export function GamePlanLanding() {
             Students accepted to elite universities including:
           </p>
           <div className="overflow-hidden relative">
-            <div className="flex gap-6 sm:gap-8 items-center justify-center animate-scroll flex-wrap">
+            <div className="flex gap-4 sm:gap-6 items-center justify-center">
               {[
                 'UCLA',
                 'Dartmouth',
@@ -86,9 +86,9 @@ export function GamePlanLanding() {
               ].map((school, i) => (
                 <div
                   key={i}
-                  className="px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                  className="px-3 sm:px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
                 >
-                  <span className="text-sm font-serif font-semibold text-[#1A2B49] whitespace-nowrap">
+                  <span className="text-xs sm:text-sm font-serif font-semibold text-[#1A2B49] whitespace-nowrap">
                     {school}
                   </span>
                 </div>
@@ -100,7 +100,7 @@ export function GamePlanLanding() {
 
       {/* What's Included - 60% width centered */}
       <section className="bg-[#F9F6EF] py-16">
-        <div className="max-w-[1000px] mx-auto px-[20%]">
+        <div className="max-w-[600px] mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-10">
             What&apos;s Included in Your Elite Admissions Game Plan?
           </h2>
@@ -122,7 +122,7 @@ export function GamePlanLanding() {
 
       {/* Why A Readiness (beige box) - 60% width centered */}
       <section className="py-16">
-        <div className="max-w-[1000px] mx-auto px-[20%]">
+        <div className="max-w-[600px] mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-6">
             Why A Readiness in Your Elite Admissions Game Plan:
           </h2>
@@ -136,7 +136,7 @@ export function GamePlanLanding() {
 
       {/* Why A Readiness Score Alone - 60% width centered */}
       <section className="py-8">
-        <div className="max-w-[1000px] mx-auto px-[20%]">
+        <div className="max-w-[600px] mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-6">
             Why A Readiness Score Alone Isn&apos;t Enough
           </h2>
@@ -149,11 +149,11 @@ export function GamePlanLanding() {
 
       {/* Your Next Step - CTA + benefits + social proof - 60% width centered */}
       <section className="bg-[#F9F6EF] py-16">
-        <div className="max-w-[1000px] mx-auto px-[20%]">
+        <div className="max-w-[700px] mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A2B49] mb-10">
             Your Next Step: Claim Your Free Elite Admissions Game Plan
           </h2>
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="space-y-10">
             <div>
               <p className="text-lg font-semibold text-gray-800 mb-4">Fill out the short quiz to:</p>
               <ul className="space-y-3">
