@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { GraduationCap, Check, ArrowRight, Users, UserCircle, MessageCircle } from 'lucide-react'
 
-const GAME_PLAN_START_URL = '/quiz/elite-university-readiness-c?start=1'
+const GAME_PLAN_START_URL = '/gameplan?start=1'
 
 export function GamePlanLanding() {
   return (
