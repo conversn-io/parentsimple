@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-// Removed Lucide icons - using emojis instead
+import { MapPin, Users, Heart, DollarSign, Calendar, Shield, ArrowRight, Check, Sunrise, Sun, Moon, Cigarette, Ban } from 'lucide-react'
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
@@ -15,7 +15,7 @@ import { formatPhoneForInput } from '@/utils/phone-utils'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, type UTMParameters } from '@/utils/utm-utils'
-import { useNoHeaderLayout } from '@/hooks/useFunnelFooter'
+import { useFunnelLayout } from '@/hooks/useFunnelFooter'
 import {
   trackQuizStart,
   trackQuizStepViewed,
@@ -44,7 +44,7 @@ export function LifeInsuranceCAQuizVariantB() {
   const [contactError, setContactError] = useState('')
 
   useTrustedForm({ enabled: true })
-  useNoHeaderLayout() // No header, funnel footer only
+  useFunnelLayout() // Enable funnel header and footer
 
   useEffect(() => {
     const id = `li_ca_b_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
@@ -59,7 +59,7 @@ export function LifeInsuranceCAQuizVariantB() {
       }
     }
     
-    // Track quiz start - mark as variant B
+    // Track quiz start - variant B
     trackQuizStart(id, 'life_insurance_ca_variant_b')
   }, [])
 
@@ -101,7 +101,7 @@ export function LifeInsuranceCAQuizVariantB() {
     
     // Track answer
     if (sessionId) {
-      trackQuestionAnswer('province', value, 1, TOTAL_STEPS, sessionId, 'life_insurance_ca')
+      trackQuestionAnswer('province', value, 1, TOTAL_STEPS, sessionId, 'life_insurance_ca_variant_b')
     }
     
     const regionCode = value
@@ -149,7 +149,7 @@ export function LifeInsuranceCAQuizVariantB() {
 
     // Track email capture
     if (sessionId) {
-      trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_ca')
+      trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_ca_variant_b')
       trackLeadFormSubmit({
         firstName: contactInfo.firstName,
         lastName: contactInfo.lastName,
@@ -160,7 +160,7 @@ export function LifeInsuranceCAQuizVariantB() {
         stateName: '',
         quizAnswers: fullAnswers,
         sessionId: sessionId,
-        funnelType: 'life_insurance_ca'
+        funnelType: 'life_insurance_ca_variant_b'
       })
     }
 
@@ -227,13 +227,13 @@ export function LifeInsuranceCAQuizVariantB() {
 
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
-      {/* Subtle Green Social Proof Bar - only show on step 0 */}
+      {/* Yellow Alert Bar - only show on step 0 */}
       {step === 0 && (
-        <div className="bg-green-50 border-b border-green-100">
-          <div className="max-w-2xl mx-auto px-6 py-2">
-            <p className="text-center text-xs text-green-700 flex items-center justify-center gap-1.5">
-              <span className="text-sm">✓</span>
-              Join 250+ Ontario Parents who got quotes today
+        <div className="bg-[#F4D03F] border-b border-[#F1C40F]">
+          <div className="max-w-2xl mx-auto px-6 py-3">
+            <p className="text-center text-sm font-semibold text-[#1A2B49] flex items-center justify-center gap-2">
+              <span className="text-lg">⏰</span>
+              Join 25,000 Ontario Parents Who Just Got Covered Today
             </p>
           </div>
         </div>
@@ -259,39 +259,13 @@ export function LifeInsuranceCAQuizVariantB() {
       <main className="max-w-2xl mx-auto px-6 py-4 pb-8 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
-            {/* H3 Headline - Variant B */}
-            <h3 className="text-lg font-semibold text-center text-gray-800 mb-6 mt-2">
-              Compare Insurance Quotes
-            </h3>
+            {/* Main Headline */}
+            <h1 className="text-3xl font-bold text-[#1A2B49] mb-4 text-center" style={{ fontSize: '2rem', lineHeight: 1.2 }}>
+              Protect Your Family&apos;s Future with up to $2M in Life Insurance
+            </h1>
 
-            {/* Question Title */}
-            <h2 className="text-xl font-semibold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.25rem', lineHeight: 1.3 }}>
-              {currentStepDef.title}
-            </h2>
-            {'subtitle' in currentStepDef && currentStepDef.subtitle && (
-              <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
-            )}
-
-            <div className="flex flex-col gap-3 mb-6">
-              {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleProvinceSelect(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl px-5 py-3 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
-                    answers.province === opt.value
-                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
-                  }`}
-                >
-                  <span className="shrink-0 text-xl">📍</span>
-                  <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Trust Pills - Below Questions */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
+            {/* Trust Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-green-600">✓</span>
                 <span className="text-sm text-gray-700">No Health Exam</span>
@@ -306,59 +280,34 @@ export function LifeInsuranceCAQuizVariantB() {
               </div>
             </div>
 
-            {/* Trusted Insurers Logo Scroller - Scrolling Marquee */}
-            <div className="mb-6">
-              <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
-              <div className="overflow-hidden relative">
-                <div className="flex gap-8 items-center animate-scroll">
-                  {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
-                    <Image
-                      key={idx}
-                      src={`/images/life-insurance-funnel/ca-insurer-${num}-${
-                        num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
-                        num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
-                      }.png`}
-                      alt={`Insurer ${num}`}
-                      width={100}
-                      height={40}
-                      className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-                    />
-                  ))}
-                </div>
-              </div>
+            {/* Question Title */}
+            <h2 className="text-xl font-semibold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.25rem', lineHeight: 1.3 }}>
+              {currentStepDef.title}
+            </h2>
+            {'subtitle' in currentStepDef && currentStepDef.subtitle && (
+              <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleProvinceSelect(opt.value)}
+                  className={`flex items-center gap-3 rounded-xl px-5 py-4 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
+                    answers.province === opt.value
+                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
+                  }`}
+                >
+                  <MapPin className={`shrink-0 ${answers.province === opt.value ? 'text-[#9DB89D]' : 'text-gray-400'}`} size={20} />
+                  <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
+                </button>
+              ))}
             </div>
 
-            {/* Happy Customers Image - Centered */}
-            <div className="text-center mb-3">
-              <Image
-                src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
-                alt="Happy customers"
-                width={48}
-                height={48}
-                className="rounded-full mx-auto"
-              />
-            </div>
-
-            {/* Join 40,000 Canadians */}
-            <div className="text-center mb-4">
-              <p className="text-sm text-gray-600">
-                Join 40,000 Canadians who found coverage with us
-              </p>
-            </div>
-
-            {/* Trustpilot Rating - 25% larger */}
-            <div className="text-center mb-6">
-              <Image
-                src="/images/life-insurance-funnel/trustpilot-proof.png"
-                alt="Trustpilot rating - 4.6 out of 5 based on 3563 reviews"
-                width={750}
-                height={63}
-                className="mx-auto h-auto w-full max-w-lg object-contain"
-              />
-            </div>
-
-            {/* Michael T. Testimonial */}
-            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
+            {/* Testimonial Section */}
+            <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-3">
               <div className="flex gap-4 items-start">
                 <Image
                   src="/images/life-insurance-funnel/testimonial-guy.jpg"
@@ -376,24 +325,31 @@ export function LifeInsuranceCAQuizVariantB() {
               </div>
             </div>
 
-            {/* Scroll to Top Button */}
-            <div className="text-center mb-6">
-              <button
-                type="button"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A2B49] text-white rounded-lg hover:bg-[#2A3B59] transition-colors duration-200"
-              >
-                <span className="text-lg">⬆️</span>
-                Back to Top
-              </button>
-            </div>
-
-            {/* About ParentSimple */}
-            <div className="bg-transparent rounded-xl p-6 mb-6">
-              <h4 className="text-sm font-semibold text-[#1A2B49] mb-2">About ParentSimple</h4>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                ParentSimple is part of the Simple Media Network. We offer trusted resources to parents, preparing them for every aspect of their journey—from education planning to financial security. We don't sell insurance directly; instead, we partner with the best providers in every area to help you make informed decisions and find the right coverage for your family.
-              </p>
+            {/* Social Proof Statement with Stars */}
+            <div className="text-center mb-3">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Image
+                  src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
+                  alt="Happy customers"
+                  width={48}
+                  height={48}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">
+                    <span className="font-bold text-[#1A2B49]">4.8</span> ratings and reviews
+                  </p>
+                  <div className="flex gap-0.5 items-center">
+                    {[...Array(4)].map((_, i) => (
+                      <span key={i} className="text-yellow-400 text-base">★</span>
+                    ))}
+                    <span className="relative inline-block text-base">
+                      <span className="text-gray-300">★</span>
+                      <span className="absolute top-0 left-0 overflow-hidden text-yellow-400" style={{ width: '50%' }}>★</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </>
         )}
@@ -414,35 +370,37 @@ export function LifeInsuranceCAQuizVariantB() {
                 const getIcon = () => {
                   // Purpose icons
                   if (currentStepDef.id === 'purpose') {
-                    if (opt.value === 'protect_family') return <span className="shrink-0 text-xl">❤️</span>
-                    if (opt.value === 'cover_mortgage') return <span className="shrink-0 text-xl">🏠</span>
-                    if (opt.value === 'final_expenses') return <span className="shrink-0 text-xl">💰</span>
-                    if (opt.value === 'legacy') return <span className="shrink-0 text-xl">👨‍👩‍👧‍👦</span>
-                    return <span className="shrink-0 text-xl">✅</span>
+                    if (opt.value === 'protect_family') return <Heart className="text-red-500 shrink-0" size={20} />
+                    if (opt.value === 'cover_mortgage') return <Shield className="text-blue-500 shrink-0" size={20} />
+                    if (opt.value === 'final_expenses') return <DollarSign className="text-green-500 shrink-0" size={20} />
+                    if (opt.value === 'legacy') return <Users className="text-purple-500 shrink-0" size={20} />
+                    return <Check className="text-gray-400 shrink-0" size={20} />
                   }
                   // Coverage icons
-                  if (currentStepDef.id === 'coverage') return <span className="shrink-0 text-xl">💵</span>
+                  if (currentStepDef.id === 'coverage') return <DollarSign className="text-green-600 shrink-0" size={20} />
                   // Age range icons
-                  if (currentStepDef.id === 'age_range') return <span className="shrink-0 text-xl">📅</span>
+                  if (currentStepDef.id === 'age_range') return <Calendar className="text-blue-500 shrink-0" size={20} />
                   // Gender icons - use symbols
                   if (currentStepDef.id === 'gender') {
                     if (opt.value === 'male') return <span className="text-blue-500 shrink-0 text-xl font-bold">♂</span>
                     if (opt.value === 'female') return <span className="text-pink-500 shrink-0 text-xl font-bold">♀</span>
-                    return <span className="shrink-0 text-xl">👥</span>
+                    return <Users className="text-indigo-500 shrink-0" size={20} />
                   }
                   // Best time icons - specific for each time
                   if (currentStepDef.id === 'best_time') {
-                    if (opt.value === 'morning') return <span className="shrink-0 text-xl">🌅</span>
-                    if (opt.value === 'afternoon') return <span className="shrink-0 text-xl">☀️</span>
-                    if (opt.value === 'evening') return <span className="shrink-0 text-xl">🌙</span>
-                    if (opt.value === 'anytime') return <span className="shrink-0 text-xl">🕐</span>
-                    return <span className="shrink-0 text-xl">📞</span>
+                    if (opt.value === 'morning') return <Sunrise className="text-orange-400 shrink-0" size={20} />
+                    if (opt.value === 'afternoon') return <Sun className="text-yellow-500 shrink-0" size={20} />
+                    if (opt.value === 'evening') return <Moon className="text-indigo-500 shrink-0" size={20} />
+                    if (opt.value === 'anytime') return <Calendar className="text-gray-500 shrink-0" size={20} />
+                    return <Calendar className="text-orange-500 shrink-0" size={20} />
                   }
                   // Smoker icons - no smoking sign for "no"
                   if (currentStepDef.id === 'smoker') {
                     return opt.value === 'yes' ? 
-                      <span className="shrink-0 text-xl">🚬</span> : 
-                      <span className="shrink-0 text-xl">🚫</span>
+                      <Cigarette className="text-gray-500 shrink-0" size={20} /> : 
+                      <div className="relative shrink-0">
+                        <Ban className="text-red-500" size={20} />
+                      </div>
                   }
                   return null
                 }
@@ -596,7 +554,7 @@ export function LifeInsuranceCAQuizVariantB() {
                 ) : (
                   <>
                     Get My Quote
-                    <span className="inline-block text-lg ml-2">➡️</span>
+                    <ArrowRight className="inline-block" size={20} />
                   </>
                 )}
               </button>
@@ -622,6 +580,32 @@ export function LifeInsuranceCAQuizVariantB() {
         )}
       </main>
 
+      {/* Trust badges */}
+      {/* Footer with scrolling logos - only on step 0 */}
+      {step === 0 && (
+        <footer className="border-t border-[#E3E0D5] py-4 px-6" style={{ background: 'transparent' }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
+            <div className="overflow-hidden relative">
+              <div className="flex gap-8 items-center animate-scroll">
+                {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
+                  <Image
+                    key={idx}
+                    src={`/images/life-insurance-funnel/ca-insurer-${num}-${
+                      num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
+                      num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
+                    }.png`}
+                    alt={`Insurer ${num}`}
+                    width={100}
+                    height={40}
+                    className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
     </div>
   )
 }
