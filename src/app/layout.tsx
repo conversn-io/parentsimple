@@ -31,12 +31,13 @@ export const metadata: Metadata = {
   publisher: "ParentSimple",
   icons: {
     icon: [
-      { url: '/images/logos/parentsimple-favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '512x512', type: 'image/png' },
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' }
     ],
-    shortcut: '/images/logos/parentsimple-favicon.png',
-    apple: '/images/logos/parentsimple-favicon.png',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
   formatDetection: {
     email: false,
@@ -107,10 +108,10 @@ export default function RootLayout({
         {/* End Google Tag Manager */}
         
         {/* Favicon links for better browser compatibility */}
-        <link rel="icon" type="image/png" sizes="32x32" href="/images/logos/parentsimple-favicon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/images/logos/parentsimple-favicon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         
         {/* ✅ DIRECT TRACKING: GA4 Base Code (Synchronous Loading) */}
         <script
