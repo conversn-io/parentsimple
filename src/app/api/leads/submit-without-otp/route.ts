@@ -262,6 +262,8 @@ export async function POST(request: NextRequest) {
       quizAnswers, 
       sessionId, 
       funnelType,
+      leadTags,
+      leadPriority,
       zipCode,
       state,
       stateName,
@@ -278,7 +280,9 @@ export async function POST(request: NextRequest) {
       lastName,
       studentFirstName,
       sessionId,
-      funnelType
+      funnelType,
+      leadTags,
+      leadPriority
     });
 
     if (!email || !phoneNumber) {
@@ -334,6 +338,7 @@ export async function POST(request: NextRequest) {
         customData: {
           funnel_type: funnelType || 'college_consulting',
           lead_score: calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
+          lead_priority: leadPriority || quizAnswers?.lead_priority || null,
           state,
           zip_code: zipCode,
         },
@@ -353,6 +358,18 @@ export async function POST(request: NextRequest) {
     const formattedPhone = formatPhoneForGHL(phoneNumber);
     const leadScore = calculatedResults?.totalScore || calculatedResults?.readiness_score || 0;
     const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
+    const resolvedLeadTags = Array.isArray(leadTags)
+      ? leadTags
+      : Array.isArray(quizAnswers?.lead_tags)
+        ? quizAnswers.lead_tags
+        : Array.isArray(lead.quiz_answers?.lead_tags)
+          ? lead.quiz_answers.lead_tags
+          : [];
+    const resolvedLeadPriority =
+      leadPriority ||
+      quizAnswers?.lead_priority ||
+      lead.quiz_answers?.lead_priority ||
+      null;
     const ghlPayload = {
       firstName: firstName || contact.first_name,
       lastName: lastName || contact.last_name,
@@ -365,9 +382,13 @@ export async function POST(request: NextRequest) {
       householdIncome: householdIncome, // Add household income to GHL payload
       source: 'ParentSimple Quiz',
       funnelType: funnelType || lead.funnel_type || 'college_consulting',
+      leadTags: resolvedLeadTags,
+      leadPriority: resolvedLeadPriority,
       quizAnswers: {
         ...(lead.quiz_answers || quizAnswers),
         household_income: householdIncome, // Ensure household income is in quizAnswers
+        lead_tags: resolvedLeadTags,
+        lead_priority: resolvedLeadPriority,
       },
       calculatedResults: calculatedResults,
       licensingInfo: licensingInfo,
@@ -477,6 +498,8 @@ export async function POST(request: NextRequest) {
             response_body: ghlResponseData,
             success: ghlResponse.ok,
             skipOTP: true,
+            lead_tags: resolvedLeadTags,
+            lead_priority: resolvedLeadPriority,
             utm_parameters: utmParams || {}
           }
         });
@@ -547,4 +570,3 @@ export async function POST(request: NextRequest) {
     }, 500);
   }
 }
-

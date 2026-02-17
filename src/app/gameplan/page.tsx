@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { GamePlanFunnelClient } from '@/components/quiz/GamePlanFunnelClient'
+import { GamePlanV2FunnelClient } from '@/components/quiz/GamePlanV2FunnelClient'
 
 export const metadata: Metadata = {
   title: 'Free Elite Admissions Game Plan | ParentSimple',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default function GamePlanPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white" />}>
-      <GamePlanFunnelClient />
+      <GamePlanV2FunnelClient />
     </Suspense>
   )
 }
