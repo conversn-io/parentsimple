@@ -188,10 +188,22 @@ export const ELITE_UNIVERSITY_GAMEPLAN_V2_QUESTIONS: GamePlanV2Question[] = [
     type: 'single_select',
     text: "How would you describe your child's extracurricular involvement?",
     options: [
-      { value: 'deep_commitment_1_2_activities', label: 'Deep commitment...' },
-      { value: 'sustained_involvement_2_3_activities', label: 'Sustained involvement...' },
-      { value: 'active_participation_3_4_activities', label: 'Active participation...' },
-      { value: 'involvement_5plus_limited_depth', label: 'Involvement in 5+...' },
+      {
+        value: 'deep_commitment_1_2_activities',
+        label: 'Deep commitment (2+ years) to 1-2 activities with leadership roles and notable achievements',
+      },
+      {
+        value: 'sustained_involvement_2_3_activities',
+        label: 'Sustained involvement (1+ years) in 2-3 activities, some leadership',
+      },
+      {
+        value: 'active_participation_3_4_activities',
+        label: 'Active participation in 3-4 activities, minimal leadership',
+      },
+      {
+        value: 'involvement_5plus_limited_depth',
+        label: 'Involvement in 5+ activities, but limited depth or commitment',
+      },
       { value: 'minimal_no_involvement', label: 'Minimal or no involvement' },
     ],
     next: 'q10_awards',
