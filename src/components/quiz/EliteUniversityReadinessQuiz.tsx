@@ -31,29 +31,16 @@ type QuizVariant = 'default' | 'embed';
 
 // Helper function to get A/B test results route
 const getResultsRoute = (): string => {
-  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results';
+  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results-video';
   
   // Check if already assigned in this session
   const stored = sessionStorage.getItem(RESULTS_LAYOUT_VARIANT_KEY);
   if (stored === 'video') return '/quiz/elite-university-readiness/results-video';
   if (stored === 'simplified') return '/quiz/elite-university-readiness/results';
   
-  // Random assignment (50/50)
-  const variant = Math.random() < 0.5 ? 'video' : 'simplified';
-  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, variant);
-  
-  // Track assignment to analytics
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', 'ab_test_assignment', {
-      event_category: 'ab_testing',
-      event_label: `results_layout_${variant}`,
-      variant: variant
-    });
-  }
-  
-  return variant === 'video' 
-    ? '/quiz/elite-university-readiness/results-video'
-    : '/quiz/elite-university-readiness/results';
+  // Default standard results page to video variant
+  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, 'video');
+  return '/quiz/elite-university-readiness/results-video';
 };
 
 type QuizAnswer = Record<string, unknown>;
@@ -528,4 +515,3 @@ export const EliteUniversityReadinessQuiz = ({ resultVariant = 'default', skipOT
     </div>
   );
 };
-

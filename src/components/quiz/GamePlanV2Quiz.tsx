@@ -52,18 +52,15 @@ type ContactInfoAnswer = {
 const RESULTS_LAYOUT_VARIANT_KEY = 'results_layout_variant';
 
 const getResultsRoute = (): string => {
-  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results';
+  if (typeof window === 'undefined') return '/quiz/elite-university-readiness/results-video';
 
   const stored = sessionStorage.getItem(RESULTS_LAYOUT_VARIANT_KEY);
   if (stored === 'video') return '/quiz/elite-university-readiness/results-video';
   if (stored === 'simplified') return '/quiz/elite-university-readiness/results';
 
-  const variant = Math.random() < 0.5 ? 'video' : 'simplified';
-  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, variant);
-
-  return variant === 'video'
-    ? '/quiz/elite-university-readiness/results-video'
-    : '/quiz/elite-university-readiness/results';
+  // Default standard results page to video variant
+  sessionStorage.setItem(RESULTS_LAYOUT_VARIANT_KEY, 'video');
+  return '/quiz/elite-university-readiness/results-video';
 };
 
 const parseJsonResponse = async (response: Response): Promise<Record<string, unknown>> => {
