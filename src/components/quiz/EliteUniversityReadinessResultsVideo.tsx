@@ -16,7 +16,18 @@ export function EliteUniversityReadinessResultsVideo({
   category,
 }: EliteUniversityReadinessResultsVideoProps) {
   const [hasQuizData, setHasQuizData] = useState(true)
-  const nextStepHref = '/quiz/elite-university-readiness/results-embed'
+  const addEmpowerlyUTM = (url: string): string => {
+    const utmParams = new URLSearchParams({
+      utm_campaign: 'parent-simple',
+      utm_source: 'leadgen',
+      utm_medium: 'referral',
+      utm_content: 'social',
+      utm_term: 'results',
+    })
+    const separator = url.includes('?') ? '&' : '?'
+    return `${url}${separator}${utmParams.toString()}`
+  }
+  const empowerlyCtaHref = addEmpowerlyUTM('https://empowerly.com/consult')
 
   useEffect(() => {
     // Check if user has quiz data in sessionStorage
@@ -179,10 +190,10 @@ export function EliteUniversityReadinessResultsVideo({
             <Button
               variant="secondary"
               size="lg"
-              href={nextStepHref}
+              href={empowerlyCtaHref}
               className="w-full py-4 text-lg"
             >
-              Continue to Next Step
+              Request a call from Empowerly
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
@@ -190,20 +201,29 @@ export function EliteUniversityReadinessResultsVideo({
               <div className="flex justify-center mb-4">
                 <EmpowerlyLogo width={180} height={36} />
               </div>
-              <p className="text-gray-700 text-base leading-relaxed max-w-2xl mx-auto">
-                On the next page, you can connect with an admissions advisor to review your score,
-                identify key gaps, and map out a personalized plan to improve your student's
-                competitiveness for top schools.
-              </p>
+              <h3 className="text-2xl font-serif font-bold text-[#1A2B49] mb-4">
+                Schedule Your Free Consultation with Empowerly
+              </h3>
+              <div className="space-y-3 text-left max-w-3xl mx-auto">
+                <p className="text-gray-700 text-base leading-relaxed">
+                  <span className="font-semibold">Personalized Assessment:</span> an admissions advisor will learn about the academic background, extracurriculars, and college goals.
+                </p>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  <span className="font-semibold">Gap Analysis &amp; Clarity:</span> families will receive honest feedback on where the student currently stands and what areas need improvement
+                </p>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  <span className="font-semibold">Customized Planning:</span> the admissions advisor will outline a step-by-step plan designed to close the gap towards building a competitive profile.
+                </p>
+              </div>
             </div>
 
             <Button
               variant="outline"
               size="lg"
-              href={nextStepHref}
+              href={empowerlyCtaHref}
               className="w-full sm:w-auto min-w-[280px]"
             >
-              Go to Consultation Options
+              Book a call
             </Button>
           </div>
         </div>
