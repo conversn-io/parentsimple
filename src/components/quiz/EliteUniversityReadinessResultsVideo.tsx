@@ -159,7 +159,7 @@ export function EliteUniversityReadinessResultsVideo({
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <div className="rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
               <iframe
-                src="https://player.vimeo.com/video/906a4635aac94b4d86dae685cf97e7cd?title=0&byline=0&portrait=0&autoplay=0"
+                src="https://player.vimeo.com/video/1166775697?title=0&byline=0&portrait=0&autoplay=0"
                 className="w-full h-full"
                 frameBorder="0"
                 allow="autoplay; fullscreen; picture-in-picture"
