@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { CheckCircle, AlertCircle, TrendingUp, Target, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
+import { EmpowerlyLogo } from '@/components/empowerly/EmpowerlyLogo'
 
 interface EliteUniversityReadinessResultsVideoProps {
   score: number;
@@ -173,56 +174,41 @@ export function EliteUniversityReadinessResultsVideo({
             </div>
           </div>
 
-          {/* Priority CTA for next page */}
+          {/* Priority CTA + Empowerly context */}
           <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 text-center">
-            <p className="text-sm uppercase tracking-wide text-[#36596A] font-semibold mb-2">
-              Next Step
-            </p>
-            <h3 className="text-2xl font-serif font-bold text-[#1A2B49] mb-2">
-              Continue to Your Consultation Page
-            </h3>
-            <p className="text-gray-600 mb-5">
-              Move to the next page to book your admissions strategy call.
-            </p>
             <Button
               variant="secondary"
               size="lg"
               href={nextStepHref}
-              className="w-full sm:w-auto min-w-[280px]"
+              className="w-full py-4 text-lg"
             >
               Continue to Next Step
               <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+
+            <div className="mt-6 mb-5">
+              <div className="flex justify-center mb-4">
+                <EmpowerlyLogo width={180} height={36} />
+              </div>
+              <p className="text-gray-700 text-base leading-relaxed max-w-2xl mx-auto">
+                On the next page, you can connect with an admissions advisor to review your score,
+                identify key gaps, and map out a personalized plan to improve your student's
+                competitiveness for top schools.
+              </p>
+            </div>
+
+            <Button
+              variant="outline"
+              size="lg"
+              href={nextStepHref}
+              className="w-full sm:w-auto min-w-[280px]"
+            >
+              Go to Consultation Options
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Footer Elements */}
-      <footer className="bg-white border-t border-gray-200 py-8 px-4 mt-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center space-y-4">
-            {/* Copyright Notice */}
-            <p className="text-gray-600 text-sm">
-              © {new Date().getFullYear()} ParentSimple. All rights reserved.
-            </p>
-
-            {/* Compliance and Contact Links */}
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <Link href="/privacy-policy" className="text-[#1A2B49] hover:underline">
-                Privacy Policy
-              </Link>
-              <span className="text-gray-400">|</span>
-              <Link href="/terms-of-service" className="text-[#1A2B49] hover:underline">
-                Terms of Use
-              </Link>
-              <span className="text-gray-400">|</span>
-              <Link href="/contact" className="text-[#1A2B49] hover:underline">
-                Contact Us
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
