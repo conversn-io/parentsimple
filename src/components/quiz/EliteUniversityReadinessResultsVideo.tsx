@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { CheckCircle, AlertCircle, TrendingUp, Target } from 'lucide-react'
-import { EmpowerlyCTASection } from '@/components/empowerly/EmpowerlyCTASection'
+import { CheckCircle, AlertCircle, TrendingUp, Target, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { Button } from '@/components/ui/Button'
 
 interface EliteUniversityReadinessResultsVideoProps {
   score: number;
@@ -15,8 +14,8 @@ export function EliteUniversityReadinessResultsVideo({
   score,
   category,
 }: EliteUniversityReadinessResultsVideoProps) {
-  const router = useRouter()
   const [hasQuizData, setHasQuizData] = useState(true)
+  const nextStepHref = '/quiz/elite-university-readiness/results-embed'
 
   useEffect(() => {
     // Check if user has quiz data in sessionStorage
@@ -97,10 +96,10 @@ export function EliteUniversityReadinessResultsVideo({
   return (
     <div className="min-h-screen bg-[#F9F6EF]">
       {/* Announcement Bar - Directly under header nav */}
-      <div className="bg-green-50 border-b border-green-200 py-4 px-6">
-        <div className="max-w-4xl mx-auto flex items-center justify-center gap-3">
-          <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-          <p className="text-green-800 font-semibold text-lg">
+      <div className="bg-green-50 border-b border-green-200 py-2.5 px-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2">
+          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+          <p className="text-green-800 font-semibold text-sm sm:text-base text-center">
             Your full PDF assessment is on its way to your inbox!
           </p>
         </div>
@@ -108,9 +107,9 @@ export function EliteUniversityReadinessResultsVideo({
 
       {/* Pre-Header (for users who didn't take quiz) */}
       {!hasQuizData && (
-        <div className="bg-blue-50 border-b border-blue-200 py-4 px-6">
+        <div className="bg-blue-50 border-b border-blue-200 py-3 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-blue-800">
+            <p className="text-blue-800 text-sm sm:text-base">
               Didn't take the quiz yet?{' '}
               <Link href="/quiz/elite-university-readiness" className="font-semibold underline hover:text-blue-900">
                 Take the Elite University Readiness Assessment
@@ -120,43 +119,48 @@ export function EliteUniversityReadinessResultsVideo({
         </div>
       )}
 
-      <div className="py-12 px-4">
+      <div className="py-6 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1A2B49] mb-4">
-              Your Elite University Readiness Results
-            </h1>
-          </div>
-
-          {/* Score & Category Display */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-            <div className="text-center mb-8">
-              <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full text-white mb-6 ${scoreVisuals.circleBg}`}>
-                <span className="text-5xl font-bold">{score}</span>
+          {/* Compact Header + Score Card */}
+          <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 mb-5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+              <div className="min-w-0">
+                <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#1A2B49] leading-tight">
+                  Your Elite University Readiness Results
+                </h1>
+                <p className="text-gray-600 mt-2 text-sm sm:text-base">
+                  Quick summary first, then watch your 2-minute breakdown and continue to your next step.
+                </p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
+              <div className="flex items-center gap-4 md:flex-shrink-0">
+                <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full text-white ${scoreVisuals.circleBg}`}>
+                  <span className="text-4xl font-bold">{score}</span>
+                </div>
+                <div className="min-w-0">
+                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
+                    <IconComponent className="w-4 h-4" />
+                    <span className="font-bold">{category}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className={`h-4 rounded-full transition-all duration-500 ${scoreVisuals.barBg}`}
+                  className={`h-3 rounded-full transition-all duration-500 ${scoreVisuals.barBg}`}
                   style={{ width: `${Math.min(score, 100)}%` }}
                 />
-              </div>
-              <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
-                <IconComponent className="w-5 h-5" />
-                <span className="font-bold text-lg">{category}</span>
-              </div>
             </div>
           </div>
 
           {/* Video Headline */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1A2B49]">
+          <div className="text-center mb-3">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1A2B49]">
               Here's What That Means...
             </h2>
           </div>
 
           {/* Video Embed */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 mb-5">
             <div className="rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
               <iframe
                 src="https://player.vimeo.com/video/1166775697?title=0&byline=0&portrait=0&autoplay=0"
@@ -169,12 +173,27 @@ export function EliteUniversityReadinessResultsVideo({
             </div>
           </div>
 
-          {/* CTA Section Below Video */}
-          <EmpowerlyCTASection 
-            title="What to expect on the call with a college counselor?"
-            showLogo={true}
-            logoPosition="above-title"
-          />
+          {/* Priority CTA for next page */}
+          <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 text-center">
+            <p className="text-sm uppercase tracking-wide text-[#36596A] font-semibold mb-2">
+              Next Step
+            </p>
+            <h3 className="text-2xl font-serif font-bold text-[#1A2B49] mb-2">
+              Continue to Your Consultation Page
+            </h3>
+            <p className="text-gray-600 mb-5">
+              Move to the next page to book your admissions strategy call.
+            </p>
+            <Button
+              variant="secondary"
+              size="lg"
+              href={nextStepHref}
+              className="w-full sm:w-auto min-w-[280px]"
+            >
+              Continue to Next Step
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
         </div>
       </div>
 
