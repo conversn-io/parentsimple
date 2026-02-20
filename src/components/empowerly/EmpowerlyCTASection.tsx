@@ -77,17 +77,8 @@ export function EmpowerlyCTASection({
           Request a call from Empowerly
           <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          href={addEmpowerlyUTM("https://empowerly.com/consult")}
-          className="border-2 border-[#1A2B49] text-[#1A2B49] hover:bg-[#1A2B49] hover:text-white min-w-[200px]"
-        >
-          Book a call
-        </Button>
       </div>
     </div>
   )
 }
-
 

@@ -175,35 +175,27 @@ export default function PrivacyPolicyPage() {
             in your country, but we will take appropriate measures to ensure that your personal information remains protected in
             accordance with this Privacy Policy.
           </p>
-        </section>
-
-        <section className="space-y-2">
+        </section>        <section className="space-y-2">
           <h2 className="text-2xl font-semibold text-[#1A2B49]">12. Third-Party Websites</h2>
           <p className="text-[#1A2B49]/80">
             Our Site may contain links to third-party websites that we do not control. We are not responsible for the privacy
             practices or content of these third-party websites. We encourage you to review the privacy policies of any website you
             visit.
           </p>
-        </section>
-
-        <section className="space-y-2">
+        </section>        <section className="space-y-2">
           <h2 className="text-2xl font-semibold text-[#1A2B49]">13. Changes to This Privacy Policy</h2>
           <p className="text-[#1A2B49]/80">
             We may update this Privacy Policy from time to time at our sole discretion. If we make material changes, we will notify
             you by updating the "Last Updated" date at the top of this page. Your continued use of our Site after we make changes
             is deemed to be acceptance of those changes, so please check the policy periodically for updates.
           </p>
-        </section>
-
-        <section className="space-y-2">
+        </section>        <section className="space-y-2">
           <h2 className="text-2xl font-semibold text-[#1A2B49]">14. Contact Us</h2>
           <div className="text-[#1A2B49]/80 space-y-1">
             <p>ParentSimple</p>
             <p>support@parentsimple.org</p>
           </div>
-        </section>
-
-        <footer className="pt-6 text-sm text-[#1A2B49]/60">
+        </section>        <footer className="pt-6 text-sm text-[#1A2B49]/60">
           <p>Copyright © {new Date().getFullYear()} ParentSimple. All rights reserved.</p>
         </footer>
       </div>

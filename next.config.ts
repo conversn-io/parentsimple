@@ -1,6 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/canada-life',
+        destination:
+          'http://parentsimple.org/quiz/life-insurance-ca?utm_source=meta&utm_medium=cpc&utm_campaign=LIFE-Term-CAN-ABO-P2',
+        permanent: true,
+      },
+      {
+        source: '/elite-ready',
+        destination:
+          'https://www.parentsimple.org/quiz/elite-university-readiness?utm_source=meta&utm_medium=cpc&utm_campaign=EUQ-CBO-GamePlan&utm_content=Ad-Link',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
@@ -33,4 +49,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

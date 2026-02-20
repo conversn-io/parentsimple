@@ -212,17 +212,13 @@ export default function TermsOfServicePage() {
             ParentSimple may modify this Agreement at any time. Continued use of the Platform after changes are posted constitutes
             acceptance of the modified Agreement.
           </p>
-        </section>
-
-        <section className="space-y-3">
+        </section>        <section className="space-y-3">
           <h2 className="text-2xl font-semibold text-[#1A2B49]">19. Entire Agreement and Severability</h2>
           <p className="text-[#1A2B49]/80">
             This Agreement constitutes the entire agreement between you and ParentSimple regarding the Platform. If any provision is
             found unenforceable, the remaining provisions shall remain in full force and effect.
           </p>
-        </section>
-
-        <section className="space-y-3">
+        </section>        <section className="space-y-3">
           <h2 className="text-2xl font-semibold text-[#1A2B49]">20. Contact Information</h2>
           <p className="text-[#1A2B49]/80">
             For questions regarding this Agreement, please contact:
