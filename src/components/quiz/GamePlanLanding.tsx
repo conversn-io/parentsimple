@@ -50,7 +50,7 @@ export function GamePlanLanding() {
             
             {/* Subheadline */}
             <p className="text-xl sm:text-2xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
-              Includes a personalized Readiness Score and a private 1-on-1 call with a former admissions officer.
+              Includes a personalized Readiness Score and a private 1-on-1 call with an admissions advisor.
             </p>
 
             {/* CTA Button */}
