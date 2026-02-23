@@ -193,7 +193,7 @@ export function EliteUniversityReadinessResultsVideo({
               href={empowerlyCtaHref}
               className="w-full py-4 text-lg"
             >
-              Request a call from Empowerly
+              Schedule Your Game Plan Review Call with Empowerly
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
