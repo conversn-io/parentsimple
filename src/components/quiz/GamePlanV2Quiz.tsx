@@ -93,6 +93,29 @@ const mapV2AnswersToLegacyScoringInput = (answers: QuizAnswer): QuizAnswer => ({
   financial_planning: answers.q4_financial_readiness,
 });
 
+const buildNormalizedLegacyAnswers = (
+  answers: QuizAnswer,
+  licensingInfo: unknown = null,
+): QuizAnswer => {
+  const legacy = mapV2AnswersToLegacyScoringInput(answers);
+
+  return {
+    // Preferred normalized schema for downstream mapping parity with legacy quiz
+    graduation_year: legacy.graduation_year ?? null,
+    application_strategy: legacy.application_strategy ?? null,
+    academic_performance: legacy.gpa_score ?? null,
+    test_scores: legacy.test_scores ?? null,
+    essays: legacy.essays ?? null,
+    activities: legacy.research_internships ?? null,
+    achievements: legacy.achievements ?? null,
+    extracurriculars: legacy.extracurriculars ?? null,
+    diversity_factors: legacy.diversity_factors ?? null,
+    licensing: licensingInfo ?? null,
+    financial_planning: legacy.financial_planning ?? null,
+    recommendations: legacy.recommendations ?? null,
+  };
+};
+
 const getLeadPriority = (tags: Set<string>): 'high' | 'medium' | 'low' => {
   const has = (tag: string) => tags.has(tag);
 
@@ -364,6 +387,7 @@ export const GamePlanV2Quiz = () => {
       lastName: contactInfo.lastName,
       studentFirstName: contactInfo.studentFirstName,
       quizAnswers: {
+        ...buildNormalizedLegacyAnswers(updatedAnswers, null),
         ...updatedAnswers,
         quiz_id: ELITE_UNIVERSITY_GAMEPLAN_V2_ID,
         quiz_mode: ELITE_UNIVERSITY_GAMEPLAN_V2_SETTINGS.mode,
