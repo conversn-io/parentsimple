@@ -8,9 +8,7 @@ import Image from 'next/image'
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
-  ONTARIO_REGION_CODE,
 } from '@/data/life-insurance-ca-questions'
-import { LifeInsuranceCADQScreen } from './LifeInsuranceCADQScreen'
 import { formatPhoneForInput } from '@/utils/phone-utils'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
@@ -34,7 +32,6 @@ export function LifeInsuranceCAQuiz() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
   const [sessionId, setSessionId] = useState<string | null>(null)
-  const [isDQ, setIsDQ] = useState(false)
   const [utmParams, setUtmParams] = useState<UTMParameters | null>(null)
   const [contactFirstName, setContactFirstName] = useState('')
   const [contactLastName, setContactLastName] = useState('')
@@ -79,7 +76,6 @@ export function LifeInsuranceCAQuiz() {
   }, [contactPhone])
 
   const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
-  const isProvinceStep = currentStepDef?.id === 'province'
   const isContactStep = currentStepDef?.id === 'contact_info'
 
   // Track step views
@@ -95,22 +91,6 @@ export function LifeInsuranceCAQuiz() {
       )
     }
   }, [step, sessionId, currentStepDef])
-
-  const handleProvinceSelect = (value: string) => {
-    setAnswers((prev) => ({ ...prev, province: value }))
-    
-    // Track answer
-    if (sessionId) {
-      trackQuestionAnswer('province', value, 1, TOTAL_STEPS, sessionId, 'life_insurance_ca')
-    }
-    
-    const regionCode = value
-    if (regionCode !== ONTARIO_REGION_CODE) {
-      setIsDQ(true)
-    } else {
-      setStep(1)
-    }
-  }
 
   const handleMultipleChoice = (value: string) => {
     if (!currentStepDef) return
@@ -223,8 +203,6 @@ export function LifeInsuranceCAQuiz() {
     }
   }
 
-  if (isDQ) return <LifeInsuranceCADQScreen />
-
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
       {/* Subtle Green Social Proof Bar - only show on step 0 */}
@@ -233,7 +211,7 @@ export function LifeInsuranceCAQuiz() {
           <div className="max-w-2xl mx-auto px-6 py-2">
             <p className="text-center text-xs text-green-700 flex items-center justify-center gap-1.5">
               <span className="text-sm">✓</span>
-              Join 250+ Ontario Parents who got quotes today
+              Join 250+ families who got quotes today
             </p>
           </div>
         </div>
@@ -277,14 +255,19 @@ export function LifeInsuranceCAQuiz() {
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => handleProvinceSelect(opt.value)}
+                  onClick={() => handleMultipleChoice(opt.value)}
                   className={`flex items-center gap-3 rounded-xl px-5 py-3 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
-                    answers.province === opt.value
+                    answers[currentStepDef.id] === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
                   }`}
                 >
-                  <span className="shrink-0 text-xl">📍</span>
+                  <span className="shrink-0 text-xl">
+                    {opt.value === 'protect_family' ? '❤️' :
+                      opt.value === 'cover_mortgage' ? '🏠' :
+                      opt.value === 'final_expenses' ? '💰' :
+                      opt.value === 'legacy' ? '👨‍👩‍👧‍👦' : '✅'}
+                  </span>
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
@@ -306,28 +289,6 @@ export function LifeInsuranceCAQuiz() {
               </div>
             </div>
 
-            {/* Trusted Insurers Logo Scroller - Scrolling Marquee */}
-            <div className="mb-6">
-              <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
-              <div className="overflow-hidden relative">
-                <div className="flex gap-8 items-center animate-scroll">
-                  {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
-                    <Image
-                      key={idx}
-                      src={`/images/life-insurance-funnel/ca-insurer-${num}-${
-                        num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' : 
-                        num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
-                      }.png`}
-                      alt={`Insurer ${num}`}
-                      width={100}
-                      height={40}
-                      className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {/* Happy Customers Image - Centered */}
             <div className="text-center mb-3">
               <Image
@@ -342,7 +303,7 @@ export function LifeInsuranceCAQuiz() {
             {/* Join 40,000 Canadians */}
             <div className="text-center mb-4">
               <p className="text-sm text-gray-600">
-                Join 40,000 Canadians who found coverage with us
+                Join 40,000 families who found coverage with us
               </p>
             </div>
 
@@ -371,7 +332,7 @@ export function LifeInsuranceCAQuiz() {
                   <p className="text-gray-700 text-sm italic mb-2">
                     "Found coverage in minutes! The process was so simple and I got quotes from multiple insurers. Best decision for my family's security."
                   </p>
-                  <p className="text-xs text-gray-500">— Michael T., Ontario</p>
+                  <p className="text-xs text-gray-500">— Michael T.</p>
                 </div>
               </div>
             </div>

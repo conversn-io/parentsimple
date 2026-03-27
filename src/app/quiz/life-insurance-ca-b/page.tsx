@@ -3,8 +3,8 @@ import { LifeInsuranceCAQuizVariantB } from '@/components/quiz/LifeInsuranceCAQu
 
 export const metadata: Metadata = {
   title: 'Compare Life Insurance Quotes | ParentSimple',
-  description: 'Compare life insurance quotes from 13+ Canadian insurers. No medical exam, instant approval. Ontario residents.',
-  keywords: ['life insurance', 'Canada', 'Ontario', 'quotes', 'compare', 'parents', 'ParentSimple'],
+  description: 'Compare life insurance quotes from top providers. No medical exam, instant approval on qualifying plans.',
+  keywords: ['life insurance', 'quotes', 'compare', 'family protection', 'parents', 'ParentSimple'],
   openGraph: {
     title: 'Compare Life Insurance Quotes | ParentSimple',
     description: 'Compare life insurance quotes from 13+ insurers. No medical exam, instant approval.',

@@ -18,7 +18,7 @@ const lifeInsuranceFaqData = [
   },
   {
     question: "How much does life insurance cost?",
-    answer: "Premiums vary based on your age, health, coverage amount, and policy type. Term life insurance (coverage for a specific period) is typically more affordable than permanent life insurance (lifetime coverage). Our specialist will provide quotes from multiple Canadian insurers to help you find the best rate."
+    answer: "Premiums vary based on your age, health, coverage amount, and policy type. Term life insurance (coverage for a specific period) is typically more affordable than permanent life insurance (lifetime coverage). Our specialist will provide quotes from multiple providers to help you find the best rate."
   },
   {
     question: "What's the difference between term and permanent life insurance?",
@@ -121,4 +121,3 @@ export const FAQ = ({ funnelType }: FAQProps = {} as FAQProps) => {
     </section>
   );
 };
-

@@ -133,7 +133,7 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
                   <div className="w-8 h-8 bg-emerald-600 rounded-full text-white flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</div>
                   <p className="text-slate-600">
                     <strong>Custom Analysis:</strong> {isLifeInsurance
-                      ? "Receive personalized life insurance quotes from multiple top Canadian insurers based on your needs"
+                      ? "Receive personalized life insurance quotes from multiple top providers based on your needs"
                       : "Receive personalized recommendations based on your quiz"
                     }
                   </p>
