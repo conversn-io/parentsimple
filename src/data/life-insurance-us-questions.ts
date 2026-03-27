@@ -1,32 +1,8 @@
 /**
- * Life Insurance CA Funnel - Question definitions
- * Built for Canadian parents; DQ path for non-Ontario. Structured to scale to US (region/state).
- * Control model: comparemyloans.io/life-insurance-ca
+ * Life insurance US funnel question definitions.
  */
 
-export const ONTARIO_REGION_CODE = 'ON';
-
-/** Canadian provinces (region_code) - Ontario is qualified; others DQ */
-export const CA_PROVINCES = [
-  { value: 'ON', label: 'Ontario', regionCode: 'ON' },
-  { value: 'BC', label: 'British Columbia', regionCode: 'BC' },
-  { value: 'AB', label: 'Alberta', regionCode: 'AB' },
-  { value: 'SK', label: 'Saskatchewan', regionCode: 'SK' },
-  { value: 'MB', label: 'Manitoba', regionCode: 'MB' },
-  { value: 'QC', label: 'Quebec', regionCode: 'QC' },
-  { value: 'NB', label: 'New Brunswick', regionCode: 'NB' },
-  { value: 'NS', label: 'Nova Scotia', regionCode: 'NS' },
-] as const;
-
-export const LIFE_INSURANCE_CA_STEPS = [
-  {
-    id: 'province',
-    title: 'Which province do you live in?',
-    subtitle: 'Select your province to see available options',
-    type: 'multiple-choice' as const,
-    options: CA_PROVINCES,
-    required: true,
-  },
+export const LIFE_INSURANCE_US_STEPS = [
   {
     id: 'purpose',
     title: "What's your main reason to get life insurance?",
@@ -109,4 +85,4 @@ export const LIFE_INSURANCE_CA_STEPS = [
   },
 ] as const;
 
-export const TOTAL_STEPS = LIFE_INSURANCE_CA_STEPS.length;
+export const TOTAL_US_STEPS = LIFE_INSURANCE_US_STEPS.length;

@@ -67,7 +67,7 @@ interface FAQProps {
 
 export const FAQ = ({ funnelType }: FAQProps = {} as FAQProps) => {
   // Select appropriate FAQ data based on funnel type
-  const isLifeInsurance = funnelType === 'life-insurance-ca';
+  const isLifeInsurance = funnelType === 'life-insurance-ca' || funnelType === 'life-insurance-us';
   const faqData = isLifeInsurance ? lifeInsuranceFaqData : annuityFaqData;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 

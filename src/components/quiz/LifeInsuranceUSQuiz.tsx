@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  LIFE_INSURANCE_CA_STEPS,
-  TOTAL_STEPS,
-  ONTARIO_REGION_CODE,
-} from '@/data/life-insurance-ca-questions'
-import { LifeInsuranceCADQScreen } from './LifeInsuranceCADQScreen'
+  LIFE_INSURANCE_US_STEPS,
+  TOTAL_US_STEPS,
+} from '@/data/life-insurance-us-questions'
 import { formatPhoneForInput } from '@/utils/phone-utils'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
@@ -21,19 +19,17 @@ import {
   trackQuestionAnswer,
   trackEmailCapture,
   trackLeadFormSubmit,
-  getSessionId as getTrackingSessionId
 } from '@/lib/unified-tracking'
 
-const STORAGE_KEY = 'life_insurance_ca_quiz_data'
+const STORAGE_KEY = 'life_insurance_us_quiz_data'
 
 type Answers = Record<string, string | { firstName: string; lastName: string; email: string; phone: string }>
 
-export function LifeInsuranceCAQuiz() {
+export function LifeInsuranceUSQuiz() {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
   const [sessionId, setSessionId] = useState<string | null>(null)
-  const [isDQ, setIsDQ] = useState(false)
   const [utmParams, setUtmParams] = useState<UTMParameters | null>(null)
   const [contactFirstName, setContactFirstName] = useState('')
   const [contactLastName, setContactLastName] = useState('')
@@ -43,10 +39,10 @@ export function LifeInsuranceCAQuiz() {
   const [contactError, setContactError] = useState('')
 
   useTrustedForm({ enabled: true })
-  useNoHeaderLayout() // No header, funnel footer only
+  useNoHeaderLayout()
 
   useEffect(() => {
-    const id = `li_ca_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+    const id = `li_us_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
     setSessionId(id)
     const stored = getStoredUTMParameters()
     if (stored) setUtmParams(stored)
@@ -57,16 +53,13 @@ export function LifeInsuranceCAQuiz() {
         setUtmParams(utm)
       }
     }
-    
-    // Track quiz start
-    trackQuizStart(id, 'life_insurance_ca')
+
+    trackQuizStart(id, 'life_insurance_us')
   }, [])
 
-  // Clean up phone number after browser autofill
   useEffect(() => {
     if (contactPhone) {
       let digits = contactPhone.replace(/\D/g, '')
-      // Remove leading 1 if it's an 11-digit number (North American format with country code)
       if (digits.startsWith('1') && digits.length === 11) {
         digits = digits.slice(1)
       }
@@ -77,49 +70,31 @@ export function LifeInsuranceCAQuiz() {
     }
   }, [contactPhone])
 
-  const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
-  const isProvinceStep = currentStepDef?.id === 'province'
+  const currentStepDef = LIFE_INSURANCE_US_STEPS[step]
   const isContactStep = currentStepDef?.id === 'contact_info'
 
-  // Track step views
   useEffect(() => {
     if (sessionId && currentStepDef) {
       trackQuizStepViewed(
         step + 1,
         currentStepDef.id,
         sessionId,
-        'life_insurance_ca',
-        step > 0 ? LIFE_INSURANCE_CA_STEPS[step - 1]?.id : undefined,
-        TOTAL_STEPS
+        'life_insurance_us',
+        step > 0 ? LIFE_INSURANCE_US_STEPS[step - 1]?.id : undefined,
+        TOTAL_US_STEPS
       )
     }
   }, [step, sessionId, currentStepDef])
 
-  const handleProvinceSelect = (value: string) => {
-    setAnswers((prev) => ({ ...prev, province: value }))
-
-    if (sessionId) {
-      trackQuestionAnswer('province', value, 1, TOTAL_STEPS, sessionId, 'life_insurance_ca')
-    }
-
-    const regionCode = value
-    if (regionCode !== ONTARIO_REGION_CODE) {
-      setIsDQ(true)
-    } else {
-      setStep(1)
-    }
-  }
-
   const handleMultipleChoice = (value: string) => {
     if (!currentStepDef) return
     setAnswers((prev) => ({ ...prev, [currentStepDef.id]: value }))
-    
-    // Track answer
+
     if (sessionId) {
-      trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_STEPS, sessionId, 'life_insurance_ca')
+      trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_US_STEPS, sessionId, 'life_insurance_us')
     }
-    
-    if (step < TOTAL_STEPS - 1) setStep(step + 1)
+
+    if (step < TOTAL_US_STEPS - 1) setStep(step + 1)
   }
 
   const handleBack = () => {
@@ -145,9 +120,8 @@ export function LifeInsuranceCAQuiz() {
     }
     const fullAnswers = { ...answers, contact_info: contactInfo }
 
-    // Track email capture
     if (sessionId) {
-      trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_ca')
+      trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_us')
       trackLeadFormSubmit({
         firstName: contactInfo.firstName,
         lastName: contactInfo.lastName,
@@ -158,7 +132,7 @@ export function LifeInsuranceCAQuiz() {
         stateName: '',
         quizAnswers: fullAnswers,
         sessionId: sessionId,
-        funnelType: 'life_insurance_ca'
+        funnelType: 'life_insurance_us'
       })
     }
 
@@ -179,7 +153,7 @@ export function LifeInsuranceCAQuiz() {
           phoneNumber: phoneE164,
           quizAnswers: fullAnswers,
           sessionId: sessionId || 'unknown',
-          funnelType: 'life_insurance_ca',
+          funnelType: 'life_insurance_us',
           zipCode: null,
           state: null,
           stateName: null,
@@ -214,40 +188,36 @@ export function LifeInsuranceCAQuiz() {
           })
         )
       }
-      router.push('/quiz/life-insurance-ca/verify-otp')
-    } catch (err) {
+      router.push('/quiz/life-insurance-us/verify-otp')
+    } catch {
       setContactError('Something went wrong. Please try again.')
       setIsSubmitting(false)
     }
   }
 
-  if (isDQ) return <LifeInsuranceCADQScreen />
-
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
-      {/* Subtle Green Social Proof Bar - only show on step 0 */}
       {step === 0 && (
         <div className="bg-green-50 border-b border-green-100">
           <div className="max-w-2xl mx-auto px-6 py-2">
             <p className="text-center text-xs text-green-700 flex items-center justify-center gap-1.5">
               <span className="text-sm">✓</span>
-              Join 250+ Ontario Parents who got quotes today
+              Join 250+ families who got quotes today
             </p>
           </div>
         </div>
       )}
 
-      {/* Progress bar on page - not sticky, hidden on landing page */}
       {step > 0 && (
         <div className="bg-[#F9F6EF] border-b border-[#E3E0D5]">
           <div className="max-w-2xl mx-auto px-6 py-4">
             <p className="text-sm text-gray-600 mb-3 text-center whitespace-nowrap" aria-live="polite">
-              Step {step + 1} of {TOTAL_STEPS}
+              Step {step + 1} of {TOTAL_US_STEPS}
             </p>
             <div className="w-full bg-gray-200 rounded-full h-1.5">
               <div
                 className="bg-[#1A2B49] h-1.5 rounded-full transition-all duration-300"
-                style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
+                style={{ width: `${((step + 1) / TOTAL_US_STEPS) * 100}%` }}
               />
             </div>
           </div>
@@ -257,12 +227,10 @@ export function LifeInsuranceCAQuiz() {
       <main className="max-w-2xl mx-auto px-6 py-4 pb-8 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
-            {/* H3 Headline - Variant B */}
             <h3 className="text-lg font-semibold text-center text-gray-800 mb-6 mt-2">
               Compare Insurance Quotes
             </h3>
 
-            {/* Question Title */}
             <h2 className="text-xl font-semibold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.25rem', lineHeight: 1.3 }}>
               {currentStepDef.title}
             </h2>
@@ -275,20 +243,24 @@ export function LifeInsuranceCAQuiz() {
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => handleProvinceSelect(opt.value)}
+                  onClick={() => handleMultipleChoice(opt.value)}
                   className={`flex items-center gap-3 rounded-xl px-5 py-3 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
-                    answers.province === opt.value
+                    answers[currentStepDef.id] === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
                   }`}
                 >
-                  <span className="shrink-0 text-xl">📍</span>
+                  <span className="shrink-0 text-xl">
+                    {opt.value === 'protect_family' ? '❤️' :
+                      opt.value === 'cover_mortgage' ? '🏠' :
+                      opt.value === 'final_expenses' ? '💰' :
+                      opt.value === 'legacy' ? '👨‍👩‍👧‍👦' : '✅'}
+                  </span>
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
             </div>
 
-            {/* Trust Pills - Below Questions */}
             <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
               <div className="flex items-center gap-2">
                 <span className="text-green-600">✓</span>
@@ -304,28 +276,6 @@ export function LifeInsuranceCAQuiz() {
               </div>
             </div>
 
-            {/* Happy Customers Image - Centered */}
-            <div className="mb-6">
-              <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
-              <div className="overflow-hidden relative">
-                <div className="flex gap-8 items-center animate-scroll">
-                  {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
-                    <Image
-                      key={idx}
-                      src={`/images/life-insurance-funnel/ca-insurer-${num}-${
-                        num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' :
-                        num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
-                      }.png`}
-                      alt={`Insurer ${num}`}
-                      width={100}
-                      height={40}
-                      className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
             <div className="text-center mb-3">
               <Image
                 src="/images/life-insurance-funnel/ca-social-proof-h7iBv84u.webp"
@@ -336,14 +286,12 @@ export function LifeInsuranceCAQuiz() {
               />
             </div>
 
-            {/* Join 40,000 Canadians */}
             <div className="text-center mb-4">
               <p className="text-sm text-gray-600">
-                Join 40,000 Canadians who found coverage with us
+                Join 40,000 families who found coverage with us
               </p>
             </div>
 
-            {/* Trustpilot Rating - 25% larger */}
             <div className="text-center mb-6">
               <Image
                 src="/images/life-insurance-funnel/trustpilot-proof.png"
@@ -354,7 +302,6 @@ export function LifeInsuranceCAQuiz() {
               />
             </div>
 
-            {/* Michael T. Testimonial */}
             <div className="bg-white rounded-xl p-6 border border-[#E3E0D5] shadow-sm mb-6">
               <div className="flex gap-4 items-start">
                 <Image
@@ -368,12 +315,11 @@ export function LifeInsuranceCAQuiz() {
                   <p className="text-gray-700 text-sm italic mb-2">
                     "Found coverage in minutes! The process was so simple and I got quotes from multiple insurers. Best decision for my family's security."
                   </p>
-                  <p className="text-xs text-gray-500">— Michael T., Ontario</p>
+                  <p className="text-xs text-gray-500">— Michael T.</p>
                 </div>
               </div>
             </div>
 
-            {/* Scroll to Top Button */}
             <div className="text-center mb-6">
               <button
                 type="button"
@@ -385,7 +331,6 @@ export function LifeInsuranceCAQuiz() {
               </button>
             </div>
 
-            {/* About ParentSimple */}
             <div className="bg-transparent rounded-xl p-6 mb-6">
               <h4 className="text-sm font-semibold text-[#1A2B49] mb-2">About ParentSimple</h4>
               <p className="text-xs text-gray-600 leading-relaxed">
@@ -397,7 +342,7 @@ export function LifeInsuranceCAQuiz() {
 
         {step >= 1 && !isContactStep && currentStepDef && currentStepDef.type === 'multiple-choice' && (
           <>
-            {step === 6 && (
+            {step === 5 && (
               <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>
             )}
             <h1 className="text-2xl font-bold text-[#1A2B49] mb-2" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>
@@ -409,7 +354,6 @@ export function LifeInsuranceCAQuiz() {
             <div className="flex flex-col gap-3">
               {((currentStepDef.options as unknown) as { value: string; label: string; sublabel?: string }[]).map((opt) => {
                 const getIcon = () => {
-                  // Purpose icons
                   if (currentStepDef.id === 'purpose') {
                     if (opt.value === 'protect_family') return <span className="shrink-0 text-xl">❤️</span>
                     if (opt.value === 'cover_mortgage') return <span className="shrink-0 text-xl">🏠</span>
@@ -417,17 +361,13 @@ export function LifeInsuranceCAQuiz() {
                     if (opt.value === 'legacy') return <span className="shrink-0 text-xl">👨‍👩‍👧‍👦</span>
                     return <span className="shrink-0 text-xl">✅</span>
                   }
-                  // Coverage icons
                   if (currentStepDef.id === 'coverage') return <span className="shrink-0 text-xl">💵</span>
-                  // Age range icons
                   if (currentStepDef.id === 'age_range') return <span className="shrink-0 text-xl">📅</span>
-                  // Gender icons - use symbols
                   if (currentStepDef.id === 'gender') {
                     if (opt.value === 'male') return <span className="text-blue-500 shrink-0 text-xl font-bold">♂</span>
                     if (opt.value === 'female') return <span className="text-pink-500 shrink-0 text-xl font-bold">♀</span>
                     return <span className="shrink-0 text-xl">👥</span>
                   }
-                  // Best time icons - specific for each time
                   if (currentStepDef.id === 'best_time') {
                     if (opt.value === 'morning') return <span className="shrink-0 text-xl">🌅</span>
                     if (opt.value === 'afternoon') return <span className="shrink-0 text-xl">☀️</span>
@@ -435,15 +375,14 @@ export function LifeInsuranceCAQuiz() {
                     if (opt.value === 'anytime') return <span className="shrink-0 text-xl">🕐</span>
                     return <span className="shrink-0 text-xl">📞</span>
                   }
-                  // Smoker icons - no smoking sign for "no"
                   if (currentStepDef.id === 'smoker') {
-                    return opt.value === 'yes' ? 
-                      <span className="shrink-0 text-xl">🚬</span> : 
-                      <span className="shrink-0 text-xl">🚫</span>
+                    return opt.value === 'yes'
+                      ? <span className="shrink-0 text-xl">🚬</span>
+                      : <span className="shrink-0 text-xl">🚫</span>
                   }
                   return null
                 }
-                
+
                 return (
                   <button
                     key={opt.value}
@@ -484,12 +423,11 @@ export function LifeInsuranceCAQuiz() {
           <>
             <input type="hidden" name="xxTrustedFormCertUrl" id="xxTrustedFormCertUrl" />
             <input type="hidden" name="leadid_token" id="leadid_token" />
-            
-            {/* Full-width notification bar */}
+
             <div className="bg-green-50 border-l-4 border-green-500 px-6 py-3 mb-4 -mx-6">
               <p className="text-base font-semibold text-green-700 flex items-center justify-center gap-2">
                 <span className="text-xl">🎉</span>
-                Great! You&apos;re Matched with 13+ Insurers
+                Great! You&apos;re Matched with Top Insurers
               </p>
             </div>
 
@@ -497,7 +435,6 @@ export function LifeInsuranceCAQuiz() {
               Where should we send your free quote?
             </h1>
 
-            {/* Social proof below headline */}
             <p className="text-xs text-gray-500 text-center mb-4">
               <span className="font-semibold text-[#1A2B49]">2,847</span> quotes sent this week
             </p>
@@ -551,62 +488,36 @@ export function LifeInsuranceCAQuiz() {
                   autoComplete="tel"
                   value={formatPhoneForInput(contactPhone)}
                   onInput={(e) => {
-                    // Strip all non-digits and any leading country code
                     const target = e.target as HTMLInputElement
                     let digits = target.value.replace(/\D/g, '')
-                    // Remove leading 1 or +1 from autofill
-                    if (digits.startsWith('1')) {
-                      digits = digits.slice(1)
-                    }
-                    setContactPhone(digits.slice(0, 10))
-                  }}
-                  onChange={(e) => {
-                    // Backup handler for onChange events
-                    let digits = e.target.value.replace(/\D/g, '')
                     if (digits.startsWith('1')) {
                       digits = digits.slice(1)
                     }
                     setContactPhone(digits.slice(0, 10))
                   }}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-1 focus:ring-[#36596A]/30 focus:border-[#36596A] bg-white transition-colors"
-                  placeholder="(XXX) XXX-XXXX"
-                  inputMode="numeric"
+                  placeholder="(555) 555-5555"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                  <span>🔒</span> We&apos;ll send a verification code to this number
-                </p>
               </div>
-
               {contactError && (
                 <p className="text-sm text-red-600">{contactError}</p>
               )}
-
-              {/* Primary CTA Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#36596A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#2a4a5a] transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg flex items-center justify-center gap-2"
+                className="w-full bg-[#1A2B49] hover:bg-[#24385C] text-white font-semibold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? (
-                  'Processing...'
-                ) : (
-                  <>
-                    Get My Quote
-                    <span className="inline-block text-lg ml-2">➡️</span>
-                  </>
-                )}
+                {isSubmitting ? 'Submitting...' : 'Get My Free Quote'}
               </button>
 
-              {/* TCPA Compliance */}
               <p className="text-xs text-gray-600 leading-relaxed">
-                By clicking &quot;Get My Quote&quot; you agree to receive communication from a licensed insurance broker via phone, email, SMS for the purpose of distributing and administering insurance. You may withdraw your consent at any time and you also agree to the{' '}
+                By clicking &quot;Get My Free Quote&quot; you agree to receive communication from a licensed insurance broker via phone, email, SMS for the purpose of distributing and administering insurance. You may withdraw your consent at any time and you also agree to the{' '}
                 <Link href="/terms-of-service" className="text-[#36596A] hover:underline transition-colors duration-150">Terms of Service</Link>
                 {' '}and{' '}
                 <Link href="/privacy-policy" className="text-[#36596A] hover:underline transition-colors duration-150">Privacy Policy</Link>.
               </p>
 
-              {/* Back Button */}
               <button
                 type="button"
                 onClick={handleBack}
@@ -618,7 +529,6 @@ export function LifeInsuranceCAQuiz() {
           </>
         )}
       </main>
-
     </div>
   )
 }

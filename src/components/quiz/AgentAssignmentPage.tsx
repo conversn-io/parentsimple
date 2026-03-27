@@ -12,8 +12,18 @@ interface AgentAssignmentPageProps {
 
 export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAssignmentPageProps) => {
   // Detect funnel type from answers or prop
-  const detectedFunnelType = funnelType || answers.funnelType || (typeof window !== 'undefined' ? window.location.pathname.includes('life-insurance-ca') ? 'life-insurance-ca' : 'unknown' : 'unknown');
-  const isLifeInsurance = detectedFunnelType === 'life-insurance-ca';
+  const detectedFunnelType =
+    funnelType ||
+    answers.funnelType ||
+    (typeof window !== 'undefined'
+      ? window.location.pathname.includes('life-insurance-us')
+        ? 'life-insurance-us'
+        : window.location.pathname.includes('life-insurance-ca')
+          ? 'life-insurance-ca'
+          : 'unknown'
+      : 'unknown');
+  const isLifeInsurance =
+    detectedFunnelType === 'life-insurance-ca' || detectedFunnelType === 'life-insurance-us';
   
   useEffect(() => {
     // Track page view for analytics

@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Users, Heart, DollarSign, Calendar, Shield, ArrowRight, Check, Sunrise, Sun, Moon, Cigarette, Ban } from 'lucide-react'
+import { MapPin, Users, Heart, DollarSign, Calendar, Shield, ArrowRight, Check, Sunrise, Sun, Moon, Cigarette, Ban } from 'lucide-react'
 import {
   LIFE_INSURANCE_CA_STEPS,
   TOTAL_STEPS,
+  ONTARIO_REGION_CODE,
 } from '@/data/life-insurance-ca-questions'
+import { LifeInsuranceCADQScreen } from './LifeInsuranceCADQScreen'
 import { formatPhoneForInput } from '@/utils/phone-utils'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
@@ -32,6 +34,7 @@ export function LifeInsuranceCAQuizVariantB() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const [isDQ, setIsDQ] = useState(false)
   const [utmParams, setUtmParams] = useState<UTMParameters | null>(null)
   const [contactFirstName, setContactFirstName] = useState('')
   const [contactLastName, setContactLastName] = useState('')
@@ -76,6 +79,7 @@ export function LifeInsuranceCAQuizVariantB() {
   }, [contactPhone])
 
   const currentStepDef = LIFE_INSURANCE_CA_STEPS[step]
+  const isProvinceStep = currentStepDef?.id === 'province'
   const isContactStep = currentStepDef?.id === 'contact_info'
 
   // Track step views
@@ -91,6 +95,21 @@ export function LifeInsuranceCAQuizVariantB() {
       )
     }
   }, [step, sessionId, currentStepDef])
+
+  const handleProvinceSelect = (value: string) => {
+    setAnswers((prev) => ({ ...prev, province: value }))
+
+    if (sessionId) {
+      trackQuestionAnswer('province', value, 1, TOTAL_STEPS, sessionId, 'life_insurance_ca_variant_b')
+    }
+
+    const regionCode = value
+    if (regionCode !== ONTARIO_REGION_CODE) {
+      setIsDQ(true)
+    } else {
+      setStep(1)
+    }
+  }
 
   const handleMultipleChoice = (value: string) => {
     if (!currentStepDef) return
@@ -203,6 +222,8 @@ export function LifeInsuranceCAQuizVariantB() {
     }
   }
 
+  if (isDQ) return <LifeInsuranceCADQScreen />
+
   return (
     <div className="min-h-screen bg-[#F9F6EF] life-insurance-ca-quiz">
       {/* Yellow Alert Bar - only show on step 0 */}
@@ -211,7 +232,7 @@ export function LifeInsuranceCAQuizVariantB() {
           <div className="max-w-2xl mx-auto px-6 py-3">
             <p className="text-center text-sm font-semibold text-[#1A2B49] flex items-center justify-center gap-2">
               <span className="text-lg">⏰</span>
-              Join 25,000 families who just got covered
+              Join 25,000 Ontario Parents Who Just Got Covered Today
             </p>
           </div>
         </div>
@@ -271,19 +292,14 @@ export function LifeInsuranceCAQuizVariantB() {
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => handleMultipleChoice(opt.value)}
+                  onClick={() => handleProvinceSelect(opt.value)}
                   className={`flex items-center gap-3 rounded-xl px-5 py-4 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
-                    answers[currentStepDef.id] === opt.value
+                    answers.province === opt.value
                       ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
                   }`}
                 >
-                  <span className="shrink-0 text-xl">
-                    {opt.value === 'protect_family' ? '❤️' :
-                      opt.value === 'cover_mortgage' ? '🏠' :
-                      opt.value === 'final_expenses' ? '💰' :
-                      opt.value === 'legacy' ? '👨‍👩‍👧‍👦' : '✅'}
-                  </span>
+                  <MapPin className={`shrink-0 ${answers.province === opt.value ? 'text-[#9DB89D]' : 'text-gray-400'}`} size={20} />
                   <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
                 </button>
               ))}
@@ -303,7 +319,7 @@ export function LifeInsuranceCAQuizVariantB() {
                   <p className="text-gray-700 text-sm italic mb-2">
                     "Found coverage in minutes! The process was so simple and I got quotes from multiple insurers. Best decision for my family's security."
                   </p>
-                  <p className="text-xs text-gray-500">— Michael T.</p>
+                  <p className="text-xs text-gray-500">— Michael T., Ontario</p>
                 </div>
               </div>
             </div>
@@ -563,6 +579,30 @@ export function LifeInsuranceCAQuizVariantB() {
         )}
       </main>
 
+      {step === 0 && (
+        <footer className="border-t border-[#E3E0D5] py-4 px-6" style={{ background: 'transparent' }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-xs text-gray-500 text-center mb-3">We work with trusted Canadian insurers</p>
+            <div className="overflow-hidden relative">
+              <div className="flex gap-8 items-center animate-scroll">
+                {[1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7].map((num, idx) => (
+                  <Image
+                    key={idx}
+                    src={`/images/life-insurance-funnel/ca-insurer-${num}-${
+                      num === 1 ? 'DC2UE-tE' : num === 2 ? 'DOKRi4v2' : num === 3 ? '94FxSc0I' :
+                      num === 4 ? '2031J7uc' : num === 5 ? 'C9-fYJNs' : num === 6 ? 'OZ8ZO6bq' : 'DNAUUnB8'
+                    }.png`}
+                    alt={`Insurer ${num}`}
+                    width={100}
+                    height={40}
+                    className="h-10 w-auto object-contain flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
     </div>
   )
 }
