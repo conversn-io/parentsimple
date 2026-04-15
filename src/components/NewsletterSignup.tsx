@@ -21,6 +21,20 @@ export default function NewsletterSignup() {
       setNewsletterStatus(result)
       
       if (result.success) {
+        // Subscribe to Publishare newsletter
+        try {
+          await fetch('https://vpysqshhafthuxvokwqj.supabase.co/functions/v1/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email,
+              site_id: 'parentsimple',
+              source: 'form',
+              source_detail: 'newsletter-signup',
+            }),
+          });
+        } catch (_) {}
+
         setEmail('')
       }
     } catch (error) {

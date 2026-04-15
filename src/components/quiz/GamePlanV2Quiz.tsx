@@ -421,6 +421,26 @@ export const GamePlanV2Quiz = () => {
       });
       await parseJsonResponse(emailCaptureResponse);
 
+      // Subscribe to Publishare newsletter
+      try {
+        await fetch('https://vpysqshhafthuxvokwqj.supabase.co/functions/v1/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: contactInfo.email,
+            site_id: 'parentsimple',
+            first_name: contactInfo.firstName ?? null,
+            last_name: contactInfo.lastName ?? null,
+            source: 'quiz',
+            source_detail: 'elite-university-gameplan-v2',
+            quiz_context: updatedAnswers,
+            tags: ['quiz_completed'],
+          }),
+        });
+      } catch (_) {
+        // silent fail — never block the user flow
+      }
+
       const leadResponse = await fetch('/api/leads/submit-without-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

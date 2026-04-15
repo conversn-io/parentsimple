@@ -420,6 +420,27 @@ export const AnnuityQuiz = ({ skipOTP = false }: AnnuityQuizProps) => {
         console.error('💥 Email Capture Exception:', errorDetails);
       }
       
+      // Subscribe to Publishare newsletter
+      try {
+        await fetch('https://vpysqshhafthuxvokwqj.supabase.co/functions/v1/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: answer.email,
+            site_id: 'parentsimple',
+            first_name: answer.firstName ?? null,
+            last_name: answer.lastName ?? null,
+            zip_code: updatedAnswers.locationInfo?.zipCode ?? null,
+            source: 'quiz',
+            source_detail: 'annuity-quiz',
+            quiz_context: updatedAnswers,
+            tags: ['quiz_completed'],
+          }),
+        });
+      } catch (_) {
+        // silent fail — never block the user flow
+      }
+
       // Branch based on skipOTP prop
       if (skipOTP) {
         // NO OTP FLOW: Send directly to GHL

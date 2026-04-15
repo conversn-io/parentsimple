@@ -282,6 +282,27 @@ export const FIAQuoteQuiz = () => {
       } catch (error) {
         console.error('💥 Email Capture Exception:', error);
       }
+
+      // Subscribe to Publishare newsletter
+      try {
+        await fetch('https://vpysqshhafthuxvokwqj.supabase.co/functions/v1/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: answer.email,
+            site_id: 'parentsimple',
+            first_name: answer.firstName ?? null,
+            last_name: answer.lastName ?? null,
+            zip_code: updatedAnswers.locationInfo?.zipCode ?? null,
+            source: 'quiz',
+            source_detail: 'fia-quote',
+            quiz_context: updatedAnswers,
+            tags: ['quiz_completed'],
+          }),
+        });
+      } catch (_) {
+        // silent fail — never block the user flow
+      }
     }
 
     // Handle phone number submission

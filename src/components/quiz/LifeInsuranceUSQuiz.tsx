@@ -175,6 +175,26 @@ export function LifeInsuranceUSQuiz() {
         return
       }
 
+      // Subscribe to Publishare newsletter
+      try {
+        await fetch('https://vpysqshhafthuxvokwqj.supabase.co/functions/v1/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: contactInfo.email,
+            site_id: 'parentsimple',
+            first_name: contactInfo.firstName ?? null,
+            last_name: contactInfo.lastName ?? null,
+            source: 'quiz',
+            source_detail: 'life-insurance-us',
+            quiz_context: fullAnswers,
+            tags: ['quiz_completed'],
+          }),
+        });
+      } catch (_) {
+        // silent fail — never block the user flow
+      }
+
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.setItem(
           STORAGE_KEY,
