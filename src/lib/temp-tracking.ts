@@ -112,9 +112,17 @@ function trackGA4Event(eventName: string, parameters: Record<string, any>): void
 }
 
 // Meta Pixel Event Tracking
-function trackMetaEvent(eventName: string, parameters: Record<string, any>): void {
+function trackMetaEvent(
+  eventName: string,
+  parameters: Record<string, any>,
+  options?: { eventId?: string }
+): void {
   if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-    window.fbq('track', eventName, parameters);
+    if (options?.eventId) {
+      window.fbq('track', eventName, parameters, { eventID: options.eventId });
+    } else {
+      window.fbq('track', eventName, parameters);
+    }
   }
 }
 
@@ -227,6 +235,7 @@ export function trackScoreCalculated(sessionId: string, score: number, category?
 
 export function trackLeadFormSubmit(leadData: LeadData): void {
   console.log('📊 Tracking lead form submit:', leadData);
+  const metaEventId = (leadData as any).metaEventId || buildBrowserMetaEventId(leadData.sessionId, 'Lead');
   
   trackGA4Event('lead_form_submit', {
     session_id: leadData.sessionId,
@@ -240,10 +249,18 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
   });
   
   trackMetaEvent('Lead', {
-    content_name: 'ParentSimple College Planning Lead',
+    content_name: leadData.funnelType === 'life_insurance_us'
+      ? 'Life Insurance US Lead'
+      : leadData.funnelType === 'life_insurance_ca' || leadData.funnelType === 'life_insurance_ca_variant_b'
+        ? 'Life Insurance Canada Lead'
+        : 'ParentSimple College Planning Lead',
     content_category: 'lead_generation',
     value: leadData.leadScore || 0,
-    currency: 'USD'
+    currency: leadData.funnelType === 'life_insurance_ca' || leadData.funnelType === 'life_insurance_ca_variant_b'
+      ? 'CAD'
+      : 'USD'
+  }, {
+    eventId: metaEventId
   });
   
   // ❌ REMOVED: sendToGHL() to prevent duplicate GHL submissions
@@ -254,7 +271,8 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
 async function sendPageViewToSupabase(
   pageName: string,
   pagePath: string,
-  sessionId: string
+  sessionId: string,
+  metaEventId?: string
 ): Promise<void> {
   // Skip if bot
   if (isBot()) {
@@ -272,6 +290,7 @@ async function sendPageViewToSupabase(
     // Get tracking IDs
     const gaClientId = getGAClientId();
     const metaIds = getMetaPixelIds();
+    const funnelType = resolveFunnelTypeFromPath(pagePath);
     
     // Get UTM parameters
     const utmParams = getUTMParams();
@@ -291,6 +310,7 @@ async function sendPageViewToSupabase(
       },
       body: JSON.stringify({
         event_name: 'page_view',
+        event_id: metaEventId || null,
         page_title: pageName,
         page_path: pagePath,
         session_id: sessionId,
@@ -299,7 +319,7 @@ async function sendPageViewToSupabase(
         user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
         properties: {
           site_key: 'parentsimple.org',
-          funnel_type: 'college_consulting',
+          funnel_type: funnelType,
           utm_parameters: utmParams,
           contact: {
             ga_client_id: gaClientId,
@@ -378,6 +398,18 @@ function getUTMParams(): Record<string, string> {
   };
 }
 
+function resolveFunnelTypeFromPath(pagePath: string): string {
+  if (pagePath.includes('/quiz/life-insurance-us')) return 'life_insurance_us';
+  if (pagePath.includes('/quiz/life-insurance-ca-b')) return 'life_insurance_ca_variant_b';
+  if (pagePath.includes('/quiz/life-insurance-ca')) return 'life_insurance_ca';
+  if (pagePath.includes('/quiz/elite-university-readiness')) return 'elite_university_readiness';
+  return 'college_consulting';
+}
+
+function buildBrowserMetaEventId(baseId: string, eventName: string): string {
+  return `${baseId}-${eventName}-${Math.floor(Date.now() / 1000)}`;
+}
+
 // Page view tracking
 export function trackPageView(pageName: string, pagePath: string): void {
   console.log('📊 Tracking page view:', pageName);
@@ -396,18 +428,28 @@ export function trackPageView(pageName: string, pagePath: string): void {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem('session_id', sessionId);
   }
+  const metaEventId = buildBrowserMetaEventId(sessionId, 'PageView');
+  
+  const funnelType = resolveFunnelTypeFromPath(pagePath);
   
   // Track to GA4
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
     trackGA4Event('page_view', {
       page_title: pageName,
       page_location: pagePath,
-      event_category: 'navigation'
+      event_category: 'navigation',
+      funnel_type: funnelType
     });
   }
+  trackMetaEvent('PageView', {
+    content_name: pageName,
+    content_category: funnelType
+  }, {
+    eventId: metaEventId
+  });
   
   // Track to Supabase (async, non-blocking)
-  sendPageViewToSupabase(pageName, pagePath, sessionId).catch(error => {
+  sendPageViewToSupabase(pageName, pagePath, sessionId, metaEventId).catch(error => {
     console.error('Failed to send PageView to Supabase:', error);
   });
 }

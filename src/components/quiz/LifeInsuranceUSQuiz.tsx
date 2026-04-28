@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -37,6 +37,7 @@ export function LifeInsuranceUSQuiz() {
   const [contactPhone, setContactPhone] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [contactError, setContactError] = useState('')
+  const initiateCheckoutFiredRef = useRef(false)
 
   useTrustedForm({ enabled: true })
   useNoHeaderLayout()
@@ -86,6 +87,20 @@ export function LifeInsuranceUSQuiz() {
     }
   }, [step, sessionId, currentStepDef])
 
+  // Browser-only InitiateCheckout: fires once when the contact form is reached.
+  // Mid-funnel signal Meta uses for optimization; CAPI companion intentionally
+  // omitted in the relaunch hardening pass (see ParentSimple CAPI plan).
+  useEffect(() => {
+    if (!isContactStep || !sessionId || initiateCheckoutFiredRef.current) return
+    if (typeof window === 'undefined' || typeof (window as any).fbq !== 'function') return
+    initiateCheckoutFiredRef.current = true
+    const eventId = `${sessionId}-InitiateCheckout-${Math.floor(Date.now() / 1000)}`
+    ;(window as any).fbq('track', 'InitiateCheckout', {
+      content_name: 'Life Insurance US Contact Form',
+      content_category: 'life_insurance_us',
+    }, { eventID: eventId })
+  }, [isContactStep, sessionId])
+
   const handleMultipleChoice = (value: string) => {
     if (!currentStepDef) return
     setAnswers((prev) => ({ ...prev, [currentStepDef.id]: value }))
@@ -119,6 +134,7 @@ export function LifeInsuranceUSQuiz() {
       phone: phoneE164,
     }
     const fullAnswers = { ...answers, contact_info: contactInfo }
+    const metaEventId = `${sessionId || 'li_us'}-Lead-${Math.floor(Date.now() / 1000)}`
 
     if (sessionId) {
       trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_us')
@@ -132,7 +148,8 @@ export function LifeInsuranceUSQuiz() {
         stateName: '',
         quizAnswers: fullAnswers,
         sessionId: sessionId,
-        funnelType: 'life_insurance_us'
+        funnelType: 'life_insurance_us',
+        metaEventId
       })
     }
 
@@ -160,6 +177,7 @@ export function LifeInsuranceUSQuiz() {
           licensingInfo: null,
           calculatedResults: null,
           utmParams: utmParams,
+          metaEventId,
           trustedFormCertUrl: getTrustedFormCertUrl() || null,
           trustedform_cert_url: getTrustedFormCertUrl() || null,
           jornayaLeadId: getLeadIdToken() || null,

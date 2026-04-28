@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/life',
+        destination:
+          'https://www.parentsimple.org/quiz/life-insurance-us?utm_source=meta&utm_medium=cpc&utm_campaign=LIFE-Term-USA-ABO-P2-US-STATES',
+        permanent: true,
+      },
+      {
         source: '/elite-ready',
         destination:
           'https://www.parentsimple.org/quiz/elite-university-readiness?utm_source=meta&utm_medium=cpc&utm_campaign=EUQ-CBO-GamePlan&utm_content=Ad-Link',

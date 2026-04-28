@@ -90,6 +90,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Browser pixel ID. Prefer env-set life insurance pixel for the relaunch funnel,
+  // then a generic NEXT_PUBLIC override, then the legacy literal as a last-resort
+  // fallback so unsetting env never produces a dead pixel.
+  const META_PIXEL_ID =
+    process.env.NEXT_PUBLIC_META_PIXEL_ID_LIFE_INSURANCE ||
+    process.env.NEXT_PUBLIC_META_PIXEL_ID ||
+    '799755069642014';
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -150,20 +157,16 @@ export default function RootLayout({
                   isBot = /bot|crawler|spider|crawling|facebookexternalhit|Googlebot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|Exabot|facebot|ia_archiver/i.test(ua);
                 }
                 
-                if (!isBot) {
-                  fbq('init', '799755069642014');
-                  fbq('track', 'PageView');
-                } else {
-                  // Still initialize but don't track PageView for bots
-                  fbq('init', '799755069642014');
-                }
+                // Initialize here, but let the route tracker send PageView
+                // with an eventID so browser and CAPI can dedupe.
+                fbq('init', '${META_PIXEL_ID}');
               })();
             `
           }}
         />
         <noscript>
-          <img height="1" width="1" style={{display:'none'}} 
-               src="https://www.facebook.com/tr?id=799755069642014&ev=PageView&noscript=1" />
+          <img height="1" width="1" style={{display:'none'}}
+               src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
         </noscript>
       </head>
           <body

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { callreadyQuizDb } from '@/lib/callready-quiz-db';
+import { sendPageViewEvent } from '@/lib/meta-capi-service';
 
 /**
  * API Route: Track PageView to Supabase analytics_events
@@ -17,6 +18,7 @@ export async function POST(request: NextRequest) {
     
     const {
       event_name = 'page_view',
+      event_id,
       page_title,
       page_path,
       session_id,
@@ -108,6 +110,46 @@ export async function POST(request: NextRequest) {
       page_url: data.page_url
     });
 
+    const funnelType = properties?.funnel_type || 'college_consulting';
+    if (funnelType === 'life_insurance_us') {
+      try {
+        // Server cookies + Vercel geo headers — same EMQ enrichment as the lead routes.
+        const fbpFromCookie = request.cookies.get('_fbp')?.value || null;
+        const fbcFromCookie = request.cookies.get('_fbc')?.value || null;
+        const inferredCity = request.headers.get('x-vercel-ip-city') || null;
+        const inferredPostalCode = request.headers.get('x-vercel-ip-postal-code') || null;
+
+        const capiResult = await sendPageViewEvent({
+          pageId: session_id,
+          eventId: event_id || undefined,
+          fbp: fbpFromCookie || properties?.contact?.fbp || null,
+          fbc: fbcFromCookie || properties?.contact?.fbc || null,
+          fbLoginId: properties?.contact?.fbLoginId || null,
+          ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || null,
+          userAgent: user_agent || request.headers.get('user-agent') || null,
+          externalId: session_id || null,
+          city: inferredCity,
+          zipCode: inferredPostalCode,
+          country: 'us',
+          customData: {
+            content_name: page_title || page_path || 'Life Insurance US',
+            funnel_type: funnelType,
+            page_path,
+          },
+          eventSourceUrl: page_url || request.url,
+          funnelType,
+        });
+
+        if (!capiResult.success) {
+          console.error('[Meta CAPI] PageView event failed:', capiResult.error);
+        } else {
+          console.log('[Meta CAPI] PageView event sent:', capiResult.eventId);
+        }
+      } catch (capiError) {
+        console.error('[Meta CAPI] PageView error:', capiError);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       event_id: data.id
@@ -122,7 +164,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-
 
 

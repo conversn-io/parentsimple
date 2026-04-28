@@ -3,7 +3,7 @@ import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
 import { formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
-// Removed Meta CAPI import - conversion should only fire on OTP verification, not email capture
+import { sendLeadEvent } from '@/lib/meta-capi-service';
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -129,7 +129,8 @@ export async function POST(request: NextRequest) {
       licensingInfo,
       calculatedResults,
       utmParams,
-      metaCookies
+      metaCookies,
+      metaEventId
     } = body;
 
     if (!email) {
@@ -172,6 +173,14 @@ export async function POST(request: NextRequest) {
       request.headers.get('x-real-ip') ||
       null;
     const userAgent = request.headers.get('user-agent') || null;
+
+    // Server-side EMQ enrichment: cookies are authoritative on this side, since
+    // the client is unable to read HttpOnly cookies and may strip values across
+    // navigations. Vercel injects geo headers from its edge.
+    const fbpFromCookie = request.cookies.get('_fbp')?.value || null;
+    const fbcFromCookie = request.cookies.get('_fbc')?.value || null;
+    const inferredCity = request.headers.get('x-vercel-ip-city') || null;
+    const inferredPostalCode = request.headers.get('x-vercel-ip-postal-code') || null;
     
     // Get user_id from analytics_events if available (for this session)
     let userId = null;
@@ -348,10 +357,49 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Meta CAPI removed from email capture - conversion event should only fire on OTP verification
-    // This prevents double-firing of conversion events
     if (lead?.id) {
-      console.log('[Email Capture] Lead created, Meta CAPI will fire on OTP verification:', lead.id);
+      if (funnelType === 'life_insurance_us') {
+        try {
+          const capiResult = await sendLeadEvent({
+            leadId: lead.id,
+            eventId: metaEventId || undefined,
+            email,
+            phone: phoneNumber || null,
+            firstName: firstName || null,
+            lastName: lastName || null,
+            // Server cookies win over client-passed values — see comment above.
+            fbp: fbpFromCookie || metaCookies?.fbp || null,
+            fbc: fbcFromCookie || metaCookies?.fbc || null,
+            fbLoginId: metaCookies?.fbLoginId || null,
+            ipAddress,
+            userAgent,
+            externalId: sessionId || null,
+            city: inferredCity,
+            state: state || null,
+            zipCode: zipCode || inferredPostalCode || null,
+            country: 'us',
+            value: 0,
+            currency: 'USD',
+            customData: {
+              funnel_type: funnelType,
+              state,
+              zip_code: zipCode,
+            },
+            eventSourceUrl: referrer || request.url,
+            funnelType,
+          });
+
+          if (!capiResult.success) {
+            console.error('[Meta CAPI] Lead event failed on capture-email:', capiResult.error);
+          } else {
+            console.log('[Meta CAPI] Lead event sent on capture-email:', capiResult.eventId);
+          }
+        } catch (capiError) {
+          console.error('[Meta CAPI] capture-email error:', capiError);
+        }
+      } else {
+        console.log('[Email Capture] Lead created, Meta CAPI will fire on OTP verification:', lead.id);
+      }
     }
 
     // Save to analytics_events for retargeting
@@ -425,5 +473,3 @@ export async function POST(request: NextRequest) {
     }, 500);
   }
 }
-
-

@@ -19,53 +19,52 @@ import crypto from 'crypto';
 // ============================================================================
 
 // Funnel-specific pixel IDs
-const META_PIXEL_ID_INSURANCE = process.env.META_PIXEL_ID_INSURANCE;
+// Canonical names per .env.example: META_PIXEL_ID_LIFE_INSURANCE / META_PIXEL_ID_COLLEGE.
+// Legacy META_PIXEL_ID_INSURANCE kept for backward compatibility during transition.
+const META_PIXEL_ID_LIFE_INSURANCE =
+  process.env.META_PIXEL_ID_LIFE_INSURANCE || process.env.META_PIXEL_ID_INSURANCE;
 const META_PIXEL_ID_COLLEGE = process.env.META_PIXEL_ID_COLLEGE;
 const META_PIXEL_ID = process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID; // Fallback
+
+// Funnel-specific access tokens. Each pixel has its own system-user token in Meta —
+// pairing a pixel ID with the wrong token returns 190/Invalid OAuth.
+const META_CAPI_TOKEN_LIFE_INSURANCE = process.env.META_CAPI_TOKEN_LIFE_INSURANCE;
+const META_CAPI_TOKEN_COLLEGE = process.env.META_CAPI_TOKEN_COLLEGE;
 const META_CAPI_TOKEN = process.env.META_CAPI_TOKEN || process.env.META_CAPI_ACCESS_TOKEN;
-const META_CAPI_VERSION = process.env.META_CAPI_VERSION || 'v18.0';
+const META_CAPI_VERSION = process.env.META_CAPI_VERSION || 'v21.0';
 const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE; // Optional, for testing
 
 /**
  * Get the correct pixel ID based on funnel type
  */
 export function getPixelIdForFunnel(funnelType?: string | null): string | undefined {
-  // #region agent log
-  console.log('[DEBUG-H1] getPixelIdForFunnel called:', {funnelType, META_PIXEL_ID_INSURANCE, META_PIXEL_ID_COLLEGE, META_PIXEL_ID});
-  // #endregion
-  
-  if (!funnelType) {
-    // #region agent log
-    console.log('[DEBUG-H1] No funnelType, returning fallback:', {result: META_PIXEL_ID});
-    // #endregion
-    return META_PIXEL_ID;
-  }
+  if (!funnelType) return META_PIXEL_ID;
 
   const normalized = funnelType.toLowerCase();
-  
-  // Life Insurance funnel
   if (normalized.includes('insurance') || normalized.includes('life')) {
-    const result = META_PIXEL_ID_INSURANCE || META_PIXEL_ID;
-    // #region agent log
-    console.log('[DEBUG-H2] Matched insurance funnel:', {normalized, result, META_PIXEL_ID_INSURANCE, META_PIXEL_ID});
-    // #endregion
-    return result;
+    return META_PIXEL_ID_LIFE_INSURANCE || META_PIXEL_ID;
   }
-  
-  // College Consulting funnel
   if (normalized.includes('college') || normalized.includes('consulting')) {
-    const result = META_PIXEL_ID_COLLEGE || META_PIXEL_ID;
-    // #region agent log
-    console.log('[DEBUG-H2] Matched college funnel:', {normalized, result});
-    // #endregion
-    return result;
+    return META_PIXEL_ID_COLLEGE || META_PIXEL_ID;
   }
-  
-  // Default fallback
-  // #region agent log
-  console.log('[DEBUG-H1] No match, using fallback:', {normalized, result: META_PIXEL_ID});
-  // #endregion
   return META_PIXEL_ID;
+}
+
+/**
+ * Get the correct CAPI access token based on funnel type.
+ * Token must travel with its paired pixel — Meta rejects mismatches.
+ */
+export function getTokenForFunnel(funnelType?: string | null): string | undefined {
+  if (!funnelType) return META_CAPI_TOKEN;
+
+  const normalized = funnelType.toLowerCase();
+  if (normalized.includes('insurance') || normalized.includes('life')) {
+    return META_CAPI_TOKEN_LIFE_INSURANCE || META_CAPI_TOKEN;
+  }
+  if (normalized.includes('college') || normalized.includes('consulting')) {
+    return META_CAPI_TOKEN_COLLEGE || META_CAPI_TOKEN;
+  }
+  return META_CAPI_TOKEN;
 }
 
 // ============================================================================
@@ -274,17 +273,25 @@ export function buildUserData(input: {
   if (input.date_of_birth) {
     userData.db = input.date_of_birth; // YYYYMMDD format
   }
+  // Geo fields are PII per Meta — hash like email/phone (lowercase, trim, then SHA256).
   if (input.city) {
-    userData.ct = input.city;
+    const hashedCity = hashForMeta(input.city);
+    if (hashedCity) userData.ct = hashedCity;
   }
   if (input.state) {
-    userData.st = input.state.substring(0, 2).toUpperCase();
+    const hashedState = hashForMeta(input.state.substring(0, 2));
+    if (hashedState) userData.st = hashedState;
   }
   if (input.zip_code) {
-    userData.zp = input.zip_code.substring(0, 10); // Max 10 chars
+    const hashedZip = hashForMeta(input.zip_code.substring(0, 10));
+    if (hashedZip) userData.zp = hashedZip;
   }
-  if (input.country) {
-    userData.country = input.country.substring(0, 2).toUpperCase();
+  // Country: hash like other PII. Default to 'us' so the signal is always present.
+  // Meta expects 2-letter ISO code, lowercased + trimmed before hashing.
+  const countryRaw = (input.country || 'us').toLowerCase().trim().substring(0, 2);
+  const hashedCountry = hashForMeta(countryRaw);
+  if (hashedCountry) {
+    userData.country = hashedCountry;
   }
 
   return userData;
@@ -310,17 +317,10 @@ export async function sendMetaCAPIEvent(
   const testEventCode = options.testEventCode || META_TEST_EVENT_CODE;
   const maxRetries = options.retries ?? 3;
 
-  // #region agent log
-  console.log('[DEBUG-H3] sendMetaCAPIEvent called:', {pixelId: pixelId || 'MISSING', accessToken: accessToken ? 'SET' : 'MISSING', eventId: event.event_id, eventName: event.event_name});
-  // #endregion
-
-  // Validate configuration
+  // Fail-open: if pixel/token are missing, log a warning and skip rather than throw.
   if (!pixelId || !accessToken) {
-    const error = 'Meta CAPI not configured: Missing META_PIXEL_ID or META_CAPI_TOKEN';
-    console.warn(`[Meta CAPI] ${error}`);
-    // #region agent log
-    console.log('[DEBUG-H4] Meta CAPI not configured:', {pixelId: pixelId || 'MISSING', accessToken: accessToken ? 'SET' : 'MISSING', error});
-    // #endregion
+    const error = 'Meta CAPI not configured: Missing pixel ID or access token';
+    console.warn(`📡 [CAPI] SKIPPED ${event.event_name} | id:${event.event_id.slice(-8)} | ${error}`);
     return {
       success: false,
       eventId: event.event_id,
@@ -360,19 +360,9 @@ export async function sendMetaCAPIEvent(
       }
 
       if (response.ok) {
-        // Success
-        // #region agent log
-        console.log('[DEBUG-H5] Meta CAPI SUCCESS:', {eventId: event.event_id, eventName: event.event_name, responseData, pixelId});
-        // #endregion
-        
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`[Meta CAPI] Event sent successfully:`, {
-            eventId: event.event_id,
-            eventName: event.event_name,
-            response: responseData,
-          });
-        }
-
+        console.log(
+          `📡 [CAPI] ✅ ${event.event_name} | id:${event.event_id.slice(-8)} | pixel:${pixelId}`
+        );
         return {
           success: true,
           eventId: event.event_id,
@@ -382,9 +372,9 @@ export async function sendMetaCAPIEvent(
         // API error
         const errorMessage = responseData?.error?.message || responseText || 'Unknown error';
         lastError = new Error(`Meta CAPI error (${response.status}): ${errorMessage}`);
-        // #region agent log
-        console.log('[DEBUG-H6] Meta CAPI ERROR:', {status: response.status, errorMessage, eventId: event.event_id, pixelId});
-        // #endregion
+        console.error(
+          `📡 [CAPI] ❌ ${event.event_name} | status:${response.status} | id:${event.event_id.slice(-8)} | ${errorMessage}`
+        );
 
         // Don't retry on certain errors (authentication, invalid data)
         if (response.status === 401 || response.status === 400) {
@@ -547,13 +537,39 @@ export function createLeadEvent(params: {
   userData: MetaUserData;
   customData?: MetaCustomData;
   eventTime?: number;
+  eventId?: string;
   eventSourceUrl?: string;
 }): MetaCAPIEvent {
   const eventTime = params.eventTime || Math.floor(Date.now() / 1000);
-  const eventId = generateEventId(params.leadId, 'Lead', eventTime);
+  const eventId = params.eventId || generateEventId(params.leadId, 'Lead', eventTime);
 
   return {
     event_name: 'Lead',
+    event_time: eventTime,
+    event_id: eventId,
+    action_source: 'website',
+    user_data: params.userData,
+    custom_data: params.customData,
+    event_source_url: params.eventSourceUrl,
+  };
+}
+
+/**
+ * Create a standard PageView event
+ */
+export function createPageViewEvent(params: {
+  pageId: string;
+  userData: MetaUserData;
+  customData?: MetaCustomData;
+  eventTime?: number;
+  eventId?: string;
+  eventSourceUrl?: string;
+}): MetaCAPIEvent {
+  const eventTime = params.eventTime || Math.floor(Date.now() / 1000);
+  const eventId = params.eventId || generateEventId(params.pageId, 'PageView', eventTime);
+
+  return {
+    event_name: 'PageView',
     event_time: eventTime,
     event_id: eventId,
     action_source: 'website',
@@ -625,6 +641,7 @@ export function createCustomEvent(params: {
  */
 export async function sendLeadEvent(params: {
   leadId: string;
+  eventId?: string;
   email?: string | null;
   phone?: string | null;
   firstName?: string | null;
@@ -634,17 +651,19 @@ export async function sendLeadEvent(params: {
   fbLoginId?: string | null; // Facebook Login ID (do NOT hash)
   ipAddress?: string | null;
   userAgent?: string | null;
+  // EMQ signal fields — forwarded into user_data, hashed where required.
+  externalId?: string | null;  // session_id, hashed
+  city?: string | null;        // hashed
+  state?: string | null;       // hashed
+  zipCode?: string | null;     // hashed
+  country?: string | null;     // hashed; defaults to 'us' if not provided
   value?: number;
   currency?: string;
   customData?: MetaCustomData;
   eventSourceUrl?: string;
-  funnelType?: string | null; // NEW: Determines which pixel to use
+  funnelType?: string | null; // Determines which pixel + token to use
   options?: SendCAPIOptions;
 }): Promise<SendCAPIResult> {
-  // #region agent log
-  console.log('[DEBUG-H7] sendLeadEvent called:', {leadId: params.leadId, funnelType: params.funnelType, email: params.email ? 'SET' : 'MISSING'});
-  // #endregion
-  
   const userData = buildUserData({
     email: params.email,
     phone: params.phone,
@@ -655,6 +674,11 @@ export async function sendLeadEvent(params: {
     fb_login_id: params.fbLoginId,
     ip_address: params.ipAddress,
     user_agent: params.userAgent,
+    external_id: params.externalId,
+    city: params.city,
+    state: params.state,
+    zip_code: params.zipCode,
+    country: params.country,
   });
 
   const customData: MetaCustomData = {
@@ -667,20 +691,66 @@ export async function sendLeadEvent(params: {
     leadId: params.leadId,
     userData,
     customData,
+    eventId: params.eventId,
     eventSourceUrl: params.eventSourceUrl,
   });
 
-  // Determine pixel ID based on funnel type
-  const pixelId = getPixelIdForFunnel(params.funnelType);
-  
-  // #region agent log
-  console.log('[DEBUG-H8] Pixel ID selected:', {funnelType: params.funnelType, selectedPixelId: pixelId, optionsPixelId: params.options?.pixelId});
-  // #endregion
-  
-  // Merge options with funnel-specific pixel ID
+  // Pixel + token must come from the same funnel — Meta rejects mismatched pairs.
   const finalOptions: SendCAPIOptions = {
     ...params.options,
-    pixelId: params.options?.pixelId || pixelId, // Allow manual override
+    pixelId: params.options?.pixelId || getPixelIdForFunnel(params.funnelType),
+    accessToken: params.options?.accessToken || getTokenForFunnel(params.funnelType),
+  };
+
+  return sendMetaCAPIEvent(event, finalOptions);
+}
+
+/**
+ * Send a PageView event with automatic user data building
+ */
+export async function sendPageViewEvent(params: {
+  pageId: string;
+  eventId?: string;
+  fbp?: string | null;
+  fbc?: string | null;
+  fbLoginId?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  externalId?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zipCode?: string | null;
+  country?: string | null;
+  customData?: MetaCustomData;
+  eventSourceUrl?: string;
+  funnelType?: string | null;
+  options?: SendCAPIOptions;
+}): Promise<SendCAPIResult> {
+  const userData = buildUserData({
+    fbp: params.fbp,
+    fbc: params.fbc,
+    fb_login_id: params.fbLoginId,
+    ip_address: params.ipAddress,
+    user_agent: params.userAgent,
+    external_id: params.externalId,
+    city: params.city,
+    state: params.state,
+    zip_code: params.zipCode,
+    country: params.country,
+  });
+
+  const event = createPageViewEvent({
+    pageId: params.pageId,
+    userData,
+    customData: params.customData,
+    eventId: params.eventId,
+    eventSourceUrl: params.eventSourceUrl,
+  });
+
+  const finalOptions: SendCAPIOptions = {
+    ...params.options,
+    pixelId: params.options?.pixelId || getPixelIdForFunnel(params.funnelType),
+    accessToken: params.options?.accessToken || getTokenForFunnel(params.funnelType),
   };
 
   return sendMetaCAPIEvent(event, finalOptions);
@@ -693,7 +763,5 @@ export async function sendLeadEvent(params: {
  * @returns true if pixel ID and token are configured
  */
 export function isMetaCAPIConfigured(funnelType?: string | null): boolean {
-  const pixelId = getPixelIdForFunnel(funnelType);
-  return !!(pixelId && META_CAPI_TOKEN);
+  return !!(getPixelIdForFunnel(funnelType) && getTokenForFunnel(funnelType));
 }
-

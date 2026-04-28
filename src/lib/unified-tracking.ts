@@ -57,6 +57,7 @@ export interface LeadData {
   funnelType: string;
   leadScore?: number;
   utmParams?: Record<string, any>;
+  metaEventId?: string;
 }
 
 export interface SupabaseTrackingEvent {
@@ -200,11 +201,19 @@ function trackGA4Event(eventName: string, parameters: Record<string, any>): void
 /**
  * Track Meta Pixel event
  */
-function trackMetaEvent(eventName: string, parameters: Record<string, any>): void {
+function trackMetaEvent(
+  eventName: string,
+  parameters: Record<string, any>,
+  options?: { eventId?: string }
+): void {
   if (isBot()) return;
   
   if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-    window.fbq('track', eventName, parameters);
+    if (options?.eventId) {
+      window.fbq('track', eventName, parameters, { eventID: options.eventId });
+    } else {
+      window.fbq('track', eventName, parameters);
+    }
     console.log(`✅ Meta: ${eventName}`, parameters);
   } else {
     console.warn('⚠️ Meta Pixel not available');
@@ -535,6 +544,7 @@ export function trackEmailCapture(email: string, sessionId: string, funnelType: 
  */
 export function trackLeadFormSubmit(leadData: LeadData): void {
   console.log('📊 Tracking lead_form_submit:', { email: leadData.email, sessionId: leadData.sessionId });
+  const metaEventId = (leadData as any).metaEventId || `${leadData.sessionId}-Lead-${Math.floor(Date.now() / 1000)}`;
   
   // Client-side tracking
   trackGA4Event('lead_form_submit', {
@@ -548,12 +558,20 @@ export function trackLeadFormSubmit(leadData: LeadData): void {
   
   // Meta Pixel Lead event
   trackMetaEvent('Lead', {
-    content_name: leadData.funnelType === 'life_insurance_ca' 
-      ? 'Life Insurance Canada Lead' 
-      : 'College Planning Lead',
+    content_name:
+      leadData.funnelType === 'life_insurance_us'
+        ? 'Life Insurance US Lead'
+        : leadData.funnelType === 'life_insurance_ca' || leadData.funnelType === 'life_insurance_ca_variant_b'
+          ? 'Life Insurance Canada Lead'
+          : 'College Planning Lead',
     content_category: 'lead_generation',
     value: leadData.leadScore || 0,
-    currency: leadData.funnelType === 'life_insurance_ca' ? 'CAD' : 'USD'
+    currency:
+      leadData.funnelType === 'life_insurance_ca' || leadData.funnelType === 'life_insurance_ca_variant_b'
+        ? 'CAD'
+        : 'USD'
+  }, {
+    eventId: metaEventId
   });
   
   // Server-side tracking handled by verify-otp-and-send-to-ghl route
