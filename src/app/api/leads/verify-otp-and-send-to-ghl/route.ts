@@ -5,7 +5,7 @@ import { formatPhoneForGHL, formatE164 } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
 import { sendLeadEvent } from '@/lib/meta-capi-service';
 import {
-  sendLeadToWebhooks,
+  sendLeadToGhl,
   logWebhookDelivery,
   buildWebhookPayload
 } from '@/lib/webhook-delivery';
@@ -330,6 +330,12 @@ export async function POST(request: NextRequest) {
       null;
     const userAgent = request.headers.get('user-agent') || null;
 
+    // Server-side EMQ enrichment for the CAPI call below.
+    const fbpFromCookie = request.cookies.get('_fbp')?.value || null;
+    const fbcFromCookie = request.cookies.get('_fbc')?.value || null;
+    const inferredCity = request.headers.get('x-vercel-ip-city') || null;
+    const inferredPostalCode = request.headers.get('x-vercel-ip-postal-code') || null;
+
     // Extract UTM parameters - use null instead of defaults to clearly indicate missing UTM data
     const utmSource = utmParams?.utm_source || null;
     const utmMedium = utmParams?.utm_medium || null;
@@ -469,7 +475,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (lead?.id) {
+    if (lead?.id && funnelType !== 'life_insurance_us') {
       try {
         const capiResult = await sendLeadEvent({
           leadId: lead.id,
@@ -477,11 +483,16 @@ export async function POST(request: NextRequest) {
           phone: phoneNumber,
           firstName,
           lastName,
-          fbp: metaCookies?.fbp || null,
-          fbc: metaCookies?.fbc || null,
+          fbp: fbpFromCookie || metaCookies?.fbp || null,
+          fbc: fbcFromCookie || metaCookies?.fbc || null,
           fbLoginId: metaCookies?.fbLoginId || null,
           ipAddress,
           userAgent,
+          externalId: sessionId || null,
+          city: inferredCity,
+          state: state || null,
+          zipCode: zipCode || inferredPostalCode || null,
+          country: 'us',
           value: 0,
           currency: 'USD',
           customData: {
@@ -491,6 +502,7 @@ export async function POST(request: NextRequest) {
             zip_code: zipCode,
           },
           eventSourceUrl: request.headers.get('referer') || request.url,
+          funnelType: funnelType || lead.funnel_type || 'life_insurance_ca',
         });
 
         if (!capiResult.success) {
@@ -514,7 +526,6 @@ export async function POST(request: NextRequest) {
       return createCorsResponse({ error: 'Contact not found' }, 404);
     }
 
-    // Build unified webhook payload (sends to both GHL and Zapier)
     const householdIncome = quizAnswers?.household_income || lead.quiz_answers?.household_income || null;
     const webhookPayload = buildWebhookPayload({
       firstName: firstName || contact.first_name,
@@ -539,12 +550,10 @@ export async function POST(request: NextRequest) {
       userAgent: userAgent || undefined
     });
 
-    console.log('📤 Sending to unified webhooks (GHL + Zapier)...');
-    
-    // Send to both GHL and Zapier webhooks in parallel
-    const deliveryResult = await sendLeadToWebhooks(webhookPayload, true);
-    
-    // Log webhook delivery to analytics_events
+    console.log('📤 Sending lead to GHL...');
+
+    const deliveryResult = await sendLeadToGhl(webhookPayload, true);
+
     await logWebhookDelivery(
       lead.id,
       contact.id,
@@ -554,30 +563,23 @@ export async function POST(request: NextRequest) {
       utmParams
     );
 
-    // Check if at least one webhook succeeded
-    const hasSuccess = deliveryResult.ghl?.success || deliveryResult.zapier?.success;
-    
-    if (hasSuccess) {
-      console.log('✅ Lead sent to webhooks:', {
-        leadId: lead.id,
-        ghl: deliveryResult.ghl?.success ? 'success' : 'failed',
-        zapier: deliveryResult.zapier?.success ? 'success' : 'failed'
-      });
+    if (deliveryResult.ghl?.success) {
+      console.log('✅ Lead sent to GHL:', { leadId: lead.id });
       return createCorsResponse({
         success: true,
         leadId: lead.id,
         contactId: contact.id,
         webhookResults: deliveryResult
       });
-    } else {
-      console.error('❌ All webhooks failed:', deliveryResult);
-      return createCorsResponse({
-        error: 'All webhooks failed',
-        leadId: lead.id,
-        contactId: contact.id,
-        webhookResults: deliveryResult
-      }, 500);
     }
+
+    console.error('❌ GHL delivery failed:', deliveryResult);
+    return createCorsResponse({
+      error: 'GHL delivery failed',
+      leadId: lead.id,
+      contactId: contact.id,
+      webhookResults: deliveryResult
+    }, 500);
 
   } catch (error) {
     console.error('💥 OTP Verification Exception:', error);
