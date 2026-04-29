@@ -267,6 +267,16 @@ export async function logWebhookDelivery(
 
     const ghlWebhookUrl = getGhlWebhookUrl(payload.funnelType);
 
+    // Log the exact flat shape that was POSTed to GHL (with PII redacted)
+    const flatPayload = flattenPayloadForGhl(payload);
+    const redactedFlatPayload = {
+      ...flatPayload,
+      phone: flatPayload.phone ? '***' + String(flatPayload.phone).slice(-4) : flatPayload.phone,
+      email: flatPayload.email
+        ? flatPayload.email.split('@')[0].substring(0, 3) + '***@' + flatPayload.email.split('@')[1]
+        : flatPayload.email,
+    };
+
     await callreadyQuizDb.from('analytics_events').insert({
       event_name: 'webhook_delivery',
       event_category: 'lead_distribution',
@@ -295,11 +305,7 @@ export async function logWebhookDelivery(
             duration: deliveryResult.ghl.duration
           }
         },
-        request_payload: {
-          ...payload,
-          phone: '***' + payload.phone.slice(-4),
-          email: payload.email.split('@')[0].substring(0, 3) + '***@' + payload.email.split('@')[1]
-        },
+        request_payload: redactedFlatPayload,
         utm_parameters: utmParams || {}
       }
     });
