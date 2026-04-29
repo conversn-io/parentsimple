@@ -664,6 +664,14 @@ export async function sendLeadEvent(params: {
   funnelType?: string | null; // Determines which pixel + token to use
   options?: SendCAPIOptions;
 }): Promise<SendCAPIResult> {
+  console.log('🟣 [CAPI] Preparing Lead event:', {
+    funnelType: params.funnelType || null,
+    leadId: params.leadId,
+    eventId: params.eventId || null,
+    hasEmail: Boolean(params.email),
+    hasPhone: Boolean(params.phone),
+  });
+
   const userData = buildUserData({
     email: params.email,
     phone: params.phone,
@@ -726,6 +734,13 @@ export async function sendPageViewEvent(params: {
   funnelType?: string | null;
   options?: SendCAPIOptions;
 }): Promise<SendCAPIResult> {
+  console.log('🟣 [CAPI] Preparing PageView event:', {
+    funnelType: params.funnelType || null,
+    pageId: params.pageId,
+    eventId: params.eventId || null,
+    path: params.customData?.page_path || null,
+  });
+
   const userData = buildUserData({
     fbp: params.fbp,
     fbc: params.fbc,

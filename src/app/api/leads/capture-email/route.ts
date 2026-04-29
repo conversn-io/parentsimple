@@ -108,9 +108,8 @@ async function upsertContact(email: string, firstName: string | null, lastName: 
 }
 
 export async function POST(request: NextRequest) {
-  console.log('📧 Lead Capture (All Contact Data):', {
-    timestamp: new Date().toISOString()
-  });
+  console.log('🟠 [LEAD] Capture-email request received');
+  console.log('⏰ [LEAD] Timestamp:', new Date().toISOString());
 
   try {
     const body = await request.json();
@@ -137,10 +136,18 @@ export async function POST(request: NextRequest) {
       return createCorsResponse({ error: 'Email is required' }, 400);
     }
 
+    console.log('🧭 [LEAD] Route summary:', {
+      funnelType,
+      sessionId: sessionId || null,
+      email,
+      hasPhone: Boolean(phoneNumber),
+      eventId: metaEventId || null,
+    });
+
     // Upsert contact (with phone if provided)
     const contact = await upsertContact(email, firstName, lastName, phoneNumber || null);
     const contactId = contact.id || contact;
-    console.log('✅ Contact upserted:', contactId);
+    console.log('👤 [LEAD] Contact upserted:', contactId);
 
     // Extract UTM parameters - use null instead of defaults to clearly indicate missing UTM data
     const utmSource = utmParams?.utm_source || null;
@@ -265,7 +272,7 @@ export async function POST(request: NextRequest) {
         const isPGRST204 = errorCode === 'PGRST204';
         const mentionsColumn = errorMessage.includes('column') || errorMessage.includes('could not find');
         
-        console.log('⚠️ Lead update error, attempting retry without optional columns:', {
+        console.log('🟡 [LEAD] Update error, retrying without optional columns:', {
           error: updateError.message || updateError,
           code: errorCode,
           details: updateError.details,
@@ -280,7 +287,7 @@ export async function POST(request: NextRequest) {
           delete leadData.attributed_ad_account;
           delete leadData.profit_center;
           
-          console.log('🔄 Retrying update without optional columns (form_type, attributed_ad_account, profit_center)');
+          console.log('🔄 [LEAD] Retrying update without optional columns');
           
           const { data: fallbackUpdated, error: fallbackError } = await callreadyQuizDb
             .from('leads')
@@ -291,9 +298,9 @@ export async function POST(request: NextRequest) {
           
           if (fallbackUpdated) {
             lead = fallbackUpdated;
-            console.log('✅ Lead updated (without optional columns):', lead.id);
+            console.log('🟢 [LEAD] Lead updated (without optional columns):', lead.id);
           } else {
-            console.error('❌ Fallback lead update also failed:', fallbackError);
+            console.error('🔴 [LEAD] Fallback lead update failed:', fallbackError);
             throw updateError;
           }
         } else {
@@ -301,7 +308,7 @@ export async function POST(request: NextRequest) {
         }
       } else {
         lead = updated || existingLead;
-        console.log('✅ Lead updated:', lead.id);
+        console.log('🟢 [LEAD] Lead updated:', lead.id);
       }
     } else {
       // Create new lead
@@ -317,7 +324,7 @@ export async function POST(request: NextRequest) {
         const isPGRST204 = errorCode === 'PGRST204';
         const mentionsColumn = errorMessage.includes('column') || errorMessage.includes('could not find');
         
-        console.log('⚠️ Lead creation error, attempting retry without optional columns:', {
+        console.log('🟡 [LEAD] Creation error, retrying without optional columns:', {
           error: leadError.message || leadError,
           code: errorCode,
           details: leadError.details,
@@ -332,7 +339,7 @@ export async function POST(request: NextRequest) {
           delete leadData.attributed_ad_account;
           delete leadData.profit_center;
           
-          console.log('🔄 Retrying without optional columns (form_type, attributed_ad_account, profit_center)');
+          console.log('🔄 [LEAD] Retrying create without optional columns');
           
           const { data: fallbackLead, error: fallbackError } = await callreadyQuizDb
             .from('leads')
@@ -342,9 +349,9 @@ export async function POST(request: NextRequest) {
           
           if (fallbackLead) {
             lead = fallbackLead;
-            console.log('✅ Lead created (without optional columns):', lead.id);
+            console.log('🟢 [LEAD] Lead created (without optional columns):', lead.id);
           } else {
-            console.error('❌ Fallback lead creation also failed:', fallbackError);
+            console.error('🔴 [LEAD] Fallback lead creation failed:', fallbackError);
             throw leadError; // Throw original error
           }
         } else {
@@ -353,13 +360,21 @@ export async function POST(request: NextRequest) {
         }
       } else {
         lead = newLead;
-        console.log('✅ Lead created:', lead.id);
+        console.log('🟢 [LEAD] Lead created:', lead.id);
       }
     }
 
     if (lead?.id) {
       if (funnelType === 'life_insurance_us') {
         try {
+          console.log('🟣 [LEAD] Dispatching Meta CAPI Lead:', {
+            funnelType,
+            leadId: lead.id,
+            sessionId: sessionId || null,
+            eventId: metaEventId || null,
+            email,
+          });
+
           const capiResult = await sendLeadEvent({
             leadId: lead.id,
             eventId: metaEventId || undefined,
@@ -390,15 +405,18 @@ export async function POST(request: NextRequest) {
           });
 
           if (!capiResult.success) {
-            console.error('[Meta CAPI] Lead event failed on capture-email:', capiResult.error);
+            console.error('🔴 [LEAD] Meta CAPI Lead failed:', capiResult.error);
           } else {
-            console.log('[Meta CAPI] Lead event sent on capture-email:', capiResult.eventId);
+            console.log('🟢 [LEAD] Meta CAPI Lead sent:', capiResult.eventId);
           }
         } catch (capiError) {
-          console.error('[Meta CAPI] capture-email error:', capiError);
+          console.error('💥 [LEAD] Meta CAPI Lead exception:', capiError);
         }
       } else {
-        console.log('[Email Capture] Lead created, Meta CAPI will fire on OTP verification:', lead.id);
+        console.log('⚪ [LEAD] CAPI deferred to OTP verification for funnel:', {
+          funnelType,
+          leadId: lead.id,
+        });
       }
     }
 
@@ -445,9 +463,9 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('⚠️ Analytics event save failed (non-critical):', error);
+      console.error('🟡 [LEAD] Analytics event save failed (non-critical):', error);
     } else {
-      console.log('✅ Analytics event saved:', event.id);
+      console.log('🟢 [LEAD] Analytics event saved:', event.id);
     }
 
     return createCorsResponse({ 
@@ -459,7 +477,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('💥 Email Capture Exception:', {
+    console.error('💥 [LEAD] Capture-email exception:', {
       error: error.message || error,
       stack: error.stack,
       details: error.details || error.hint || 'No additional details',

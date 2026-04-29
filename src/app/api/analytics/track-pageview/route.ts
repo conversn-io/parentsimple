@@ -9,12 +9,12 @@ import { sendPageViewEvent } from '@/lib/meta-capi-service';
  * Used by temp-tracking.ts to send page_view events.
  */
 export async function POST(request: NextRequest) {
-  console.log('📊 PageView Tracking API Called');
-  console.log('⏰ Timestamp:', new Date().toISOString());
+  console.log('🔵 [PV] PageView tracking request received');
+  console.log('⏰ [PV] Timestamp:', new Date().toISOString());
   
   try {
     const body = await request.json();
-    console.log('📥 PageView Data:', JSON.stringify(body, null, 2));
+    console.log('📥 [PV] Payload received:', JSON.stringify(body, null, 2));
     
     const {
       event_name = 'page_view',
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     if (!session_id) {
-      console.warn('⚠️ Missing session_id in pageview request');
+      console.warn('🟡 [PV] Missing session_id in pageview request');
       return NextResponse.json(
         { error: 'session_id is required' },
         { status: 400 }
@@ -52,7 +52,16 @@ export async function POST(request: NextRequest) {
     const fbclid = utmParameters?.fbclid || null;
     const msclkid = utmParameters?.msclkid || null;
 
-    console.log('💾 Inserting pageview to analytics_events:', {
+    const funnelType = properties?.funnel_type || 'college_consulting';
+    console.log('🧭 [PV] Route summary:', {
+      funnelType,
+      pagePath: page_path || null,
+      pageTitle: page_title || null,
+      sessionId: session_id,
+      eventId: event_id || null,
+    });
+
+    console.log('💾 [PV] Writing analytics event:', {
       event_name,
       session_id,
       page_url: page_url || page_path,
@@ -95,22 +104,21 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('❌ Supabase PageView insert error:', error);
-      console.error('❌ Error details:', JSON.stringify(error, null, 2));
+      console.error('🔴 [PV] Supabase insert failed:', error);
+      console.error('🔴 [PV] Error details:', JSON.stringify(error, null, 2));
       return NextResponse.json(
         { error: 'Failed to save PageView event', details: error.message },
         { status: 500 }
       );
     }
 
-    console.log('✅ PageView saved to Supabase successfully:', {
+    console.log('🟢 [PV] Supabase pageview saved:', {
       id: data.id,
       event_name: data.event_name,
       session_id: data.session_id,
       page_url: data.page_url
     });
 
-    const funnelType = properties?.funnel_type || 'college_consulting';
     if (funnelType === 'life_insurance_us') {
       try {
         // Server cookies + Vercel geo headers — same EMQ enrichment as the lead routes.
@@ -118,6 +126,13 @@ export async function POST(request: NextRequest) {
         const fbcFromCookie = request.cookies.get('_fbc')?.value || null;
         const inferredCity = request.headers.get('x-vercel-ip-city') || null;
         const inferredPostalCode = request.headers.get('x-vercel-ip-postal-code') || null;
+
+        console.log('🟣 [PV] Dispatching Meta CAPI PageView:', {
+          funnelType,
+          sessionId: session_id,
+          eventId: event_id || null,
+          pagePath: page_path || null,
+        });
 
         const capiResult = await sendPageViewEvent({
           pageId: session_id,
@@ -141,13 +156,18 @@ export async function POST(request: NextRequest) {
         });
 
         if (!capiResult.success) {
-          console.error('[Meta CAPI] PageView event failed:', capiResult.error);
+          console.error('🔴 [PV] Meta CAPI PageView failed:', capiResult.error);
         } else {
-          console.log('[Meta CAPI] PageView event sent:', capiResult.eventId);
+          console.log('🟢 [PV] Meta CAPI PageView sent:', capiResult.eventId);
         }
       } catch (capiError) {
-        console.error('[Meta CAPI] PageView error:', capiError);
+        console.error('💥 [PV] Meta CAPI PageView exception:', capiError);
       }
+    } else {
+      console.log('⚪ [PV] Meta CAPI skipped for non-US funnel:', {
+        funnelType,
+        sessionId: session_id,
+      });
     }
 
     return NextResponse.json({
@@ -156,13 +176,12 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('💥 PageView Tracking Exception:', error);
-    console.error('💥 Stack trace:', error.stack);
+    console.error('💥 [PV] PageView tracking exception:', error);
+    console.error('💥 [PV] Stack trace:', error.stack);
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
     );
   }
 }
-
 
