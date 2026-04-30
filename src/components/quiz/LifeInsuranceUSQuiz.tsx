@@ -299,6 +299,7 @@ export function LifeInsuranceUSQuiz() {
               ))}
             </div>
 
+            <p className="text-center text-sm text-gray-600 mb-2">You may qualify for:</p>
             <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
               <div className="flex items-center gap-2">
                 <span className="text-green-600">✓</span>
