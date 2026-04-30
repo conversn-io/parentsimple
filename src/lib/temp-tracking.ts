@@ -19,9 +19,6 @@ declare global {
 const GA4_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID_PARENTSIMPLE || 'G-XXXXXXXXXX';
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID_PARENTSIMPLE || '';
 const GHL_WEBHOOK = process.env.PARENTSIMPLE_GHL_WEBHOOK || process.env.GHL_WEBHOOK;
-const SUPABASE_QUIZ_URL = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_URL || 'https://jqjftrlnyysqcwbbigpw.supabase.co';
-const SUPABASE_QUIZ_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY || '';
-
 // Debug logging
 console.log('🔧 ParentSimple Temp Tracking Config:', {
   GA4_ID: GA4_MEASUREMENT_ID,
@@ -280,11 +277,10 @@ async function sendPageViewToSupabase(
     return;
   }
 
-  // Skip if Supabase not configured
-  if (!SUPABASE_QUIZ_URL || !SUPABASE_QUIZ_ANON_KEY) {
-    console.warn('⚠️ Supabase not configured, skipping PageView tracking');
-    return;
-  }
+  // The /api/analytics/track-pageview route writes via a server-side
+  // Supabase client with its own credentials, so the NEXT_PUBLIC anon key
+  // is not required. Previously this gate silently dropped pageview
+  // tracking when the env was missing on a deploy.
 
   try {
     // Get tracking IDs

@@ -27,14 +27,10 @@ declare global {
 // Configuration
 const GA4_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID_PARENTSIMPLE || 'G-ZC29XQ0W2J';
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID_PARENTSIMPLE || '799755069642014';
-const SUPABASE_QUIZ_URL = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_URL || 'https://jqjftrlnyysqcwbbigpw.supabase.co';
-const SUPABASE_QUIZ_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY || '';
 
 console.log('🔧 ParentSimple Unified Tracking Config:', {
   GA4_ID: GA4_MEASUREMENT_ID,
   META_ID: META_PIXEL_ID,
-  SUPABASE_URL: SUPABASE_QUIZ_URL ? 'Set' : 'Missing',
-  SUPABASE_KEY: SUPABASE_QUIZ_ANON_KEY ? 'Set' : 'Missing'
 });
 
 // ============================================================================
@@ -233,10 +229,10 @@ async function sendToSupabase(eventData: SupabaseTrackingEvent): Promise<boolean
     return false;
   }
 
-  if (!SUPABASE_QUIZ_URL || !SUPABASE_QUIZ_ANON_KEY) {
-    console.warn('⚠️ Supabase not configured, skipping server-side tracking');
-    return false;
-  }
+  // Note: the /api/analytics/track-event route writes via a server-side
+  // Supabase client with its own credentials, so the NEXT_PUBLIC anon key
+  // is not required here. Gating on it previously caused silent tracking
+  // loss whenever the env was missing on a deploy.
 
   try {
     const response = await fetch('/api/analytics/track-event', {
