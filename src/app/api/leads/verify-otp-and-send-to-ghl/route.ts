@@ -350,15 +350,16 @@ export async function POST(request: NextRequest) {
     // Find existing lead by session_id (should already exist from capture-email)
     console.log('🔍 Finding existing lead...');
     let lead = null;
-    if (sessionId) {
-      // First, find contact by email to get contact_id
-      const { data: contactByEmail } = await callreadyQuizDb
-        .from('contacts')
-        .select('id')
-        .eq('email', email.toLowerCase())
-        .maybeSingle();
-      
-      if (contactByEmail?.id) {
+    // Look up contact by email first; we need it for both the exact-match
+    // lookup and the recent-lead fallback below.
+    const { data: contactByEmail } = await callreadyQuizDb
+      .from('contacts')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .maybeSingle();
+
+    if (contactByEmail?.id) {
+      if (sessionId) {
         const { data: existingLead } = await callreadyQuizDb
           .from('leads')
           .select('*')
@@ -366,6 +367,33 @@ export async function POST(request: NextRequest) {
           .eq('session_id', sessionId)
           .maybeSingle();
         lead = existingLead;
+      }
+
+      // Fallback: if the sessionId changed mid-funnel (refresh, returned
+      // visitor, new tab), the (contact_id, session_id) match misses the
+      // capture-email row. Pick the most recent un-verified lead for the
+      // same contact + funnel within the last 30 min and re-use it instead
+      // of creating a duplicate.
+      if (!lead) {
+        const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+        const { data: recentLead } = await callreadyQuizDb
+          .from('leads')
+          .select('*')
+          .eq('contact_id', contactByEmail.id)
+          .eq('funnel_type', funnelType || 'insurance')
+          .eq('is_verified', false)
+          .gte('created_at', thirtyMinAgo)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (recentLead) {
+          console.log('🔁 [LEAD] Reusing recent unverified lead despite session mismatch:', {
+            leadId: recentLead.id,
+            originalSessionId: recentLead.session_id,
+            newSessionId: sessionId,
+          });
+          lead = recentLead;
+        }
       }
     }
 
