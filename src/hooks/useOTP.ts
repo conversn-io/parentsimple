@@ -80,7 +80,17 @@ export const useOTP = (config: OTPHookConfig): OTPHookReturn => {
     try {
       // Use client-side environment variables (NEXT_PUBLIC_ prefixed)
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_URL || 'https://jqjftrlnyysqcwbbigpw.supabase.co';
-      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxamZ0cmxueXlzcWN3YmJpZ3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyOTQ2MzksImV4cCI6MjA2Njg3MDYzOX0.ZqgLIflQJY5zC3ZnU5K9k_KEM9bDdNhtq3ek6ckuwjAo';
+      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY;
+      // No silent fallback: a typo'd hardcoded key here previously paired
+      // with a wrong JWT signature. send-otp/verify-otp currently run with
+      // verify_jwt:false so the fallback didn't cause failures, but it
+      // would silently break if JWT verification is ever enabled.
+      if (!anonKey) {
+        const msg = 'NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY is not set';
+        console.error('❌ OTP request aborted:', msg);
+        setState(prev => ({ ...prev, isResending: false, isVerifying: false, error: msg }));
+        return false;
+      }
       
       // Debug environment variables
       console.log('🔍 Environment Debug:', {
@@ -149,7 +159,17 @@ export const useOTP = (config: OTPHookConfig): OTPHookReturn => {
     try {
       // Use client-side environment variables (NEXT_PUBLIC_ prefixed)
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_URL || 'https://jqjftrlnyysqcwbbigpw.supabase.co';
-      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxamZ0cmxueXlzcWN3YmJpZ3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyOTQ2MzksImV4cCI6MjA2Njg3MDYzOX0.ZqgLIflQJY5zC3ZnU5K9k_KEM9bDdNhtq3ek6ckuwjAo';
+      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY;
+      // No silent fallback: a typo'd hardcoded key here previously paired
+      // with a wrong JWT signature. send-otp/verify-otp currently run with
+      // verify_jwt:false so the fallback didn't cause failures, but it
+      // would silently break if JWT verification is ever enabled.
+      if (!anonKey) {
+        const msg = 'NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY is not set';
+        console.error('❌ OTP request aborted:', msg);
+        setState(prev => ({ ...prev, isResending: false, isVerifying: false, error: msg }));
+        return false;
+      }
       
       console.log('🔍 OTP Verify Debug:', {
         supabaseUrl,

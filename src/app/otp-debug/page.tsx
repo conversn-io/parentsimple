@@ -6,7 +6,11 @@ export default function OTPDebugPage() {
     
     // Test the exact same logic as useOTP.ts
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_URL || 'https://jqjftrlnyysqcwbbigpw.supabase.co';
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxamZ0cmxueXlzcWN3YmJpZ3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyOTQ2MzksImV4cCI6MjA2Njg3MDYzOX0.ZqgLIflQJY5zC3ZnU5K9k_KEM9bDdNhtq3ek6ckuwjAo';
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY;
+    if (!anonKey) {
+      console.error('❌ NEXT_PUBLIC_SUPABASE_QUIZ_ANON_KEY is not set — debug page cannot test OTP');
+      return;
+    }
     
     console.log('🔍 Client Environment Debug:', {
       envUrl: process.env.NEXT_PUBLIC_SUPABASE_QUIZ_URL ? 'SET' : 'NOT SET',
