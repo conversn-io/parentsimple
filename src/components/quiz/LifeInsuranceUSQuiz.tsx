@@ -9,6 +9,7 @@ import {
   TOTAL_US_STEPS,
 } from '@/data/life-insurance-us-questions'
 import { formatPhoneForInput } from '@/utils/phone-utils'
+import { validatePhoneAPI, validatePhoneFormat } from '@/utils/phone-validation'
 import { getMetaCookies } from '@/lib/meta-capi-cookies'
 import { useTrustedForm, getTrustedFormCertUrl, getLeadIdToken } from '@/hooks/useTrustedForm'
 import { extractUTMParameters, storeUTMParameters, getStoredUTMParameters, hasUTMParameters, type UTMParameters } from '@/utils/utm-utils'
@@ -37,6 +38,8 @@ export function LifeInsuranceUSQuiz() {
   const [contactPhone, setContactPhone] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [contactError, setContactError] = useState('')
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+  const [phoneValidating, setPhoneValidating] = useState(false)
   const initiateCheckoutFiredRef = useRef(false)
 
   useTrustedForm({ enabled: true })
@@ -153,12 +156,45 @@ export function LifeInsuranceUSQuiz() {
     if (step > 0) setStep(step - 1)
   }
 
+  const handlePhoneBlur = async () => {
+    const digits = contactPhone.replace(/\D/g, '')
+    const format = validatePhoneFormat(digits)
+    if (!format.isValid) {
+      setPhoneError(format.error || null)
+      return
+    }
+    setPhoneError(null)
+    setPhoneValidating(true)
+    try {
+      const apiResult = await validatePhoneAPI(digits, {
+        session_id: sessionId,
+        funnel_type: 'life_insurance_us',
+        path: '/quiz/life-insurance-us',
+      })
+      if (!apiResult.valid) {
+        setPhoneError(apiResult.error || 'Please provide a valid mobile phone number')
+      } else {
+        setPhoneError(null)
+      }
+    } finally {
+      setPhoneValidating(false)
+    }
+  }
+
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setContactError('')
     const phone = contactPhone.replace(/\D/g, '').slice(0, 10)
     if (!contactFirstName?.trim() || !contactLastName?.trim() || !contactEmail?.trim() || phone.length < 10) {
       setContactError('Please fill in all required fields with a valid 10-digit phone number.')
+      return
+    }
+    const format = validatePhoneFormat(phone)
+    if (!format.isValid) {
+      setPhoneError(format.error || 'Please enter a valid mobile phone number')
+      return
+    }
+    if (phoneError) {
       return
     }
     setIsSubmitting(true)
@@ -225,7 +261,15 @@ export function LifeInsuranceUSQuiz() {
 
       const captureData = await captureRes.json()
       if (!captureRes.ok) {
-        setContactError(captureData?.error || 'Something went wrong. Please try again.')
+        if (captureRes.status === 422 && captureData?.phoneValidation) {
+          const message = captureData.phoneValidation.error
+            || captureData.error
+            || 'Please provide a valid mobile phone number'
+          setPhoneError(message)
+          setContactError('')
+        } else {
+          setContactError(captureData?.error || 'Something went wrong. Please try again.')
+        }
         setIsSubmitting(false)
         return
       }
@@ -263,7 +307,7 @@ export function LifeInsuranceUSQuiz() {
           })
         )
       }
-      router.push('/quiz/life-insurance-us/verify-otp')
+      router.push('/quiz/life-insurance-us/results')
     } catch {
       setContactError('Something went wrong. Please try again.')
       setIsSubmitting(false)
@@ -570,11 +614,21 @@ export function LifeInsuranceUSQuiz() {
                       digits = digits.slice(1)
                     }
                     setContactPhone(digits.slice(0, 10))
+                    if (phoneError) setPhoneError(null)
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-1 focus:ring-[#36596A]/30 focus:border-[#36596A] bg-white transition-colors"
+                  onBlur={handlePhoneBlur}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-1 focus:ring-[#36596A]/30 bg-white transition-colors ${
+                    phoneError ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#36596A]'
+                  }`}
                   placeholder="(555) 555-5555"
                   required
                 />
+                {phoneError && (
+                  <p className="mt-1 text-sm text-red-600">{phoneError}</p>
+                )}
+                {phoneValidating && !phoneError && (
+                  <p className="mt-1 text-xs text-gray-500">Checking number…</p>
+                )}
               </div>
               {contactError && (
                 <p className="text-sm text-red-600">{contactError}</p>

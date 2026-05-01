@@ -1,3 +1,8 @@
+// DEPRECATED: life-insurance-us no longer redirects users here. Trestle
+// line-type validation in the contact step replaces SMS OTP; the GHL push
+// happens inside /api/leads/capture-email. This page is retained so users
+// on stale browser bundles don't 404 mid-flow. Safe to remove ~48h after
+// deploy.
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'

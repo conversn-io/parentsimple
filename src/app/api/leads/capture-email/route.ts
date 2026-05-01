@@ -1,9 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
-import { formatE164 } from '@/utils/phone-utils';
+import { formatE164, formatPhoneForGHL } from '@/utils/phone-utils';
 import * as crypto from 'crypto';
 import { sendLeadEvent } from '@/lib/meta-capi-service';
+import { validatePhoneWithTrestle, type TrestlePhoneValidationResult } from '@/lib/trestle-phone-validation';
+import { classifyPhone } from '@/lib/phone-tier';
+import {
+  buildWebhookPayload,
+  logWebhookDelivery,
+  sendLeadToGhl,
+} from '@/lib/webhook-delivery';
+
+const SITE_KEY = 'parentsimple.org';
+
+function logPhoneValidationBlock(args: {
+  sessionId: string | null;
+  phone: string;
+  funnelType: string | null;
+  pageUrl: string | null;
+  userAgent: string | null;
+  ipAddress: string | null;
+  trestle: TrestlePhoneValidationResult;
+  rejectedReason: string | null;
+  reasons: string[];
+}) {
+  const { sessionId, phone, funnelType, pageUrl, userAgent, ipAddress, trestle, rejectedReason, reasons } = args;
+  const digits = (phone || '').replace(/\D/g, '');
+  const phoneLast4 = digits.length >= 4 ? digits.slice(-4) : null;
+  callreadyQuizDb
+    .from('analytics_events')
+    .insert({
+      event_name: 'phone_validation_block',
+      event_category: 'validation',
+      event_label: SITE_KEY,
+      session_id: sessionId || null,
+      user_id: sessionId || null,
+      page_url: pageUrl || null,
+      user_agent: userAgent || null,
+      ip_address: ipAddress || null,
+      properties: {
+        site_key: SITE_KEY,
+        funnel_type: funnelType || null,
+        path: pageUrl || null,
+        tier: 'C',
+        blocked: true,
+        valid: false,
+        line_type: trestle.lineType || null,
+        carrier: trestle.carrier || null,
+        activity_score: trestle.activityScore ?? null,
+        is_prepaid: trestle.isPrepaid ?? null,
+        country_code: trestle.countryCode || null,
+        rejected_reason: rejectedReason || null,
+        reasons: reasons || [],
+        phone_last4: phoneLast4,
+        blocked_at: 'submit',
+      },
+    })
+    .then(({ error }) => {
+      if (error) console.warn('⚠️ phone_validation_block analytics write failed:', error.message);
+    });
+}
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -144,6 +201,61 @@ export async function POST(request: NextRequest) {
       eventId: metaEventId || null,
     });
 
+    const requestPageUrl = request.headers.get('referer') || request.headers.get('referrer') || null;
+    const requestUserAgent = request.headers.get('user-agent') || null;
+    const requestIpAddress =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip') ||
+      null;
+
+    // Trestle phone re-validation gate. Runs only when a phone is supplied —
+    // shadow leads / email-only captures stay unaffected. Tier C returns 422
+    // and writes a phone_validation_block row before any lead/contact writes
+    // so we don't pollute the table with rejected phones.
+    let trestleResult: TrestlePhoneValidationResult | null = null;
+    let trestleClassification: ReturnType<typeof classifyPhone> | null = null;
+    if (phoneNumber && String(phoneNumber).trim()) {
+      try {
+        trestleResult = await validatePhoneWithTrestle(String(phoneNumber));
+      } catch (validationError) {
+        console.error('⚠️ Trestle unavailable — passing lead through unvalidated:', validationError);
+        trestleResult = null;
+      }
+
+      if (trestleResult) {
+        trestleClassification = classifyPhone(trestleResult);
+        if (trestleClassification.tier === 'C') {
+          logPhoneValidationBlock({
+            sessionId: sessionId || null,
+            phone: String(phoneNumber),
+            funnelType: funnelType || null,
+            pageUrl: requestPageUrl,
+            userAgent: requestUserAgent,
+            ipAddress: requestIpAddress,
+            trestle: trestleResult,
+            rejectedReason: trestleClassification.rejected_reason || null,
+            reasons: trestleClassification.reasons || [],
+          });
+          return createCorsResponse(
+            {
+              error: trestleClassification.helper_message || trestleResult.error || 'Please provide a valid mobile phone number.',
+              phoneValidation: {
+                valid: false,
+                error: trestleClassification.helper_message || trestleResult.error || null,
+                lineType: trestleResult.lineType,
+                rejected_reason: trestleClassification.rejected_reason || null,
+                tier: trestleClassification.tier,
+                normalizedPhone: trestleResult.normalizedPhone,
+              },
+            },
+            422,
+          );
+        }
+      }
+    }
+
+    const isLifeInsuranceUs = funnelType === 'life_insurance_us';
+
     // Upsert contact (with phone if provided)
     const contact = await upsertContact(email, firstName, lastName, phoneNumber || null);
     const contactId = contact.id || contact;
@@ -227,13 +339,24 @@ export async function POST(request: NextRequest) {
     // Insert or update lead (not verified yet - OTP verification comes later)
     // NOTE: Do NOT include optional columns (form_type, attributed_ad_account, profit_center) 
     // as they don't exist in the current schema and will cause PGRST204 errors
+    // For life_insurance_us we mark the lead verified at capture-email since
+    // the OTP step is removed. Trestle line-type validation is the gate; the
+    // GHL push fires below in this same request.
+    const verifiedNow = isLifeInsuranceUs && Boolean(phoneNumber);
+    const leadStatus = verifiedNow
+      ? 'verified'
+      : phoneNumber
+        ? 'phone_captured'
+        : 'email_captured';
+
     const leadData: any = {
       contact_id: contactId,
       session_id: sessionId,
       site_key: 'parentsimple.org',
       funnel_type: funnelType || 'college_consulting',
-      status: phoneNumber ? 'phone_captured' : 'email_captured',
-      is_verified: false, // Will be set to true when OTP is verified
+      status: leadStatus,
+      is_verified: verifiedNow,
+      verified_at: verifiedNow ? new Date().toISOString() : null,
       zip_code: zipCode,
       state: state,
       state_name: stateName,
@@ -252,6 +375,9 @@ export async function POST(request: NextRequest) {
         calculated_results: calculatedResults,
         licensing_info: licensingInfo,
         utm_parameters: utmParams || existingLead?.quiz_answers?.utm_parameters || {},
+        trestle_phone_validation: trestleResult || existingLead?.quiz_answers?.trestle_phone_validation || null,
+        phone_tier: trestleClassification?.tier || existingLead?.quiz_answers?.phone_tier || null,
+        phone_tier_reasons: trestleClassification?.reasons || existingLead?.quiz_answers?.phone_tier_reasons || null,
       },
       utm_source: utmSource,
       utm_medium: utmMedium,
@@ -430,6 +556,59 @@ export async function POST(request: NextRequest) {
           funnelType,
           leadId: lead.id,
         });
+      }
+
+      // GHL push for life_insurance_us happens here — OTP step is removed,
+      // Trestle line-type validation above is the gate. Other funnels still
+      // route through /api/leads/verify-otp-and-send-to-ghl.
+      if (verifiedNow && phoneNumber) {
+        try {
+          const householdIncome =
+            quizAnswers?.household_income ?? lead.quiz_answers?.household_income ?? null;
+          const webhookPayload = buildWebhookPayload({
+            firstName: firstName || '',
+            lastName: lastName || '',
+            email,
+            phone: formatPhoneForGHL(phoneNumber),
+            zipCode: zipCode || lead.zip_code || '',
+            state: state || lead.state || '',
+            stateName: stateName || lead.state_name || '',
+            householdIncome,
+            funnelType,
+            quizAnswers: {
+              ...(lead.quiz_answers || quizAnswers || {}),
+              household_income: householdIncome,
+            },
+            calculatedResults,
+            licensingInfo,
+            leadScore:
+              calculatedResults?.totalScore || calculatedResults?.readiness_score || 0,
+            utmParams: utmParams || lead.quiz_answers?.utm_parameters || {},
+            sessionId: sessionId || undefined,
+            ipAddress: ipAddress || undefined,
+            userAgent: userAgent || undefined,
+          });
+
+          console.log('📤 [LEAD] Sending life_insurance_us lead to GHL:', { leadId: lead.id });
+          const deliveryResult = await sendLeadToGhl(webhookPayload, true);
+
+          await logWebhookDelivery(
+            lead.id,
+            contactId,
+            sessionId || '',
+            deliveryResult,
+            webhookPayload,
+            utmParams,
+          );
+
+          if (deliveryResult.ghl?.success) {
+            console.log('✅ [LEAD] GHL delivery succeeded:', { leadId: lead.id });
+          } else {
+            console.error('❌ [LEAD] GHL delivery failed:', deliveryResult);
+          }
+        } catch (ghlError) {
+          console.error('💥 [LEAD] GHL push exception:', ghlError);
+        }
       }
     }
 

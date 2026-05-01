@@ -1,3 +1,8 @@
+// DEPRECATED: life-insurance-us no longer routes through OTP. The Trestle
+// line-type validation in /api/leads/capture-email is the gate, and the GHL
+// push happens there. This route is retained so users on stale browser
+// bundles don't 404 mid-flow. Safe to remove ~48h after deploy. Other funnels
+// (CA variant) still hit this endpoint until they migrate.
 import { NextRequest, NextResponse } from 'next/server';
 import { callreadyQuizDb } from '@/lib/callready-quiz-db';
 import { createCorsResponse, handleCorsOptions } from '@/lib/cors-headers';
