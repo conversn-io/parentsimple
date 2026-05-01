@@ -42,20 +42,55 @@ export function LifeInsuranceUSQuiz() {
   useTrustedForm({ enabled: true })
   useNoHeaderLayout()
 
+  // Fire-and-forget shadow lead write. Lets us recover answers, UTM,
+  // and tracking IDs from sessions that bounce before the contact form.
+  const postProgress = (
+    sid: string,
+    answersSoFar: Answers,
+    utm: UTMParameters | null,
+    stepNumber: number,
+    stepName: string,
+  ) => {
+    if (typeof window === 'undefined') return
+    const metaCookies = getMetaCookies()
+    fetch('/api/leads/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        sessionId: sid,
+        funnelType: 'life_insurance_us',
+        siteKey: 'parentsimple.org',
+        quizAnswers: answersSoFar,
+        utmParams: utm,
+        metaCookies: { fbp: metaCookies.fbp, fbc: metaCookies.fbc },
+        trustedFormCertUrl: getTrustedFormCertUrl() || null,
+        jornayaLeadId: getLeadIdToken() || null,
+        lastStepNumber: stepNumber,
+        lastStepName: stepName,
+      }),
+    }).catch(() => {})
+  }
+
   useEffect(() => {
     const id = `li_us_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
     setSessionId(id)
     const stored = getStoredUTMParameters()
-    if (stored) setUtmParams(stored)
-    else {
+    let resolvedUtm: UTMParameters | null = null
+    if (stored) {
+      setUtmParams(stored)
+      resolvedUtm = stored
+    } else {
       const utm = extractUTMParameters()
       if (hasUTMParameters(utm)) {
         storeUTMParameters(utm)
         setUtmParams(utm)
+        resolvedUtm = utm
       }
     }
 
     trackQuizStart(id, 'life_insurance_us')
+    postProgress(id, {}, resolvedUtm, 1, LIFE_INSURANCE_US_STEPS[0]?.id || 'start')
   }, [])
 
   useEffect(() => {
@@ -103,10 +138,12 @@ export function LifeInsuranceUSQuiz() {
 
   const handleMultipleChoice = (value: string) => {
     if (!currentStepDef) return
-    setAnswers((prev) => ({ ...prev, [currentStepDef.id]: value }))
+    const updatedAnswers = { ...answers, [currentStepDef.id]: value }
+    setAnswers(updatedAnswers)
 
     if (sessionId) {
       trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_US_STEPS, sessionId, 'life_insurance_us')
+      postProgress(sessionId, updatedAnswers, utmParams, step + 1, currentStepDef.id)
     }
 
     if (step < TOTAL_US_STEPS - 1) setStep(step + 1)

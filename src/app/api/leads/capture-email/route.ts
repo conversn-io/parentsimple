@@ -160,16 +160,25 @@ export async function POST(request: NextRequest) {
     const fbclid = utmParams?.fbclid || null;
     const msclkid = utmParams?.msclkid || null;
 
-    // Check if lead already exists for this contact and session
+    // Check if a lead row already exists for this session — either a prior
+    // capture from the same contact, or a shadow row written by
+    // /api/leads/progress while the user was still in the quiz (no
+    // contact_id yet). Match on (session_id, funnel_type) so the shadow
+    // row gets promoted instead of inserting a duplicate.
     let existingLead = null;
     if (sessionId) {
       const { data: existing } = await callreadyQuizDb
         .from('leads')
         .select('*')
-        .eq('contact_id', contactId)
         .eq('session_id', sessionId)
+        .eq('funnel_type', funnelType || 'college_consulting')
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
       existingLead = existing;
+      if (existingLead && !existingLead.contact_id) {
+        console.log('🪄 [LEAD] Promoting shadow lead:', { leadId: existingLead.id, sessionId });
+      }
     }
 
     // Get referrer and landing page from request headers
@@ -233,12 +242,16 @@ export async function POST(request: NextRequest) {
       user_id: userId, // Populate from analytics_events or email
       contact: contactData, // Populate contact JSONB from contact data
       quiz_answers: {
+        // Preserve any progress fields the shadow lead accumulated
+        // (progress.last_step, meta_cookies, etc.) by merging the existing
+        // row's quiz_answers under the new payload.
+        ...(existingLead?.quiz_answers || {}),
         ...quizAnswers,
         student_first_name: studentFirstName || null,
         household_income: quizAnswers?.household_income || null,
         calculated_results: calculatedResults,
         licensing_info: licensingInfo,
-        utm_parameters: utmParams || {}, // Ensure UTM is stored even if empty object
+        utm_parameters: utmParams || existingLead?.quiz_answers?.utm_parameters || {},
       },
       utm_source: utmSource,
       utm_medium: utmMedium,
