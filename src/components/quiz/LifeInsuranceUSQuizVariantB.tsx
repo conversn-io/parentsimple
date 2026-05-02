@@ -26,7 +26,7 @@ const STORAGE_KEY = 'life_insurance_us_quiz_data'
 
 type Answers = Record<string, string | { firstName: string; lastName: string; email: string; phone: string }>
 
-export function LifeInsuranceUSQuiz() {
+export function LifeInsuranceUSQuizVariantB() {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
@@ -121,7 +121,7 @@ export function LifeInsuranceUSQuiz() {
         'life_insurance_us',
         step > 0 ? LIFE_INSURANCE_US_STEPS[step - 1]?.id : undefined,
         TOTAL_US_STEPS,
-        'control'
+        'b'
       )
     }
   }, [step, sessionId, currentStepDef])
@@ -146,7 +146,7 @@ export function LifeInsuranceUSQuiz() {
     setAnswers(updatedAnswers)
 
     if (sessionId) {
-      trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_US_STEPS, sessionId, 'life_insurance_us', 'control')
+      trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_US_STEPS, sessionId, 'life_insurance_us', 'b')
       postProgress(sessionId, updatedAnswers, utmParams, step + 1, currentStepDef.id)
     }
 
@@ -347,38 +347,47 @@ export function LifeInsuranceUSQuiz() {
       <main className="max-w-2xl mx-auto px-6 py-4 pb-8 w-full min-w-0">
         {step === 0 && currentStepDef && 'options' in currentStepDef && (
           <>
-            <h3 className="text-lg font-semibold text-center text-gray-800 mb-6 mt-2">
-              Compare Insurance Quotes
-            </h3>
-
-            <h2 className="text-xl font-semibold text-[#1A2B49] mb-2 text-center" style={{ fontSize: '1.25rem', lineHeight: 1.3 }}>
-              {currentStepDef.title}
+            <h2 className="text-2xl font-bold text-[#1A2B49] mb-6 mt-2 text-center" style={{ fontSize: '1.75rem', lineHeight: 1.25 }}>
+              Who are you protecting?
             </h2>
-            {'subtitle' in currentStepDef && currentStepDef.subtitle && (
-              <p className="text-gray-600 mb-6 text-sm text-center">{currentStepDef.subtitle}</p>
-            )}
 
-            <div className="flex flex-col gap-3 mb-6">
-              {((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleMultipleChoice(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl px-5 py-3 text-left w-full min-w-0 border-2 transition-colors duration-150 ${
-                    answers[currentStepDef.id] === opt.value
-                      ? 'border-[#1A2B49] bg-white text-[#1A2B49] shadow-md'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#9DB89D]'
-                  }`}
-                >
-                  <span className="shrink-0 text-xl">
-                    {opt.value === 'protect_family' ? '❤️' :
-                      opt.value === 'cover_mortgage' ? '🏠' :
-                      opt.value === 'final_expenses' ? '💰' :
-                      opt.value === 'legacy' ? '👨‍👩‍👧‍👦' : '✅'}
-                  </span>
-                  <span className="font-medium text-[#1A2B49] break-words">{opt.label}</span>
-                </button>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+              {(() => {
+                const VARIANT_B_CARDS: Record<string, { icon: string; label: string; sublabel: string }> = {
+                  protect_family: { icon: '👨‍👩‍👧', label: 'My Family', sublabel: 'Spouse, kids, dependents' },
+                  cover_mortgage: { icon: '🏠', label: 'My Mortgage', sublabel: "Keep the house if I'm gone" },
+                  final_expenses: { icon: '🕊️', label: 'Final Expenses', sublabel: 'Cover funeral & end-of-life costs' },
+                  legacy: { icon: '🌿', label: 'Leave a Legacy', sublabel: 'Pass something on' },
+                  not_sure: { icon: '🤷', label: 'Not Sure Yet', sublabel: 'Help me figure it out' },
+                }
+                return ((currentStepDef.options as unknown) as { value: string; label: string }[]).map((opt) => {
+                  const card = VARIANT_B_CARDS[opt.value] ?? { icon: '✅', label: opt.label, sublabel: '' }
+                  const selected = answers[currentStepDef.id] === opt.value
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleMultipleChoice(opt.value)}
+                      className={`relative flex flex-col items-center justify-center text-center gap-2 rounded-2xl px-5 py-6 min-h-[140px] w-full border-2 transition-all duration-150 ${
+                        selected
+                          ? 'border-[#1A2B49] bg-white shadow-md'
+                          : 'border-gray-300 bg-white hover:border-[#9DB89D] hover:shadow-sm'
+                      }`}
+                    >
+                      {selected && (
+                        <span className="absolute top-2 right-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#1A2B49] text-white text-xs">
+                          ✓
+                        </span>
+                      )}
+                      <span className="text-3xl leading-none" aria-hidden="true">{card.icon}</span>
+                      <span className="text-base font-semibold text-[#1A2B49] leading-tight">{card.label}</span>
+                      {card.sublabel && (
+                        <span className="text-xs text-gray-500 leading-snug">{card.sublabel}</span>
+                      )}
+                    </button>
+                  )
+                })
+              })()}
             </div>
 
             <p className="text-center text-sm text-gray-600 mb-2">You may qualify for:</p>

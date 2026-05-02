@@ -316,19 +316,21 @@ export function trackQuizStepViewed(
   sessionId: string,
   funnelType: string,
   previousStep?: string | null,
-  timeOnPreviousStep?: number | null
+  timeOnPreviousStep?: number | null,
+  abVariant?: string | null
 ): void {
-  console.log('📊 Tracking quiz_step_viewed:', { stepNumber, stepName, funnelType });
-  
+  console.log('📊 Tracking quiz_step_viewed:', { stepNumber, stepName, funnelType, abVariant });
+
   // Client-side tracking
   trackGA4Event('quiz_step_viewed', {
     step_number: stepNumber,
     step_name: stepName,
     funnel_type: funnelType,
     session_id: sessionId,
-    event_category: 'quiz'
+    event_category: 'quiz',
+    ...(abVariant ? { ab_variant: abVariant } : {})
   });
-  
+
   // Server-side tracking
   const utmParams = getUTMParams();
   sendToSupabase({
@@ -340,7 +342,8 @@ export function trackQuizStepViewed(
       funnel_type: funnelType,
       previous_step: previousStep,
       time_on_previous_step: timeOnPreviousStep,
-      utm_parameters: utmParams
+      utm_parameters: utmParams,
+      ...(abVariant ? { ab_variant: abVariant } : {})
     },
     session_id: sessionId,
     user_id: sessionId,
@@ -364,12 +367,13 @@ export function trackQuestionAnswer(
   step: number,
   totalSteps: number,
   sessionId: string,
-  funnelType: string
+  funnelType: string,
+  abVariant?: string | null
 ): void {
-  console.log('📊 Tracking question_answer:', { questionId, answer, step });
-  
+  console.log('📊 Tracking question_answer:', { questionId, answer, step, abVariant });
+
   const progressPercentage = Math.round((step / totalSteps) * 100);
-  
+
   // Client-side tracking
   trackGA4Event('question_answer', {
     question_id: questionId,
@@ -379,9 +383,10 @@ export function trackQuestionAnswer(
     progress_percentage: progressPercentage,
     session_id: sessionId,
     funnel_type: funnelType,
-    event_category: 'quiz'
+    event_category: 'quiz',
+    ...(abVariant ? { ab_variant: abVariant } : {})
   });
-  
+
   // Server-side tracking
   const utmParams = getUTMParams();
   sendToSupabase({
@@ -394,7 +399,8 @@ export function trackQuestionAnswer(
       total_steps: totalSteps,
       progress_percentage: progressPercentage,
       funnel_type: funnelType,
-      utm_parameters: utmParams
+      utm_parameters: utmParams,
+      ...(abVariant ? { ab_variant: abVariant } : {})
     },
     session_id: sessionId,
     user_id: sessionId,
