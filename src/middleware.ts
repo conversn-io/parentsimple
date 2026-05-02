@@ -35,9 +35,9 @@ const splitTests = [
     cookieName: 'ps_life_variant',
     siteKey: 'parentsimple.org',
     defaultVariant: 'control',
-    // PAUSED 2026-05-02: variant_b shipped 0/17 step-1 answers — likely broken.
-    // Route stays live; ?variant=b still works for debugging.
-    weights: { control: 1.0, variant_b: 0.0 },
+    // Relaunch 2026-05-02 v2: cards revised with chevron + stronger affordance
+    // after first run hit 0/17 (suspected affordance issue in FB in-app browser).
+    weights: { control: 0.5, variant_b: 0.5 },
     cookieTtlDays: 30,
     queryParamName: 'variant',
     allowQueryOverride: true

@@ -368,12 +368,20 @@ export function LifeInsuranceUSQuizVariantB() {
                       key={opt.value}
                       type="button"
                       onClick={() => handleMultipleChoice(opt.value)}
-                      className={`relative flex flex-col items-center justify-center text-center gap-2 rounded-2xl px-5 py-6 min-h-[140px] w-full border-2 transition-all duration-150 ${
+                      className={`relative flex flex-col items-center justify-center text-center gap-2 rounded-2xl px-5 py-6 min-h-[140px] w-full border-2 cursor-pointer transition-all duration-150 active:scale-[0.98] active:shadow-inner ${
                         selected
-                          ? 'border-[#1A2B49] bg-white shadow-md'
-                          : 'border-gray-300 bg-white hover:border-[#9DB89D] hover:shadow-sm'
+                          ? 'border-[#1A2B49] bg-white shadow-md ring-2 ring-[#1A2B49]/15'
+                          : 'border-[#1A2B49]/35 bg-white shadow-sm hover:border-[#1A2B49] hover:shadow-md'
                       }`}
                     >
+                      <span
+                        className={`absolute bottom-2 right-3 text-lg leading-none transition-colors duration-150 ${
+                          selected ? 'text-[#1A2B49]' : 'text-[#1A2B49]/45'
+                        }`}
+                        aria-hidden="true"
+                      >
+                        ›
+                      </span>
                       {selected && (
                         <span className="absolute top-2 right-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#1A2B49] text-white text-xs">
                           ✓
