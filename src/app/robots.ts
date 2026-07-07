@@ -1,69 +1,35 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 
-export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://parentsimple.org'
-  
-  return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/debug-*/',
-          '/test-*/',
-          '/otp-debug/',
-          '/otp-test/',
-          '/debug-api/',
-          '/debug-env/',
-          '/quiz-a/',
-          '/quiz-submitted/',
-          '/quote-submitted/',
-          '/consultation-booked/',
-          '/consultation-confirmed/',
-          '/expect-call/',
-          '/book-confirmation/',
-          '/thank-you/',
-          '/ebook/',
-          '/gallery/',
-          '/videos/',
-          '/tools/',
-          '/guides/',
-          '/resources/',
-          '/test-content/',
-          '/test-mega-menu/',
-        ],
-      },
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/debug-*/',
-          '/test-*/',
-          '/otp-debug/',
-          '/otp-test/',
-        ],
-      },
-      {
-        userAgent: 'Bingbot',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/debug-*/',
-          '/test-*/',
-          '/otp-debug/',
-          '/otp-test/',
-        ],
-      },
-    ],
-    sitemap: `${baseUrl}/sitemap.xml`,
-  }
+const FALLBACK_SITE_URL = 'https://parentsimple.org'
+
+const getSiteUrl = () => {
+  const c = process.env.NEXT_PUBLIC_SITE_URL ?? FALLBACK_SITE_URL
+  try { return new URL(c).origin } catch { return FALLBACK_SITE_URL }
 }
 
-
-
-
+// KEENAN ALLOWS ROBOTS (2026-07-07): explicitly permit all AI answer-engine
+// crawlers. Whole strategy is to be cited by AI answers — blocking them
+// forfeits the citation upside.
+export default function robots(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl()
+  return {
+    rules: [
+      { userAgent: '*', allow: '/', disallow: ['/api/', '/portal/', '/admin/'] },
+      { userAgent: 'GPTBot', allow: '/' },
+      { userAgent: 'ChatGPT-User', allow: '/' },
+      { userAgent: 'OAI-SearchBot', allow: '/' },
+      { userAgent: 'ClaudeBot', allow: '/' },
+      { userAgent: 'anthropic-ai', allow: '/' },
+      { userAgent: 'Claude-Web', allow: '/' },
+      { userAgent: 'PerplexityBot', allow: '/' },
+      { userAgent: 'Perplexity-User', allow: '/' },
+      { userAgent: 'Google-Extended', allow: '/' },
+      { userAgent: 'Applebot-Extended', allow: '/' },
+      { userAgent: 'CCBot', allow: '/' },
+      { userAgent: 'Meta-ExternalAgent', allow: '/' },
+      { userAgent: 'Bytespider', allow: '/' },
+    ],
+    sitemap: [`${siteUrl}/sitemap.xml`],
+    host: siteUrl,
+  }
+}

@@ -4,6 +4,14 @@
     {
       "source": "/:key([a-f0-9]{32}).txt",
       "destination": "/api/indexnow-key/:key"
+    },
+    {
+      "source": "/llms.txt",
+      "destination": "/api/llms"
+    },
+    {
+      "source": "/llms-full.txt",
+      "destination": "/api/llms?full=1"
     }
   ]
 }
