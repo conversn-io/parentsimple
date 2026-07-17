@@ -28,141 +28,27 @@ interface EnhancedArticleDisplayProps {
   className?: string
 }
 
-// Function to get related content based on the current article
-function getRelatedContent(slug: string) {
-  const relatedContentMap: Record<string, Array<{title: string, description: string, href: string}>> = {
-    'social-security-optimization-strategy-guide': [
-      {
-        title: 'Medicare Planning Guide',
-        description: 'Learn how to coordinate Social Security with Medicare enrollment for optimal benefits.',
-        href: '/content/medicare-planning-guide'
-      },
-      {
-        title: 'Tax Impact Calculator',
-        description: 'Calculate how Social Security benefits affect your tax situation.',
-        href: '/content/tax-impact-strategy-guide'
-      },
-      {
-        title: 'RMD Planning Guide',
-        description: 'Understand how Required Minimum Distributions work with Social Security.',
-        href: '/content/rmd-planning-guide'
-      },
-      {
-        title: 'Retirement Income Planning',
-        description: 'Create a comprehensive retirement income strategy.',
-        href: '/content/tax-free-retirement-income-complete-guide'
-      }
-    ],
-    'medicare-planning-guide': [
-      {
-        title: 'Healthcare Cost Calculator',
-        description: 'Calculate your total healthcare costs in retirement.',
-        href: '/content/healthcare-cost-strategy-guide'
-      },
-      {
-        title: 'Medicare Cost Calculator',
-        description: 'Estimate your Medicare premiums and out-of-pocket costs.',
-        href: '/content/medicare-cost-strategy-guide'
-      },
-      {
-        title: 'Long-Term Care Planning',
-        description: 'Plan for long-term care needs and insurance options.',
-        href: '/content/long-term-care-planning-strategy-guide'
-      },
-      {
-        title: 'Social Security Optimization',
-        description: 'Coordinate Medicare with Social Security claiming strategies.',
-        href: '/content/social-security-optimization-strategy-guide'
-      }
-    ],
-    'tax-planning-guide': [
-      {
-        title: 'Tax Impact Calculator',
-        description: 'Calculate the tax implications of different retirement income sources.',
-        href: '/content/tax-impact-strategy-guide'
-      },
-      {
-        title: 'Roth Conversion Calculator',
-        description: 'Evaluate the benefits of converting traditional IRA to Roth IRA.',
-        href: '/content/roth-conversion-strategy-guide'
-      },
-      {
-        title: 'RMD Planning Guide',
-        description: 'Optimize your Required Minimum Distribution strategy.',
-        href: '/content/rmd-planning-guide'
-      },
-      {
-        title: 'Tax-Efficient Withdrawals',
-        description: 'Learn strategies for tax-efficient retirement withdrawals.',
-        href: '/content/tax-efficient-withdrawals-strategy-guide'
-      }
-    ],
-    'reverse-mortgage-strategy-guide': [
-      {
-        title: 'Home Equity Calculator',
-        description: 'Calculate your available home equity and options.',
-        href: '/content/home-equity-strategy-guide'
-      },
-      {
-        title: 'Downsizing Calculator',
-        description: 'Evaluate the benefits of downsizing your home.',
-        href: '/content/downsizing-strategy-guide'
-      },
-      {
-        title: 'Retirement Income Planning',
-        description: 'Create a comprehensive retirement income strategy.',
-        href: '/content/tax-free-retirement-income-complete-guide'
-      },
-      {
-        title: 'Estate Planning Guide',
-        description: 'Protect your assets and plan for your legacy.',
-        href: '/content/estate-planning-checklist'
-      }
-    ],
-    'life-insurance-strategy-guide': [
-      {
-        title: 'Long-Term Care Planning',
-        description: 'Plan for long-term care needs and insurance options.',
-        href: '/content/long-term-care-planning-strategy-guide'
-      },
-      {
-        title: 'Estate Planning Guide',
-        description: 'Protect your assets and plan for your legacy.',
-        href: '/content/estate-planning-checklist'
-      },
-      {
-        title: 'Beneficiary Planning',
-        description: 'Plan your beneficiary designations and distributions.',
-        href: '/content/beneficiary-planning-strategy-guide'
-      },
-      {
-        title: 'Retirement Income Planning',
-        description: 'Create a comprehensive retirement income strategy.',
-        href: '/content/tax-free-retirement-income-complete-guide'
-      }
-    ]
-  }
-
-  return relatedContentMap[slug] || [
+function getRelatedContent(_slug: string) {
+  return [
     {
-      title: 'Retirement Planning Guide',
-      description: 'Get comprehensive guidance on retirement planning strategies.',
-      href: '/content/tax-free-retirement-income-complete-guide'
+      title: 'Family Budgeting Guide',
+      description: 'Build a family budget that covers today and plans for what is next.',
+      href: '/content'
     },
     {
-      title: 'Social Security Optimization',
-      description: 'Learn how to maximize your Social Security benefits.',
-      href: '/content/social-security-optimization-strategy-guide'
+      title: 'College Savings Playbook',
+      description: 'Compare 529 plans, custodial accounts, and how to start early.',
+      href: '/content'
     },
     {
-      title: 'Medicare Planning Guide',
-      description: 'Navigate Medicare enrollment and coverage options.',
-      href: '/content/medicare-planning-guide'
+      title: 'Childcare Cost Planner',
+      description: 'Estimate childcare costs and find strategies to make them work.',
+      href: '/content'
     },
     {
-      title: 'Tax Planning Guide',
-      description: 'Optimize your tax strategy for retirement.',
-      href: '/content/tax-planning-guide'
+      title: 'Life Insurance for Parents',
+      description: 'Protect your family with the right coverage for your stage of life.',
+      href: '/content'
     }
   ]
 }
@@ -512,8 +398,8 @@ export default function EnhancedArticleDisplay({
               <User className="w-6 h-6 text-gray-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">SeniorSimple Team</h3>
-              <p className="text-gray-600">Expert retirement planning guidance</p>
+              <h3 className="font-semibold text-gray-900">ParentSimple Team</h3>
+              <p className="text-gray-600">Practical guidance for modern parents</p>
             </div>
           </div>
         </div>
