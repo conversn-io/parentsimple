@@ -1,5 +1,5 @@
-import { getArticle, getRelatedArticles } from '../../../lib/articles'
-import { notFound } from 'next/navigation'
+import { getArticle, resolveOrphanSlug, getRelatedArticles } from '../../../lib/articles'
+import { notFound, permanentRedirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -16,7 +16,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { article, error } = await getArticle(slug)
 
   if (error || !article) {
-    console.error('Error fetching article:', error)
+    // P1.6 self-healing orphan redirect: this slug isn't on parentsimple, but
+    // Bing may still rank the parentsimple.org URL because of the historical
+    // cross-domain rendering bug. `resolve_orphan_slug` returns the canonical
+    // URL if the slug lives on another site — 308 instead of 404. Recovers
+    // ~390 clicks/28d of leaked annuity traffic → seniorsimple.
+    // (permanentRedirect → HTTP 308; Google treats 308 same as 301.)
+    const canonicalUrl = await resolveOrphanSlug(slug)
+    if (canonicalUrl) permanentRedirect(canonicalUrl)
+    if (error) console.error('Error fetching article:', error)
     notFound()
   }
 

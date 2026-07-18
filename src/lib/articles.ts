@@ -106,6 +106,23 @@ export async function getPublishedArticles(limit?: number): Promise<{ articles: 
   }
 }
 
+// Cross-site orphan resolver — used by the article page's 404 path (P1.6).
+// Delegates to the CMS `resolve_orphan_slug` RPC (defined in migration
+// 20260710_010829). If the slug lives on a different site, returns that
+// site's canonical URL; else null (real 404).
+//
+// The RPC does the host-site diff check on the DB side and handles both
+// /articles/<slug> and /library/<slug> URL shapes — this app doesn't need
+// to encode either.
+export async function resolveOrphanSlug(slug: string): Promise<string | null> {
+  const { data, error } = await supabase.rpc('resolve_orphan_slug', {
+    p_host_site: 'parentsimple',
+    p_slug: slug,
+  })
+  if (error || !data || typeof data !== 'string') return null
+  return data
+}
+
 // Get a single article by slug - using view with primary UX category
 export async function getArticle(slug: string): Promise<{ article: ArticleWithCategory | null, error: Error | null }> {
   try {
