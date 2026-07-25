@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as crypto from 'crypto'
 import { newsletterDb, SITE_ID } from '@/lib/newsletter-db'
 
 // Simple in-memory rate limiter: 5 requests per IP per minute
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { email, site_id, first_name, zip_code, source, source_detail, tags } = body
+    const { email, site_id, first_name, zip_code, source, source_detail, tags, quiz_bucket } = body
 
     // Validation
     if (!email || !site_id) {
@@ -51,6 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = email.toLowerCase().trim()
+    const hemSha256 = crypto.createHash('sha256').update(normalizedEmail).digest('hex')
 
     // Check if subscriber already exists
     const { data: existing } = await newsletterDb
@@ -74,8 +76,11 @@ export async function POST(request: NextRequest) {
 
       const updatePayload: Record<string, unknown> = {
         tags: mergedTags,
+        hem_sha256: hemSha256,
         updated_at: new Date().toISOString(),
       }
+
+      if (quiz_bucket) updatePayload.quiz_bucket = quiz_bucket
 
       // Reactivate if previously unsubscribed
       if (existing.status === 'unsubscribed') {
@@ -111,11 +116,13 @@ export async function POST(request: NextRequest) {
         .from('newsletter_subscribers')
         .insert({
           email: normalizedEmail,
+          hem_sha256: hemSha256,
           site_id,
           first_name: first_name || null,
           zip_code: zip_code || null,
           source: source || null,
           source_detail: source_detail || null,
+          quiz_bucket: quiz_bucket || null,
           tags: tags || [],
           status: 'active',
           subscribed_at: now,
