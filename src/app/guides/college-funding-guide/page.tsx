@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { BookOpen, ShieldCheck, GraduationCap, Wallet } from 'lucide-react'
+import FunnelLayoutActivator from '@/components/FunnelLayoutActivator'
 import GuideGate from './GuideGate'
 
 const CANONICAL = 'https://www.parentsimple.org/guides/college-funding-guide'
@@ -56,6 +57,7 @@ const insidePoints = [
 export default function CollegeFundingGuidePage() {
   return (
     <div className="bg-[#F9F6EF] min-h-screen">
+      <FunnelLayoutActivator />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#1A2B49] to-[#243b62]" aria-hidden />
