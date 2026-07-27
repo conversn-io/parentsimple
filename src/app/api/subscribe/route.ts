@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import * as crypto from 'crypto'
 import { newsletterDb, SITE_ID } from '@/lib/newsletter-db'
 
 // Simple in-memory rate limiter: 5 requests per IP per minute
@@ -52,7 +51,6 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = email.toLowerCase().trim()
-    const hemSha256 = crypto.createHash('sha256').update(normalizedEmail).digest('hex')
 
     // Check if subscriber already exists
     const { data: existing } = await newsletterDb
@@ -76,7 +74,6 @@ export async function POST(request: NextRequest) {
 
       const updatePayload: Record<string, unknown> = {
         tags: mergedTags,
-        hem_sha256: hemSha256,
         updated_at: new Date().toISOString(),
       }
 
@@ -116,7 +113,6 @@ export async function POST(request: NextRequest) {
         .from('newsletter_subscribers')
         .insert({
           email: normalizedEmail,
-          hem_sha256: hemSha256,
           site_id,
           first_name: first_name || null,
           zip_code: zip_code || null,
