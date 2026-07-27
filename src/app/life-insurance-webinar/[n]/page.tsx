@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, PlayCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, PlayCircle, ShieldCheck } from 'lucide-react'
 import { WEBINAR_VIDEOS, WEBINAR_TOTAL } from '../videos'
 
 const CANONICAL_BASE = 'https://www.parentsimple.org/life-insurance-webinar'
@@ -93,8 +93,48 @@ export default async function WebinarVideoPage({
         </div>
       </section>
 
+      {/* Bridge CTA: watched a video → take the quiz */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-14">
+        <div className="rounded-2xl bg-gradient-to-br from-[#1A2B49] to-[#243b62] text-white p-8 md:p-10 shadow-lg">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] uppercase text-[#E4CDA1] mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E4CDA1]" />
+              Ready when you are
+            </div>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-semibold leading-tight mb-4">
+              Now that you understand how life insurance works, see what fits your situation.
+            </h2>
+            <p className="text-white/85 text-base md:text-lg leading-relaxed mb-6">
+              Answer a few short questions and we&apos;ll match you with a licensed agent who can
+              walk you through your best-fit coverage — plain language, no obligation.
+            </p>
+            <Link
+              href="/life-insurance-quiz"
+              className="inline-flex items-center gap-2 bg-[#E4CDA1] text-[#1A2B49] px-6 py-3.5 rounded-lg font-semibold hover:bg-[#EDD9B4] transition-colors"
+            >
+              Start the 60-Second Quiz
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <ul className="mt-6 grid sm:grid-cols-3 gap-3 text-sm text-white/80">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#9DB89D] flex-shrink-0" />
+                Takes about 60 seconds
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#9DB89D] flex-shrink-0" />
+                Free · no obligation
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#9DB89D] flex-shrink-0" />
+                Licensed agents only
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* Next up */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pb-20">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         <p className="text-sm font-semibold tracking-[0.2em] uppercase text-[#9DB89D] mb-4">
           More in this series
         </p>
@@ -119,6 +159,43 @@ export default async function WebinarVideoPage({
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Close block: reinforce the next step */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-16 lg:pb-24">
+        <div className="rounded-2xl bg-white border border-[#E3E0D5] p-8 md:p-10 shadow-sm">
+          <div className="grid md:grid-cols-[auto_1fr] gap-6 md:gap-8 items-start">
+            <div className="w-14 h-14 rounded-full bg-[#9DB89D]/15 flex items-center justify-center flex-shrink-0">
+              <ShieldCheck className="w-7 h-7 text-[#1A2B49]" />
+            </div>
+            <div>
+              <h3 className="text-2xl md:text-3xl font-serif font-semibold text-[#1A2B49] mb-3">
+                Decide with confidence — not pressure
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                We built this series so families could understand life insurance before talking to
+                anyone. When you&apos;re ready, we&apos;ll match you with a licensed agent who can
+                walk you through your options — the same plain-language way. No hard sell, ever.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/life-insurance-quiz"
+                  className="inline-flex items-center justify-center gap-2 bg-[#1A2B49] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#152238] transition-colors"
+                >
+                  Start the 60-Second Quiz
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/life-insurance-webinar"
+                  className="inline-flex items-center justify-center gap-2 border border-[#E3E0D5] text-[#1A2B49] px-6 py-3 rounded-lg font-semibold hover:bg-[#F9F6EF] transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to the series
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
