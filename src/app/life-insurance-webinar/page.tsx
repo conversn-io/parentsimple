@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { BookOpen, Layers, DollarSign, PlayCircle } from 'lucide-react'
+import { BookOpen, Layers, DollarSign } from 'lucide-react'
 import WebinarGate from './WebinarGate'
 
 const CANONICAL = 'https://www.parentsimple.org/life-insurance-webinar'
@@ -80,69 +80,43 @@ export default function LifeInsuranceWebinarPage() {
               </ul>
             </div>
 
-            <div className="flex flex-col items-center gap-6">
-              <div className="w-full max-w-md lg:hidden">
-                <WebinarGate />
-              </div>
-              <div className="hidden lg:flex w-full max-w-md items-center justify-center">
-                <div className="relative w-full aspect-video rounded-2xl bg-[#0F1B33] border border-white/10 shadow-2xl flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent" aria-hidden />
-                  <div className="relative flex flex-col items-center gap-3 text-white/90">
-                    <PlayCircle className="w-16 h-16 text-[#E4CDA1]" strokeWidth={1.5} />
-                    <div className="text-sm font-semibold tracking-[0.2em] uppercase text-[#E4CDA1]">
-                      5-part series
-                    </div>
-                    <div className="font-serif text-lg text-white/80">Unlock all videos below</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What you'll learn + Gate */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="grid lg:grid-cols-5 gap-10 lg:gap-14 items-start">
-          <div className="lg:col-span-3 order-2 lg:order-1">
-            <p className="text-sm font-semibold tracking-[0.2em] text-[#9DB89D] uppercase mb-3">
-              What you&apos;ll learn
-            </p>
-            <h2 className="text-3xl md:text-4xl font-serif font-semibold text-[#1A2B49] mb-8">
-              A calm, useful primer — not a sales pitch
-            </h2>
-            <div className="grid sm:grid-cols-1 gap-5">
-              {learningPoints.map(({ icon: Icon, title, body }) => (
-                <div
-                  key={title}
-                  className="bg-white rounded-xl border border-[#E3E0D5] p-5 shadow-sm"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-[#9DB89D]/15 flex items-center justify-center mb-3">
-                    <Icon className="w-5 h-5 text-[#1A2B49]" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1A2B49] mb-1.5">{title}</h3>
-                  <p className="text-sm text-gray-700 leading-relaxed">{body}</p>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-sm text-gray-600 leading-relaxed mt-8">
-              The series is five short videos you can watch in order or jump around. Together they
-              cover the ground above — no jargon, no pressure to buy anything.
-            </p>
-          </div>
-
-          <div className="lg:col-span-2 order-1 lg:order-2 hidden lg:block">
-            <div className="lg:sticky lg:top-8">
+            <div className="w-full max-w-md mx-auto lg:mx-0 lg:ml-auto">
               <WebinarGate />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Mobile gate placement below fold */}
-      <section className="lg:hidden max-w-xl mx-auto px-4 sm:px-6 pb-16">
-        <WebinarGate />
+      {/* What you'll learn */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="max-w-3xl mb-10">
+          <p className="text-sm font-semibold tracking-[0.2em] text-[#9DB89D] uppercase mb-3">
+            What you&apos;ll learn
+          </p>
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold text-[#1A2B49]">
+            A calm, useful primer — not a sales pitch
+          </h2>
+        </div>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {learningPoints.map(({ icon: Icon, title, body }) => (
+            <div
+              key={title}
+              className="bg-white rounded-xl border border-[#E3E0D5] p-6 shadow-sm h-full"
+            >
+              <div className="w-10 h-10 rounded-lg bg-[#9DB89D]/15 flex items-center justify-center mb-3">
+                <Icon className="w-5 h-5 text-[#1A2B49]" />
+              </div>
+              <h3 className="text-lg font-semibold text-[#1A2B49] mb-1.5">{title}</h3>
+              <p className="text-sm text-gray-700 leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-sm text-gray-600 leading-relaxed mt-8 max-w-2xl">
+          The series is five short videos you can watch in order or jump around. Together they
+          cover the ground above — no jargon, no pressure to buy anything.
+        </p>
       </section>
 
       {/* Compliance / disclaimer */}
