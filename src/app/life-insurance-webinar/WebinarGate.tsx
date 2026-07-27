@@ -1,14 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { CheckCircle2, Loader2, Mail, PlayCircle } from 'lucide-react'
 
-const VIDEOS = [1, 2, 3, 4, 5].map((n) => ({
-  n,
-  src: `/life-insurance-webinar/${encodeURIComponent(
-    `Life Insurance Webinar Series Video ${n}.mp4`,
-  )}`,
-}))
+const NEXT_PATH = '/life-insurance-webinar/1'
+const AUTO_REDIRECT_MS = 1200
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -19,11 +17,19 @@ type GtagFn = (
 ) => void
 
 export default function WebinarGate() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [firstName, setFirstName] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    if (!success) return
+    router.prefetch(NEXT_PATH)
+    const t = setTimeout(() => router.push(NEXT_PATH), AUTO_REDIRECT_MS)
+    return () => clearTimeout(t)
+  }, [success, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,9 +72,6 @@ export default function WebinarGate() {
       }
 
       setSuccess(true)
-      requestAnimationFrame(() => {
-        document.getElementById('webinar-videos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong.'
       setError(message)
@@ -79,52 +82,26 @@ export default function WebinarGate() {
 
   if (success) {
     return (
-      <div id="webinar-videos" className="scroll-mt-24 space-y-6">
-        <div className="bg-white rounded-2xl shadow-lg border border-[#E3E0D5] p-6 md:p-8">
-          <div className="flex flex-col items-center text-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-[#9DB89D]/20 flex items-center justify-center">
-              <CheckCircle2 className="w-7 h-7 text-[#5F7F5F]" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-serif font-semibold text-[#1A2B49]">
-              You&apos;re in — start watching below
-            </h2>
-            <p className="text-gray-700 max-w-md">
-              We&apos;ve also sent a link to your inbox so you can come back to the series anytime.
-            </p>
+      <div className="bg-white rounded-2xl shadow-lg border border-[#E3E0D5] p-6 md:p-8">
+        <div className="flex flex-col items-center text-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-[#9DB89D]/20 flex items-center justify-center">
+            <CheckCircle2 className="w-7 h-7 text-[#5F7F5F]" />
           </div>
+          <h2 className="text-2xl md:text-3xl font-serif font-semibold text-[#1A2B49]">
+            You&apos;re in
+          </h2>
+          <p className="text-gray-700 max-w-md">
+            Sending you to Part 1 now — tap below if the page doesn&apos;t load automatically.
+          </p>
+          <Link
+            href={NEXT_PATH}
+            prefetch
+            className="inline-flex items-center gap-2 bg-[#1A2B49] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#152238] transition-colors"
+          >
+            <PlayCircle className="w-5 h-5" />
+            Watch Part 1
+          </Link>
         </div>
-
-        <div className="grid gap-6">
-          {VIDEOS.map(({ n, src }) => (
-            <figure
-              key={n}
-              className="bg-white rounded-2xl shadow-lg border border-[#E3E0D5] overflow-hidden"
-            >
-              <div className="px-5 pt-5 pb-3 flex items-center gap-2 text-sm font-semibold tracking-[0.18em] text-[#9DB89D] uppercase">
-                <PlayCircle className="w-4 h-4" />
-                Video {n} of {VIDEOS.length}
-              </div>
-              <video
-                controls
-                preload="metadata"
-                playsInline
-                className="w-full bg-black aspect-video"
-              >
-                <source src={src} type="video/mp4" />
-                Your browser doesn&apos;t support embedded video. You can
-                {' '}
-                <a href={src} className="underline">download the file</a>
-                {' '}
-                instead.
-              </video>
-            </figure>
-          ))}
-        </div>
-
-        <p className="text-xs text-gray-500 text-center max-w-md mx-auto">
-          Educational content only. Not investment, tax, or legal advice. Insurance products are
-          offered through licensed professionals and may not be available in all states.
-        </p>
       </div>
     )
   }
@@ -140,8 +117,8 @@ export default function WebinarGate() {
           Get Free Access
         </h2>
         <p className="text-gray-700 mt-2">
-          A five-part video series that explains life insurance in plain language — watch at your
-          own pace, right after you sign up.
+          A five-part video series that explains life insurance in plain language — start watching
+          the moment you sign up.
         </p>
       </div>
 
