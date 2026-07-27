@@ -109,7 +109,7 @@ export default async function WebinarVideoPage({
               walk you through your best-fit coverage — plain language, no obligation.
             </p>
             <Link
-              href="/life-insurance-quiz"
+              href="/quiz/life-insurance-us"
               className="inline-flex items-center gap-2 bg-[#E4CDA1] text-[#1A2B49] px-6 py-3.5 rounded-lg font-semibold hover:bg-[#EDD9B4] transition-colors"
             >
               Start the 60-Second Quiz
@@ -180,7 +180,7 @@ export default async function WebinarVideoPage({
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/life-insurance-quiz"
+                  href="/quiz/life-insurance-us"
                   className="inline-flex items-center justify-center gap-2 bg-[#1A2B49] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#152238] transition-colors"
                 >
                   Start the 60-Second Quiz
