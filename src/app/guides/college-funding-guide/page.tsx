@@ -90,20 +90,8 @@ export default function CollegeFundingGuidePage() {
               </ul>
             </div>
 
-            <div className="flex flex-col items-center gap-6">
-              <div className="relative">
-                <Image
-                  src={COVER_URL}
-                  alt="The College Funding Guide — cover"
-                  width={360}
-                  height={466}
-                  priority
-                  className="rounded-lg shadow-2xl"
-                />
-              </div>
-              <div className="w-full max-w-md lg:hidden">
-                <GuideGate />
-              </div>
+            <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+              <GuideGate />
             </div>
           </div>
         </div>
@@ -136,16 +124,17 @@ export default function CollegeFundingGuidePage() {
           </div>
 
           <div className="lg:col-span-2 order-1 lg:order-2 hidden lg:block">
-            <div className="lg:sticky lg:top-8">
-              <GuideGate />
+            <div className="lg:sticky lg:top-8 flex justify-center">
+              <Image
+                src={COVER_URL}
+                alt="The College Funding Guide — cover"
+                width={320}
+                height={414}
+                className="rounded-lg shadow-xl"
+              />
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Mobile gate placement below fold if hero one collapsed */}
-      <section className="lg:hidden max-w-xl mx-auto px-4 sm:px-6 pb-16">
-        <GuideGate />
       </section>
 
       {/* Compliance / disclaimer */}
