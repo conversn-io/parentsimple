@@ -5,11 +5,11 @@ export type WebinarVideo = {
 }
 
 export const WEBINAR_VIDEOS: WebinarVideo[] = [
-  { n: 1, title: 'Part 1', vimeoId: '1213427906' },
+  { n: 1, title: 'Part 1', vimeoId: '1213427905' },
   { n: 2, title: 'Part 2', vimeoId: '1213427907' },
-  { n: 3, title: 'Part 3', vimeoId: '1213427951' },
-  { n: 4, title: 'Part 4', vimeoId: '1213427908' },
-  { n: 5, title: 'Part 5', vimeoId: '1213427905' },
+  { n: 3, title: 'Part 3', vimeoId: '1213427908' },
+  { n: 4, title: 'Part 4', vimeoId: '1213427906' },
+  { n: 5, title: 'Part 5', vimeoId: '1213427951' },
 ]
 
 export const WEBINAR_TOTAL = WEBINAR_VIDEOS.length
