@@ -2,6 +2,21 @@ import { getArticle, resolveOrphanSlug, getRelatedArticles } from '../../../lib/
 import { notFound, permanentRedirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import ContentUpgradeCollegeGuide from '../../../components/content/ContentUpgradeCollegeGuide'
+import TermLifeWebinarCTA from '../../../components/content/TermLifeWebinarCTA'
+
+// DIRECTIVE-ParentSimple-Capture-Wiring-2026-07-28
+const COLLEGE_GUIDE_SLUGS = new Set([
+  'how-to-open-a-529-plan-step-by-step-guide',
+  'how-to-save-for-college-complete-parents-guide',
+  'best-529-plans-by-state-2026',
+  'best-529-plan-providers-2026',
+  'what-is-a-529-plan-and-how-does-it-work',
+  'best-student-loan-refinancing-for-parents-2026',
+  'best-private-student-loans-no-cosigner-2026',
+  'best-private-student-loans-for-parents-2026',
+])
+const TERM_LIFE_SLUG = 'best-term-life-insurance-for-parents-2026'
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
@@ -191,9 +206,16 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       {/* Article Content */}
       <section className="bg-white">
         <div className="max-w-4xl mx-auto px-6 pb-16">
+          {COLLEGE_GUIDE_SLUGS.has(slug) && (
+            <ContentUpgradeCollegeGuide slug={slug} variant="inline" />
+          )}
+          {slug === TERM_LIFE_SLUG && (
+            <TermLifeWebinarCTA slug={slug} variant="inline" />
+          )}
+
           {article.html_body ? (
             // html_body already includes <div class="prose"> wrapper, so render it directly
-            <div 
+            <div
               className="text-gray-800 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: article.html_body }}
               style={{
@@ -204,7 +226,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           ) : (
             // Fallback to markdown content with prose wrapper
             <div className="prose prose-lg max-w-none">
-              <div 
+              <div
                 className="text-gray-800 leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: article.content }}
                 style={{
@@ -213,6 +235,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 }}
               />
             </div>
+          )}
+
+          {COLLEGE_GUIDE_SLUGS.has(slug) && (
+            <ContentUpgradeCollegeGuide slug={slug} variant="end" />
+          )}
+          {slug === TERM_LIFE_SLUG && (
+            <TermLifeWebinarCTA slug={slug} variant="end" />
           )}
         </div>
       </section>

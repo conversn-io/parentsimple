@@ -26,6 +26,8 @@ import InteractiveChecklist from '../checklists/InteractiveChecklist'
 interface EnhancedArticleDisplayProps {
   article: EnhancedArticle
   className?: string
+  inlineTop?: React.ReactNode
+  inlineBottom?: React.ReactNode
 }
 
 function getRelatedContent(_slug: string) {
@@ -53,9 +55,11 @@ function getRelatedContent(_slug: string) {
   ]
 }
 
-export default function EnhancedArticleDisplay({ 
-  article, 
-  className = '' 
+export default function EnhancedArticleDisplay({
+  article,
+  className = '',
+  inlineTop,
+  inlineBottom,
 }: EnhancedArticleDisplayProps) {
   const [showTableOfContents, setShowTableOfContents] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
@@ -381,13 +385,19 @@ export default function EnhancedArticleDisplay({
       {/* Interactive Content */}
       {renderInteractiveContent()}
 
+      {/* Inline content-upgrade slot (top) — rendered after intro, before body */}
+      {inlineTop}
+
       {/* Article Content */}
       <div className="article-prose prose prose-lg max-w-none">
-        <div 
+        <div
           dangerouslySetInnerHTML={{ __html: article.html_body || article.content }}
           className="text-gray-800 leading-relaxed"
         />
       </div>
+
+      {/* Inline content-upgrade slot (bottom) — rendered at end of body, before footer */}
+      {inlineBottom}
 
       {/* Article Footer */}
       <footer className="mt-12 pt-8 border-t border-gray-200">

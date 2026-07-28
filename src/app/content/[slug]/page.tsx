@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import EnhancedArticleDisplay from '@/components/content/EnhancedArticleDisplay';
+import ContentUpgradeCollegeGuide from '@/components/content/ContentUpgradeCollegeGuide';
+import TermLifeWebinarCTA from '@/components/content/TermLifeWebinarCTA';
 import CalculatorWrapper from '@/components/calculators/CalculatorWrapper';
 import InteractiveTool from '@/components/tools/InteractiveTool';
 import InteractiveChecklist from '@/components/checklists/InteractiveChecklist';
@@ -74,7 +76,7 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
       description: content.og_description || content.meta_description || content.excerpt,
       images: content.og_image ? [{ url: content.og_image }] : [],
       type: 'article',
-      url: `https://seniorsimple.org/content/${slug}`,
+      url: `https://parentsimple.org/content/${slug}`,
     },
     twitter: {
       card: 'summary_large_image',
@@ -83,7 +85,7 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
       images: content.twitter_image ? [content.twitter_image] : [],
     },
     alternates: {
-      canonical: content.canonical_url || `https://seniorsimple.org/content/${slug}`,
+      canonical: content.canonical_url || `https://parentsimple.org/content/${slug}`,
     },
   };
 }
@@ -120,19 +122,19 @@ export default async function ContentPage({ params }: ContentPageProps) {
     "dateModified": content.updated_at,
     "author": {
       "@type": "Organization",
-      "name": "SeniorSimple"
+      "name": "ParentSimple"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "SeniorSimple",
+      "name": "ParentSimple",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://seniorsimple.org/logo.png"
+        "url": "https://parentsimple.org/logo.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://seniorsimple.org/content/${slug}`
+      "@id": `https://parentsimple.org/content/${slug}`
     }
   }
 
@@ -251,7 +253,33 @@ export default async function ContentPage({ params }: ContentPageProps) {
       );
             case 'guide':
             case 'comparison':
-            default:
+            default: {
+              // Content-upgrade wiring — DIRECTIVE-ParentSimple-Capture-Wiring-2026-07-28
+              // College guide mounts on the 529 guide + comparison cluster.
+              // Term-life-for-parents mounts the life-insurance-webinar CTA.
+              const collegeGuideSlugs = new Set([
+                'how-to-open-a-529-plan-step-by-step-guide',
+                'how-to-save-for-college-complete-parents-guide',
+                'best-529-plans-by-state-2026',
+                'best-529-plan-providers-2026',
+                'what-is-a-529-plan-and-how-does-it-work',
+                'best-student-loan-refinancing-for-parents-2026',
+                'best-private-student-loans-no-cosigner-2026',
+                'best-private-student-loans-for-parents-2026',
+              ]);
+              const termLifeSlug = 'best-term-life-insurance-for-parents-2026';
+
+              let inlineTop: React.ReactNode = null;
+              let inlineBottom: React.ReactNode = null;
+
+              if (collegeGuideSlugs.has(slug)) {
+                inlineTop = <ContentUpgradeCollegeGuide slug={slug} variant="inline" />;
+                inlineBottom = <ContentUpgradeCollegeGuide slug={slug} variant="end" />;
+              } else if (slug === termLifeSlug) {
+                inlineTop = <TermLifeWebinarCTA slug={slug} variant="inline" />;
+                inlineBottom = <TermLifeWebinarCTA slug={slug} variant="end" />;
+              }
+
               return (
                 <>
                   {/* Structured Data for SEO/AEO */}
@@ -259,8 +287,13 @@ export default async function ContentPage({ params }: ContentPageProps) {
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
                   />
-                  <EnhancedArticleDisplay article={enhancedArticle} />
+                  <EnhancedArticleDisplay
+                    article={enhancedArticle}
+                    inlineTop={inlineTop}
+                    inlineBottom={inlineBottom}
+                  />
                 </>
               );
+            }
   }
 }
