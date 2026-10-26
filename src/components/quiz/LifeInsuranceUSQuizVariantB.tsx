@@ -207,24 +207,39 @@ export function LifeInsuranceUSQuizVariantB() {
       email: contactEmail.trim().toLowerCase(),
       phone: phoneE164,
     }
-    const fullAnswers = { ...answers, contact_info: contactInfo }
+    const isSenior = answers.age_range === '65+'
+    const fullAnswers = {
+      ...answers,
+      contact_info: contactInfo,
+      ...(isSenior ? { disqualified: true, dq_reason: 'age_65_plus_term_run' } : {}),
+    }
     const metaEventId = `${sessionId || 'li_us'}-Lead-${Math.floor(Date.now() / 1000)}`
 
     if (sessionId) {
       trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_us')
-      trackLeadFormSubmit({
-        firstName: contactInfo.firstName,
-        lastName: contactInfo.lastName,
-        email: contactInfo.email,
-        phone: phoneE164,
-        zipCode: '',
-        state: '',
-        stateName: '',
-        quizAnswers: fullAnswers,
-        sessionId: sessionId,
-        funnelType: 'life_insurance_us',
-        metaEventId
-      })
+      if (isSenior) {
+        if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
+          ;(window as any).fbq('trackCustom', 'LeadSenior', {
+            content_name: 'Life Insurance US Senior (65+)',
+            content_category: 'life_insurance_us',
+            dq_reason: 'age_65_plus_term_run',
+          }, { eventID: metaEventId })
+        }
+      } else {
+        trackLeadFormSubmit({
+          firstName: contactInfo.firstName,
+          lastName: contactInfo.lastName,
+          email: contactInfo.email,
+          phone: phoneE164,
+          zipCode: '',
+          state: '',
+          stateName: '',
+          quizAnswers: fullAnswers,
+          sessionId: sessionId,
+          funnelType: 'life_insurance_us',
+          metaEventId
+        })
+      }
     }
 
     try {
@@ -257,6 +272,9 @@ export function LifeInsuranceUSQuizVariantB() {
           jornayaLeadId: getLeadIdToken() || null,
           jornaya_lead_id: getLeadIdToken() || null,
           metaCookies: { fbp: metaCookies.fbp, fbc: metaCookies.fbc, fbLoginId },
+          isSenior,
+          disqualified: isSenior || undefined,
+          dqReason: isSenior ? 'age_65_plus_term_run' : undefined,
         }),
       })
 

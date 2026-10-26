@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
       phoneNumber, // Now accepts phone number
       quizAnswers, 
       sessionId, 
-      funnelType = 'insurance', // Default for SeniorSimple
+      funnelType = 'insurance', // Default for ParentSimple
       zipCode,
       state,
       stateName,
@@ -186,8 +186,18 @@ export async function POST(request: NextRequest) {
       calculatedResults,
       utmParams,
       metaCookies,
-      metaEventId
+      metaEventId,
+      isSenior,
+      disqualified,
+      dqReason,
     } = body;
+
+    // WO-1277 — 65+ gate on life_insurance_us (control, variant B, mortgage-protection).
+    // We still save the lead row and the analytics event, but skip the optimized
+    // CAPI `Lead` and the term-agent GHL push so Meta delivery doesn't train on
+    // seniors and the broker queue isn't polluted.
+    const isSeniorFlag = Boolean(isSenior) || dqReason === 'age_65_plus_term_run';
+    const isDisqualified = Boolean(disqualified) || isSeniorFlag;
 
     if (!email) {
       return createCorsResponse({ error: 'Email is required' }, 400);
@@ -378,6 +388,9 @@ export async function POST(request: NextRequest) {
         trestle_phone_validation: trestleResult || existingLead?.quiz_answers?.trestle_phone_validation || null,
         phone_tier: trestleClassification?.tier || existingLead?.quiz_answers?.phone_tier || null,
         phone_tier_reasons: trestleClassification?.reasons || existingLead?.quiz_answers?.phone_tier_reasons || null,
+        ...(isDisqualified
+          ? { disqualified: true, dq_reason: dqReason || 'age_65_plus_term_run' }
+          : {}),
       },
       utm_source: utmSource,
       utm_medium: utmMedium,
@@ -389,7 +402,7 @@ export async function POST(request: NextRequest) {
       // Optional columns removed - they don't exist in schema:
       // form_type: 'quiz',
       // attributed_ad_account: 'CallReady - Insurance',
-      // profit_center: 'SeniorSimple.org',
+      // profit_center: 'ParentSimple.org',
     };
 
     let lead;
@@ -504,7 +517,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (lead?.id) {
-      if (funnelType === 'life_insurance_us') {
+      if (funnelType === 'life_insurance_us' && !isSeniorFlag) {
         try {
           console.log('🟣 [LEAD] Dispatching Meta CAPI Lead:', {
             funnelType,
@@ -551,6 +564,11 @@ export async function POST(request: NextRequest) {
         } catch (capiError) {
           console.error('💥 [LEAD] Meta CAPI Lead exception:', capiError);
         }
+      } else if (funnelType === 'life_insurance_us' && isSeniorFlag) {
+        console.log('⚪ [LEAD] Skipping Meta CAPI Lead — 65+ gate (dq_reason=age_65_plus_term_run):', {
+          leadId: lead.id,
+          sessionId: sessionId || null,
+        });
       } else {
         console.log('⚪ [LEAD] CAPI deferred to OTP verification for funnel:', {
           funnelType,
@@ -561,7 +579,14 @@ export async function POST(request: NextRequest) {
       // GHL push for life_insurance_us happens here — OTP step is removed,
       // Trestle line-type validation above is the gate. Other funnels still
       // route through /api/leads/verify-otp-and-send-to-ghl.
-      if (verifiedNow && phoneNumber) {
+      // 65+ gate (WO-1277): skip term-agent delivery for senior leads.
+      if (verifiedNow && phoneNumber && isSeniorFlag) {
+        console.log('⏭️ [LEAD] Skipping GHL term-agent push — 65+ gate:', {
+          leadId: lead.id,
+          dqReason: dqReason || 'age_65_plus_term_run',
+        });
+      }
+      if (verifiedNow && phoneNumber && !isSeniorFlag) {
         try {
           const householdIncome =
             quizAnswers?.household_income ?? lead.quiz_answers?.household_income ?? null;
