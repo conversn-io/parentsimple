@@ -35,7 +35,7 @@ export interface SplitTestConfig {
   /** Cookie name for sticky assignment (e.g., 'ss_landing_page_variant') */
   cookieName: string;
   
-  /** Site identifier for tracking (e.g., 'seniorsimple.org') */
+  /** Site identifier for tracking (e.g., 'parentsimple.org') */
   siteKey: string;
   
   /** Default variant if assignment fails (defaults to first variant) */
@@ -92,17 +92,29 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
       return null;
     }
 
+    // Preserve the original query string (UTMs, fbclid, gclid, etc.) on every
+    // redirect so attribution survives the A/B hop. Without this, the browser
+    // follows a 307 to the target pathname only, dropping ?utm_* and ?fbclid.
+    const copyOriginalParams = (target: URL) => {
+      searchParams.forEach((value, key) => {
+        if (!target.searchParams.has(key)) {
+          target.searchParams.set(key, value);
+        }
+      });
+    };
+
     // Check query parameter override (for testing)
     if (allowQueryOverride) {
       const queryVariant = searchParams.get(queryParamName);
       if (queryVariant && variants[queryVariant]) {
         const redirectUrl = new URL(variants[queryVariant], request.url);
-        
+        copyOriginalParams(redirectUrl);
+
         // CRITICAL: Don't redirect if already on the target path (prevents infinite loops)
         if (pathname === variants[queryVariant]) {
           return null; // Pass through
         }
-        
+
         return {
           status: 307,
           url: redirectUrl.toString(),
@@ -120,12 +132,13 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
     const existingVariant = request.cookies?.get?.(cookieName);
     if (existingVariant?.value && variants[existingVariant.value]) {
       const redirectUrl = new URL(variants[existingVariant.value], request.url);
-      
+      copyOriginalParams(redirectUrl);
+
       // CRITICAL: Don't redirect if already on the target path (prevents infinite loops)
       if (pathname === variants[existingVariant.value]) {
         return null; // Pass through
       }
-      
+
       return {
         status: 307,
         url: redirectUrl.toString(),
@@ -136,6 +149,7 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
     // Assign variant based on weights or equal split
     const assignedVariant = assignVariant(variants, weights, defaultVariant);
     const redirectUrl = new URL(variants[assignedVariant], request.url);
+    copyOriginalParams(redirectUrl);
     
     // CRITICAL: Don't redirect if already on the target path (prevents infinite loops)
     if (pathname === variants[assignedVariant]) {
