@@ -117,13 +117,22 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
       <section className="bg-white py-8">
         <div className="max-w-2xl mx-auto px-6">
           <div className="bg-slate-50 rounded-2xl p-8 mb-8">
-            {/* Agent Photo - Full crop, no circle - Reduced spacing by 50% */}
-            <img 
-              src="/images/team/agent-advisor.png" 
-              alt="Licensed Insurance Specialist"
-              className="w-full max-w-sm mx-auto mb-3 object-cover rounded-lg"
+            {/* Agent Photo + identity */}
+            <img
+              src="/images/team/maureen-donoghue.webp"
+              alt="Maureen Donoghue, Licensed Insurance Specialist (Transamerica)"
+              className="w-56 h-56 mx-auto mb-3 object-cover rounded-full"
             />
-            
+            <div className="text-center mb-6">
+              <p className="text-lg font-semibold text-slate-800">Maureen Donoghue, Transamerica</p>
+              <p className="text-slate-600">
+                Mobile:{' '}
+                <a href="tel:+17146256732" className="text-[#36596A] hover:underline">
+                  714-625-6732
+                </a>
+              </p>
+            </div>
+
             {/* What Happens Next - Vertical Stack */}
             <div className="space-y-4 text-left">
               <h3 className="text-xl font-semibold text-slate-800 mb-4 text-center">
