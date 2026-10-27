@@ -21,6 +21,7 @@ import {
   trackEmailCapture,
   trackLeadFormSubmit,
 } from '@/lib/unified-tracking'
+import StatePickerStep, { type SelectedState } from './StatePickerStep'
 
 const STORAGE_KEY = 'life_insurance_us_quiz_data'
 
@@ -111,6 +112,9 @@ export function LifeInsuranceUSQuiz() {
 
   const currentStepDef = LIFE_INSURANCE_US_STEPS[step]
   const isContactStep = currentStepDef?.id === 'contact_info'
+  const isStateStep = currentStepDef?.type === 'state-picker'
+  const stateAbbr = typeof answers.state === 'string' ? answers.state : ''
+  const stateName = typeof answers.state_name === 'string' ? answers.state_name : ''
 
   useEffect(() => {
     if (sessionId && currentStepDef) {
@@ -147,6 +151,31 @@ export function LifeInsuranceUSQuiz() {
 
     if (sessionId) {
       trackQuestionAnswer(currentStepDef.id, value, step + 1, TOTAL_US_STEPS, sessionId, 'life_insurance_us', 'control')
+      postProgress(sessionId, updatedAnswers, utmParams, step + 1, currentStepDef.id)
+    }
+
+    if (step < TOTAL_US_STEPS - 1) setStep(step + 1)
+  }
+
+  const handleStateSelect = (selected: SelectedState) => {
+    if (!currentStepDef) return
+    const updatedAnswers = {
+      ...answers,
+      state: selected.abbreviation,
+      state_name: selected.name,
+    }
+    setAnswers(updatedAnswers)
+
+    if (sessionId) {
+      trackQuestionAnswer(
+        currentStepDef.id,
+        selected.abbreviation,
+        step + 1,
+        TOTAL_US_STEPS,
+        sessionId,
+        'life_insurance_us',
+        'control',
+      )
       postProgress(sessionId, updatedAnswers, utmParams, step + 1, currentStepDef.id)
     }
 
@@ -250,8 +279,8 @@ export function LifeInsuranceUSQuiz() {
           email: contactInfo.email,
           phone: phoneE164,
           zipCode: '',
-          state: '',
-          stateName: '',
+          state: stateAbbr,
+          stateName: stateName,
           quizAnswers: fullAnswers,
           sessionId: sessionId,
           funnelType: 'life_insurance_us',
@@ -279,8 +308,8 @@ export function LifeInsuranceUSQuiz() {
           sessionId: sessionId || 'unknown',
           funnelType: 'life_insurance_us',
           zipCode: null,
-          state: null,
-          stateName: null,
+          state: stateAbbr || null,
+          stateName: stateName || null,
           licensingInfo: null,
           calculatedResults: null,
           utmParams: utmParams,
@@ -498,7 +527,28 @@ export function LifeInsuranceUSQuiz() {
           </>
         )}
 
-        {step >= 1 && !isContactStep && currentStepDef && currentStepDef.type === 'multiple-choice' && (
+        {isStateStep && (
+          <>
+            {step === TOTAL_US_STEPS - 2 && (
+              <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>
+            )}
+            <StatePickerStep
+              selectedAbbreviation={stateAbbr}
+              onSelect={handleStateSelect}
+            />
+            <div className="mt-8 flex flex-col items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="text-gray-500 text-sm hover:underline transition-colors duration-150"
+              >
+                ← Back
+              </button>
+            </div>
+          </>
+        )}
+
+        {step >= 1 && !isContactStep && !isStateStep && currentStepDef && currentStepDef.type === 'multiple-choice' && (
           <>
             {step === TOTAL_US_STEPS - 2 && (
               <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>

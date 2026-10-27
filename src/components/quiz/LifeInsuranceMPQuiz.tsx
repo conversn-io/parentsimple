@@ -21,6 +21,7 @@ import {
   trackEmailCapture,
   trackLeadFormSubmit,
 } from '@/lib/unified-tracking'
+import StatePickerStep, { type SelectedState } from './StatePickerStep'
 
 const STORAGE_KEY = 'life_insurance_us_quiz_data'
 const FUNNEL_TYPE = 'life_insurance_us'
@@ -67,6 +68,9 @@ export function LifeInsuranceMPQuiz() {
   const totalSteps = activeSteps.length
   const currentStepDef = activeSteps[step]
   const isContactStep = currentStepDef?.id === 'contact_info'
+  const isStateStep = currentStepDef?.type === 'state-picker'
+  const stateAbbr = typeof answers.state === 'string' ? answers.state : ''
+  const stateName = typeof answers.state_name === 'string' ? answers.state_name : ''
 
   const postProgress = (
     sid: string,
@@ -182,6 +186,31 @@ export function LifeInsuranceMPQuiz() {
     if (step < totalSteps - 1) setStep(step + 1)
   }
 
+  const handleStateSelect = (selected: SelectedState) => {
+    if (!currentStepDef) return
+    const updatedAnswers = {
+      ...answers,
+      state: selected.abbreviation,
+      state_name: selected.name,
+    }
+    setAnswers(updatedAnswers)
+
+    if (sessionId) {
+      trackQuestionAnswer(
+        currentStepDef.id,
+        selected.abbreviation,
+        step + 1,
+        totalSteps,
+        sessionId,
+        FUNNEL_TYPE,
+        VARIANT,
+      )
+      postProgress(sessionId, updatedAnswers, utmParams, step + 1, currentStepDef.id)
+    }
+
+    if (step < totalSteps - 1) setStep(step + 1)
+  }
+
   const handleBack = () => {
     if (step > 0) setStep(step - 1)
   }
@@ -279,8 +308,8 @@ export function LifeInsuranceMPQuiz() {
           email: contactInfo.email,
           phone: phoneE164,
           zipCode: '',
-          state: '',
-          stateName: '',
+          state: stateAbbr,
+          stateName: stateName,
           quizAnswers: fullAnswers,
           sessionId,
           funnelType: FUNNEL_TYPE,
@@ -308,8 +337,8 @@ export function LifeInsuranceMPQuiz() {
           sessionId: sessionId || 'unknown',
           funnelType: FUNNEL_TYPE,
           zipCode: null,
-          state: null,
-          stateName: null,
+          state: stateAbbr || null,
+          stateName: stateName || null,
           licensingInfo: null,
           calculatedResults: null,
           utmParams: utmParams,
@@ -464,7 +493,28 @@ export function LifeInsuranceMPQuiz() {
           </>
         )}
 
-        {step >= 1 && !isContactStep && currentStepDef && currentStepDef.type === 'multiple-choice' && (
+        {isStateStep && (
+          <>
+            {step === totalSteps - 2 && (
+              <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>
+            )}
+            <StatePickerStep
+              selectedAbbreviation={stateAbbr}
+              onSelect={handleStateSelect}
+            />
+            <div className="mt-8 flex flex-col items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="text-gray-500 text-sm hover:underline transition-colors duration-150"
+              >
+                ← Back
+              </button>
+            </div>
+          </>
+        )}
+
+        {step >= 1 && !isContactStep && !isStateStep && currentStepDef && currentStepDef.type === 'multiple-choice' && (
           <>
             {step === totalSteps - 2 && (
               <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>

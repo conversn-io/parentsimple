@@ -88,6 +88,12 @@ export const LIFE_INSURANCE_US_STEPS = [
     required: true,
   },
   {
+    id: 'state',
+    title: 'What state do you live in?',
+    type: 'state-picker' as const,
+    required: true,
+  },
+  {
     id: 'contact_info',
     title: 'Where should we send your free quote?',
     type: 'personal-info' as const,
