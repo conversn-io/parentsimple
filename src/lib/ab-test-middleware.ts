@@ -96,7 +96,7 @@ export function createSplitTestMiddleware(config: SplitTestConfig) {
     // redirect so attribution survives the A/B hop. Without this, the browser
     // follows a 307 to the target pathname only, dropping ?utm_* and ?fbclid.
     const copyOriginalParams = (target: URL) => {
-      searchParams.forEach((value, key) => {
+      searchParams.forEach((value: string, key: string) => {
         if (!target.searchParams.has(key)) {
           target.searchParams.set(key, value);
         }
