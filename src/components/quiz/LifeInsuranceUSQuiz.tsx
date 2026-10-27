@@ -208,10 +208,18 @@ export function LifeInsuranceUSQuiz() {
       phone: phoneE164,
     }
     const isSenior = answers.age_range === '65+'
+    const isHealthDq = answers.health_screen === 'yes'
+    // Age wins when both fire — matches the WO-1277 Rev 2 spec.
+    const dqReason = isSenior
+      ? 'age_65_plus_term_run'
+      : isHealthDq
+        ? 'health_screen_major_condition'
+        : null
+    const isDisqualified = Boolean(dqReason)
     const fullAnswers = {
       ...answers,
       contact_info: contactInfo,
-      ...(isSenior ? { disqualified: true, dq_reason: 'age_65_plus_term_run' } : {}),
+      ...(isDisqualified ? { disqualified: true, dq_reason: dqReason } : {}),
     }
     const metaEventId = `${sessionId || 'li_us'}-Lead-${Math.floor(Date.now() / 1000)}`
 
@@ -225,6 +233,14 @@ export function LifeInsuranceUSQuiz() {
             content_name: 'Life Insurance US Senior (65+)',
             content_category: 'life_insurance_us',
             dq_reason: 'age_65_plus_term_run',
+          }, { eventID: metaEventId })
+        }
+      } else if (isHealthDq) {
+        if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
+          ;(window as any).fbq('trackCustom', 'LeadHealthDQ', {
+            content_name: 'Life Insurance US Health DQ',
+            content_category: 'life_insurance_us',
+            dq_reason: 'health_screen_major_condition',
           }, { eventID: metaEventId })
         }
       } else {
@@ -275,8 +291,9 @@ export function LifeInsuranceUSQuiz() {
           jornaya_lead_id: getLeadIdToken() || null,
           metaCookies: { fbp: metaCookies.fbp, fbc: metaCookies.fbc, fbLoginId },
           isSenior,
-          disqualified: isSenior || undefined,
-          dqReason: isSenior ? 'age_65_plus_term_run' : undefined,
+          isHealthDq,
+          disqualified: isDisqualified || undefined,
+          dqReason: dqReason || undefined,
         }),
       })
 
@@ -483,7 +500,7 @@ export function LifeInsuranceUSQuiz() {
 
         {step >= 1 && !isContactStep && currentStepDef && currentStepDef.type === 'multiple-choice' && (
           <>
-            {step === 5 && (
+            {step === TOTAL_US_STEPS - 2 && (
               <p className="text-sm text-gray-500 mb-2 text-center">Almost there! 🎉</p>
             )}
             <h1 className="text-2xl font-bold text-[#1A2B49] mb-2" style={{ fontSize: '1.5rem', lineHeight: 1.3 }}>

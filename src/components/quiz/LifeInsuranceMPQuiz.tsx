@@ -236,11 +236,19 @@ export function LifeInsuranceMPQuiz() {
       phone: phoneE164,
     }
     const isSenior = answers.age_range === '65+'
+    const isHealthDq = answers.health_screen === 'yes'
+    // Age wins when both fire — matches the WO-1277 Rev 2 spec.
+    const dqReason = isSenior
+      ? 'age_65_plus_term_run'
+      : isHealthDq
+        ? 'health_screen_major_condition'
+        : null
+    const isDisqualified = Boolean(dqReason)
     const fullAnswers = {
       ...answers,
       variant: VARIANT,
       contact_info: contactInfo,
-      ...(isSenior ? { disqualified: true, dq_reason: 'age_65_plus_term_run' } : {}),
+      ...(isDisqualified ? { disqualified: true, dq_reason: dqReason } : {}),
     }
     const metaEventId = `${sessionId || 'li_mp'}-Lead-${Math.floor(Date.now() / 1000)}`
 
@@ -254,6 +262,14 @@ export function LifeInsuranceMPQuiz() {
             content_name: 'Mortgage Protection Senior (65+)',
             content_category: FUNNEL_TYPE,
             dq_reason: 'age_65_plus_term_run',
+          }, { eventID: metaEventId })
+        }
+      } else if (isHealthDq) {
+        if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
+          ;(window as any).fbq('trackCustom', 'LeadHealthDQ', {
+            content_name: 'Mortgage Protection Health DQ',
+            content_category: FUNNEL_TYPE,
+            dq_reason: 'health_screen_major_condition',
           }, { eventID: metaEventId })
         }
       } else {
@@ -304,8 +320,9 @@ export function LifeInsuranceMPQuiz() {
           jornaya_lead_id: getLeadIdToken() || null,
           metaCookies: { fbp: metaCookies.fbp, fbc: metaCookies.fbc, fbLoginId },
           isSenior,
-          disqualified: isSenior || undefined,
-          dqReason: isSenior ? 'age_65_plus_term_run' : undefined,
+          isHealthDq,
+          disqualified: isDisqualified || undefined,
+          dqReason: dqReason || undefined,
         }),
       })
 

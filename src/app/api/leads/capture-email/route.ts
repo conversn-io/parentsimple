@@ -188,16 +188,29 @@ export async function POST(request: NextRequest) {
       metaCookies,
       metaEventId,
       isSenior,
+      isHealthDq,
       disqualified,
       dqReason,
+      testSubmission,
     } = body;
 
-    // WO-1277 — 65+ gate on life_insurance_us (control, variant B, mortgage-protection).
+    // WO-1277 Rev 1 — 65+ gate on life_insurance_us (control, variant B, mortgage-protection).
     // We still save the lead row and the analytics event, but skip the optimized
     // CAPI `Lead` and the term-agent GHL push so Meta delivery doesn't train on
     // seniors and the broker queue isn't polluted.
     const isSeniorFlag = Boolean(isSenior) || dqReason === 'age_65_plus_term_run';
-    const isDisqualified = Boolean(disqualified) || isSeniorFlag;
+    // WO-1277 Rev 2 — Health screen DQ (cancer, stroke, heart attack, dementia in last 5y).
+    // Same gate shape as the 65+ gate: save, skip CAPI + GHL, fire a non-optimized event.
+    // Age wins when both fire so dq_reason stays stable for reporting.
+    const isHealthDqFlag =
+      !isSeniorFlag && (Boolean(isHealthDq) || dqReason === 'health_screen_major_condition');
+    const isDisqualified = Boolean(disqualified) || isSeniorFlag || isHealthDqFlag;
+    const effectiveDqReason = isSeniorFlag
+      ? 'age_65_plus_term_run'
+      : isHealthDqFlag
+        ? 'health_screen_major_condition'
+        : null;
+    const skipAgentDelivery = isSeniorFlag || isHealthDqFlag;
 
     if (!email) {
       return createCorsResponse({ error: 'Email is required' }, 400);
@@ -367,6 +380,10 @@ export async function POST(request: NextRequest) {
       status: leadStatus,
       is_verified: verifiedNow,
       verified_at: verifiedNow ? new Date().toISOString() : null,
+      // WO-1277 Rev 2 — DQ must land on the real columns so reporting can filter without
+      // digging into the quiz_answers JSONB. Keep the JSONB mirror below for audit trail.
+      disqualified: isDisqualified || null,
+      dq_reason: effectiveDqReason,
       zip_code: zipCode,
       state: state,
       state_name: stateName,
@@ -389,8 +406,9 @@ export async function POST(request: NextRequest) {
         phone_tier: trestleClassification?.tier || existingLead?.quiz_answers?.phone_tier || null,
         phone_tier_reasons: trestleClassification?.reasons || existingLead?.quiz_answers?.phone_tier_reasons || null,
         ...(isDisqualified
-          ? { disqualified: true, dq_reason: dqReason || 'age_65_plus_term_run' }
+          ? { disqualified: true, dq_reason: effectiveDqReason }
           : {}),
+        ...(testSubmission ? { test_submission: true } : {}),
       },
       utm_source: utmSource,
       utm_medium: utmMedium,
@@ -517,7 +535,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (lead?.id) {
-      if (funnelType === 'life_insurance_us' && !isSeniorFlag) {
+      if (funnelType === 'life_insurance_us' && !skipAgentDelivery) {
         try {
           console.log('🟣 [LEAD] Dispatching Meta CAPI Lead:', {
             funnelType,
@@ -564,10 +582,11 @@ export async function POST(request: NextRequest) {
         } catch (capiError) {
           console.error('💥 [LEAD] Meta CAPI Lead exception:', capiError);
         }
-      } else if (funnelType === 'life_insurance_us' && isSeniorFlag) {
-        console.log('⚪ [LEAD] Skipping Meta CAPI Lead — 65+ gate (dq_reason=age_65_plus_term_run):', {
+      } else if (funnelType === 'life_insurance_us' && skipAgentDelivery) {
+        console.log('⚪ [LEAD] Skipping Meta CAPI Lead — DQ gate:', {
           leadId: lead.id,
           sessionId: sessionId || null,
+          dqReason: effectiveDqReason,
         });
       } else {
         console.log('⚪ [LEAD] CAPI deferred to OTP verification for funnel:', {
@@ -579,14 +598,15 @@ export async function POST(request: NextRequest) {
       // GHL push for life_insurance_us happens here — OTP step is removed,
       // Trestle line-type validation above is the gate. Other funnels still
       // route through /api/leads/verify-otp-and-send-to-ghl.
-      // 65+ gate (WO-1277): skip term-agent delivery for senior leads.
-      if (verifiedNow && phoneNumber && isSeniorFlag) {
-        console.log('⏭️ [LEAD] Skipping GHL term-agent push — 65+ gate:', {
+      // DQ gates (WO-1277 Rev 1 + Rev 2): skip term-agent delivery for 65+ and
+      // for leads who flagged a major health condition on the screening step.
+      if (verifiedNow && phoneNumber && skipAgentDelivery) {
+        console.log('⏭️ [LEAD] Skipping GHL term-agent push — DQ gate:', {
           leadId: lead.id,
-          dqReason: dqReason || 'age_65_plus_term_run',
+          dqReason: effectiveDqReason,
         });
       }
-      if (verifiedNow && phoneNumber && !isSeniorFlag) {
+      if (verifiedNow && phoneNumber && !skipAgentDelivery) {
         try {
           const householdIncome =
             quizAnswers?.household_income ?? lead.quiz_answers?.household_income ?? null;

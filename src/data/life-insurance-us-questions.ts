@@ -44,6 +44,16 @@ export const LIFE_INSURANCE_US_STEPS = [
     required: true,
   },
   {
+    id: 'health_screen',
+    title: 'In the past 5 years, have you been diagnosed with or treated for cancer, a stroke, a heart attack, or dementia?',
+    type: 'multiple-choice' as const,
+    options: [
+      { value: 'no', label: 'No' },
+      { value: 'yes', label: 'Yes' },
+    ],
+    required: true,
+  },
+  {
     id: 'smoker',
     title: 'Do you smoke or vape?',
     subtitle: 'Includes tobacco, cigarettes, cigars, pipes, vapes, gum, or patches.',
