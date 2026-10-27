@@ -380,10 +380,12 @@ export async function POST(request: NextRequest) {
       status: leadStatus,
       is_verified: verifiedNow,
       verified_at: verifiedNow ? new Date().toISOString() : null,
-      // WO-1277 Rev 2 — DQ must land on the real columns so reporting can filter without
-      // digging into the quiz_answers JSONB. Keep the JSONB mirror below for audit trail.
+      // WO-1277 Rev 2 — write the DQ flag to the real column so reporting can filter without
+      // unpacking quiz_answers. The dq_reason text column has a CHECK constraint
+      // (leads_dq_reason_check) that doesn't yet accept 'age_65_plus_term_run' /
+      // 'health_screen_major_condition'; the specific reason stays in quiz_answers.dq_reason
+      // until the companion migration in callready-database widens the enum.
       disqualified: isDisqualified || null,
-      dq_reason: effectiveDqReason,
       zip_code: zipCode,
       state: state,
       state_name: stateName,
