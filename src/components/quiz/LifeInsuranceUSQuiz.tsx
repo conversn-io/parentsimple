@@ -236,14 +236,12 @@ export function LifeInsuranceUSQuiz() {
       email: contactEmail.trim().toLowerCase(),
       phone: phoneE164,
     }
-    const isSenior = answers.age_range === '65+'
     const isHealthDq = answers.health_screen === 'yes'
-    // Age wins when both fire — matches the WO-1277 Rev 2 spec.
-    const dqReason = isSenior
-      ? 'age_65_plus_term_run'
-      : isHealthDq
-        ? 'health_screen_major_condition'
-        : null
+    // WO-1277 Rev 3 (2026-10-27): 65+ gate reversed. age_range is still
+    // captured in quiz_answers so the gate can be re-introduced later, but
+    // seniors now flow as regular leads — the broker pivots to whole-life /
+    // final-expense on the call. Only the health screen remains a DQ.
+    const dqReason = isHealthDq ? 'health_screen_major_condition' : null
     const isDisqualified = Boolean(dqReason)
     const fullAnswers = {
       ...answers,
@@ -254,17 +252,7 @@ export function LifeInsuranceUSQuiz() {
 
     if (sessionId) {
       trackEmailCapture(contactInfo.email, sessionId, 'life_insurance_us')
-      if (isSenior) {
-        // 65+ gate: skip the optimized `Lead` event so Meta delivery doesn't
-        // train on senior completions. Fire a non-optimized custom event.
-        if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
-          ;(window as any).fbq('trackCustom', 'LeadSenior', {
-            content_name: 'Life Insurance US Senior (65+)',
-            content_category: 'life_insurance_us',
-            dq_reason: 'age_65_plus_term_run',
-          }, { eventID: metaEventId })
-        }
-      } else if (isHealthDq) {
+      if (isHealthDq) {
         if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
           ;(window as any).fbq('trackCustom', 'LeadHealthDQ', {
             content_name: 'Life Insurance US Health DQ',
@@ -319,7 +307,6 @@ export function LifeInsuranceUSQuiz() {
           jornayaLeadId: getLeadIdToken() || null,
           jornaya_lead_id: getLeadIdToken() || null,
           metaCookies: { fbp: metaCookies.fbp, fbc: metaCookies.fbc, fbLoginId },
-          isSenior,
           isHealthDq,
           disqualified: isDisqualified || undefined,
           dqReason: dqReason || undefined,

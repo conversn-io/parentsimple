@@ -187,30 +187,25 @@ export async function POST(request: NextRequest) {
       utmParams,
       metaCookies,
       metaEventId,
-      isSenior,
       isHealthDq,
       disqualified,
       dqReason,
       testSubmission,
     } = body;
 
-    // WO-1277 Rev 1 — 65+ gate on life_insurance_us (control, variant B, mortgage-protection).
-    // We still save the lead row and the analytics event, but skip the optimized
-    // CAPI `Lead` and the term-agent GHL push so Meta delivery doesn't train on
-    // seniors and the broker queue isn't polluted.
-    const isSeniorFlag = Boolean(isSenior) || dqReason === 'age_65_plus_term_run';
-    // WO-1277 Rev 2 — Health screen DQ (cancer, stroke, heart attack, dementia in last 5y).
-    // Same gate shape as the 65+ gate: save, skip CAPI + GHL, fire a non-optimized event.
-    // Age wins when both fire so dq_reason stays stable for reporting.
+    // WO-1277 Rev 3 reversal (2026-10-27) — the 65+ gate (Rev 1) is removed.
+    // Seniors now flow as regular verified life_insurance_us leads so Meta
+    // Lead + CAPI + GHL term-agent push all fire; the broker pivots to
+    // whole-life / final-expense on the call. age_range is still captured in
+    // quiz_answers in case the gate is re-introduced later.
+    // WO-1277 Rev 2 (unchanged) — Health screen DQ (cancer, stroke, heart
+    // attack, dementia in last 5y): save the lead, skip CAPI + GHL, fire a
+    // non-optimized event.
     const isHealthDqFlag =
-      !isSeniorFlag && (Boolean(isHealthDq) || dqReason === 'health_screen_major_condition');
-    const isDisqualified = Boolean(disqualified) || isSeniorFlag || isHealthDqFlag;
-    const effectiveDqReason = isSeniorFlag
-      ? 'age_65_plus_term_run'
-      : isHealthDqFlag
-        ? 'health_screen_major_condition'
-        : null;
-    const skipAgentDelivery = isSeniorFlag || isHealthDqFlag;
+      Boolean(isHealthDq) || dqReason === 'health_screen_major_condition';
+    const isDisqualified = Boolean(disqualified) || isHealthDqFlag;
+    const effectiveDqReason = isHealthDqFlag ? 'health_screen_major_condition' : null;
+    const skipAgentDelivery = isHealthDqFlag;
 
     if (!email) {
       return createCorsResponse({ error: 'Email is required' }, 400);
@@ -382,9 +377,9 @@ export async function POST(request: NextRequest) {
       verified_at: verifiedNow ? new Date().toISOString() : null,
       // WO-1277 Rev 2 — write the DQ flag to the real column so reporting can filter without
       // unpacking quiz_answers. The dq_reason text column has a CHECK constraint
-      // (leads_dq_reason_check) that doesn't yet accept 'age_65_plus_term_run' /
-      // 'health_screen_major_condition'; the specific reason stays in quiz_answers.dq_reason
-      // until the companion migration in callready-database widens the enum.
+      // (leads_dq_reason_check) that doesn't yet accept 'health_screen_major_condition';
+      // the specific reason stays in quiz_answers.dq_reason until the companion migration
+      // in callready-database widens the enum.
       disqualified: isDisqualified || null,
       zip_code: zipCode,
       state: state,
@@ -600,8 +595,9 @@ export async function POST(request: NextRequest) {
       // GHL push for life_insurance_us happens here — OTP step is removed,
       // Trestle line-type validation above is the gate. Other funnels still
       // route through /api/leads/verify-otp-and-send-to-ghl.
-      // DQ gates (WO-1277 Rev 1 + Rev 2): skip term-agent delivery for 65+ and
-      // for leads who flagged a major health condition on the screening step.
+      // DQ gate (WO-1277 Rev 2): skip term-agent delivery for leads who
+      // flagged a major health condition on the screening step. The 65+ gate
+      // (Rev 1) was reversed on 2026-10-27 — seniors now reach the broker.
       if (verifiedNow && phoneNumber && skipAgentDelivery) {
         console.log('⏭️ [LEAD] Skipping GHL term-agent push — DQ gate:', {
           leadId: lead.id,
