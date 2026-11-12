@@ -189,6 +189,15 @@ export default function HomePage() {
               )
             })}
           </div>
+          {/* WO-1516 chassis: article directory entry point */}
+          <div className="text-center mt-12">
+            <Link
+              href="/articles"
+              className="inline-flex items-center gap-2 text-lg font-semibold text-[#1A2B49] hover:text-[#152238] underline-offset-4 hover:underline"
+            >
+              Browse all articles →
+            </Link>
+          </div>
         </div>
       </section>
 

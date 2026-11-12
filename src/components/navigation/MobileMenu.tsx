@@ -120,6 +120,16 @@ export function MobileMenu() {
                       </Link>
                     </div>
                   ))}
+                  {/* WO-1516 chassis: article directory entry point */}
+                  <div className="px-4">
+                    <Link
+                      href="/articles"
+                      className="block py-3 text-base font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors border-b border-[#9DB89D]/20"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      All Articles
+                    </Link>
+                  </div>
                 </nav>
               </div>
 

@@ -1,307 +1,223 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { generateListingMetadata } from '../../lib/seo-utils'
-import { getPublishedArticles, getCategories } from '../../lib/articles'
+import type { Metadata } from 'next'
+import JsonLd, { chassisMetadata } from '@/components/publisher/JsonLd'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '@/lib/publisher/schema'
+import { getDirectoryArticles, groupByTopic } from '@/lib/publisher/directory'
+import { SITE, HUBS } from '@/lib/publisher/site-config'
 
-type ArticlesPageSearchParams = {
-  category?: string | string[]
-  query?: string | string[]
+/**
+ * SMN publisher chassis — article directory (SeniorSimple WO-1507 → ParentSimple WO-1516, spec §5).
+ * Latest (reverse-chron, paginated with crawlable ?page= links) + By topic.
+ * CollectionPage + ItemList + BreadcrumbList JSON-LD.
+ *
+ * Legacy `?category=<slug>` links (the mega menu uses them for categories with
+ * no articles yet) land on the full directory; canonical stays /articles.
+ */
+
+export const revalidate = 300
+
+const PAGE_SIZE = 24
+const TOPIC_PREVIEW = 8
+const TITLE = 'Parenting & College Planning Articles'
+const DESCRIPTION =
+  'Every ParentSimple guide in one place — the latest articles on college planning, education savings, family finance, and raising kids from the early years through high school.'
+
+type Props = { searchParams: Promise<{ page?: string | string[] }> }
+
+async function readPage(searchParams: Props['searchParams']) {
+  const raw = (await searchParams).page
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return Math.max(1, parseInt(value ?? '1', 10) || 1)
 }
 
-interface ArticlesPageProps {
-  searchParams?: Promise<ArticlesPageSearchParams | undefined>
-}
-
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
-
-export const metadata: Metadata = generateListingMetadata(
-  "ParentSimple Insights & Guides",
-  "Expert guidance on college planning, financial strategies, and academic success. Explore the latest ParentSimple articles for affluent families planning elite education journeys.",
-  "college planning"
-)
-
-export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
-  const resolvedSearchParams = await searchParams
-  const { articles, error } = await getPublishedArticles()
-  const { categories } = await getCategories()
-
-  const categoryParam = Array.isArray(resolvedSearchParams?.category)
-    ? resolvedSearchParams?.category[0]
-    : resolvedSearchParams?.category
-  const queryParam = Array.isArray(resolvedSearchParams?.query)
-    ? resolvedSearchParams?.query[0]
-    : resolvedSearchParams?.query
-
-  const activeCategory = categories.find(
-    (category) =>
-      category.slug === categoryParam ||
-      slugify(category.name) === categoryParam
-  )
-
-  const normalizedQuery = queryParam?.toLowerCase().trim()
-
-  if (error) {
-    console.error('Error fetching articles:', error)
-  }
-
-  const filteredArticles = (articles || []).filter((article) => {
-    let matches = true
-
-    if (activeCategory) {
-      matches =
-        matches &&
-        (article.category_details?.slug === activeCategory.slug ||
-          slugify(article.category_details?.name || '') === activeCategory.slug)
-    }
-
-    if (normalizedQuery) {
-      const haystacks = [
-        article.title,
-        article.excerpt,
-        article.meta_description,
-        article.content,
-      ]
-        .filter((value): value is string => Boolean(value))
-        .map((text) => text.toLowerCase())
-
-      matches =
-        matches &&
-        haystacks.some((text) => text.includes(normalizedQuery))
-    }
-
-    return matches
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const page = await readPage(searchParams)
+  return chassisMetadata({
+    title: page > 1 ? `${TITLE} — Page ${page}` : TITLE,
+    description: DESCRIPTION,
+    path: page > 1 ? `/articles?page=${page}` : '/articles',
   })
+}
 
-  const headline = activeCategory
-    ? `${activeCategory.name} Insights`
-    : 'ParentSimple Education & Planning Library'
-  const subheading = activeCategory
-    ? `Hand-picked guidance for ${activeCategory.name.toLowerCase()} families.`
-    : 'Elite college planning, financial strategies, and expert parenting guidance—curated for ambitious families.'
+function formatDate(iso: string | null) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+export default async function ArticlesDirectoryPage({ searchParams }: Props) {
+  const { articles, error } = await getDirectoryArticles()
+  if (error) console.error('[articles directory] fetch failed:', error)
+
+  const totalPages = Math.max(1, Math.ceil(articles.length / PAGE_SIZE))
+  const page = Math.min(totalPages, await readPage(searchParams))
+  const latest = articles.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const topics = groupByTopic(articles)
+
+  const path = page > 1 ? `/articles?page=${page}` : '/articles'
+  const schema = [
+    collectionPageJsonLd({
+      path,
+      name: TITLE,
+      description: DESCRIPTION,
+      items: latest.map((a) => ({ name: a.title, path: `/articles/${a.slug}` })),
+    }),
+    breadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Articles', path: '/articles' },
+    ]),
+  ]
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0]">
-      {/* Hero Section */}
-      <section
-        className="py-16 px-6"
-        style={{ background: 'linear-gradient(135deg, #36596A 0%, #82A6B1 100%)' }}
-      >
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-semibold text-white mb-6">
-            {headline}
-          </h1>
-          <p className="text-xl text-white opacity-90 mb-8 max-w-3xl mx-auto">
-            {subheading}
+    <div className="min-h-screen bg-[#F9F6EF]">
+      <JsonLd data={schema} />
+
+      {/* Hero */}
+      <section className="py-14 px-6 bg-gradient-to-br from-[#1A2B49] to-[#152238]">
+        <div className="max-w-6xl mx-auto text-center text-white">
+          <nav aria-label="Breadcrumb" className="text-sm opacity-80 mb-4">
+            <Link href="/" className="hover:underline">Home</Link> <span aria-hidden>›</span> Articles
+          </nav>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-5">{TITLE}</h1>
+          <div className="w-24 h-1 bg-[#9DB89D] mx-auto mb-6" />
+          <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto">
+            Clear, practical guidance for every stage of raising kids. Browse our {articles.length || 'latest'} guides
+            by date or by topic — each one is written to help you feel more confident about your next step.
           </p>
-          {normalizedQuery && (
-            <p className="text-sm text-white/80">
-              Showing results for “{normalizedQuery}”
-            </p>
-          )}
         </div>
       </section>
 
-      {/* Category Filter */}
-      {categories && categories.length > 0 && (
-        <section className="py-8 px-6 bg-white border-b">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-wrap gap-3">
-              <span className="text-[#36596A] font-medium mr-2">Filter by:</span>
-              <Link
-                href="/articles"
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  !activeCategory
-                    ? 'bg-[#36596A] text-white'
-                    : 'bg-[#F5F5F0] text-[#36596A] hover:bg-[#E4CDA1]'
-                }`}
+      {/* Topic jump links */}
+      {topics.length > 0 && (
+        <section className="py-6 px-6 bg-white border-b">
+          <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-3">
+            <span className="text-[#1A2B49] font-semibold mr-1">Browse by topic:</span>
+            {topics.map((t) => (
+              <a
+                key={t.key}
+                href={`#topic-${t.key}`}
+                className="px-4 py-2 bg-[#F9F6EF] text-[#1A2B49] rounded-full text-sm font-medium hover:bg-[#9DB89D]/30 transition-colors"
               >
-                All
-              </Link>
-              {categories.map((category) => {
-                const isActive = category.id === activeCategory?.id
-                const categoryHref = new URLSearchParams({
-                  category: category.slug,
-                }).toString()
-                return (
-                  <Link
-                    key={category.id}
-                    href={`/articles?${categoryHref}`}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-[#36596A] text-white'
-                        : 'bg-[#F5F5F0] text-[#36596A] hover:bg-[#E4CDA1]'
-                    }`}
-                  >
-                    {category.name}
-                  </Link>
-                )
-              })}
-            </div>
+                {t.name} <span className="opacity-60">({t.articles.length})</span>
+              </a>
+            ))}
           </div>
         </section>
       )}
 
-      {/* Articles Grid */}
-      <section className="py-16 px-6">
+      {/* Latest */}
+      <section className="py-14 px-6" aria-labelledby="latest-heading">
         <div className="max-w-6xl mx-auto">
-          {error ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">
-                Unable to load articles at this time. Please try again later.
-              </p>
-            </div>
-          ) : filteredArticles && filteredArticles.length > 0 ? (
+          <h2 id="latest-heading" className="text-3xl font-serif font-bold text-[#1A2B49] mb-8">
+            {page > 1 ? `Latest Articles — Page ${page}` : 'Latest Articles'}
+          </h2>
+
+          {latest.length === 0 ? (
+            <p className="text-gray-600">New guides are on the way — check back soon.</p>
+          ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredArticles.map((article) => (
-                <article
-                  key={article.id}
-                  className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
-                >
-                  {/* Featured Image */}
-                  {article.featured_image_url && (
-                    <div className="relative h-48 rounded-t-lg overflow-hidden">
+              {latest.map((a) => (
+                <article key={a.slug} className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow flex flex-col">
+                  {a.featured_image_url && (
+                    <Link href={`/articles/${a.slug}`} className="relative block h-48 rounded-t-xl overflow-hidden" tabIndex={-1} aria-hidden>
                       <Image
-                        src={article.featured_image_url}
-                        alt={article.featured_image_alt || article.title}
+                        src={a.featured_image_url}
+                        alt={a.featured_image_alt || a.title}
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                    </div>
+                    </Link>
                   )}
-
-                  {/* Content */}
-                  <div className="p-6">
-                    {/* Category */}
-                    {article.category_details && (
-                      <div className="mb-3">
-                        <span className="inline-block px-3 py-1 bg-[#E4CDA1] text-[#36596A] text-sm font-medium rounded-full">
-                          {article.category_details.name}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Title */}
-                    <h2 className="text-xl font-semibold mb-3 text-[#36596A] hover:text-[#2a4a5a] transition-colors">
-                      <Link href={`/articles/${article.slug}`}>
-                        {article.title}
-                      </Link>
-                    </h2>
-
-                    {/* Excerpt */}
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {article.excerpt}
-                    </p>
-
-                    {/* Meta */}
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span>
-                        {new Date(article.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                      <Link
-                        href={`/articles/${article.slug}`}
-                        className="text-[#36596A] font-medium hover:underline"
-                      >
-                        Read More →
-                      </Link>
+                  <div className="p-6 flex flex-col flex-1">
+                    <span className="self-start px-3 py-1 bg-[#9DB89D]/25 text-[#1A2B49] text-xs font-semibold rounded-full mb-3">
+                      {a.topic.name}
+                    </span>
+                    <h3 className="text-xl font-serif font-bold mb-3 text-[#1A2B49]">
+                      <Link href={`/articles/${a.slug}`} className="hover:underline">{a.title}</Link>
+                    </h3>
+                    {a.excerpt && <p className="text-gray-600 mb-4 line-clamp-3">{a.excerpt}</p>}
+                    <div className="mt-auto flex items-center justify-between text-sm text-gray-500">
+                      <time dateTime={a.published_at ?? a.created_at}>{formatDate(a.published_at ?? a.created_at)}</time>
+                      <span>{SITE.name} Editorial</span>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">
-                No articles matched your filters. Try adjusting your search or view all insights.
-              </p>
-              <Link
-                href="/articles"
-                className="inline-flex mt-4 px-6 py-3 rounded-full bg-[#36596A] text-white font-medium hover:bg-[#2a4a5a] transition-colors"
-              >
-                Reset filters
-              </Link>
-            </div>
+          )}
+
+          {totalPages > 1 && (
+            <nav aria-label="Article pages" className="mt-12 flex flex-wrap justify-center gap-2">
+              {page > 1 && (
+                <Link rel="prev" href={page === 2 ? '/articles' : `/articles?page=${page - 1}`} className="px-4 py-2 rounded-lg bg-white border text-[#1A2B49] hover:bg-[#9DB89D]/30">
+                  ← Newer
+                </Link>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <Link
+                  key={n}
+                  href={n === 1 ? '/articles' : `/articles?page=${n}`}
+                  aria-current={n === page ? 'page' : undefined}
+                  className={`px-4 py-2 rounded-lg border ${n === page ? 'bg-[#1A2B49] text-white' : 'bg-white text-[#1A2B49] hover:bg-[#9DB89D]/30'}`}
+                >
+                  {n}
+                </Link>
+              ))}
+              {page < totalPages && (
+                <Link rel="next" href={`/articles?page=${page + 1}`} className="px-4 py-2 rounded-lg bg-white border text-[#1A2B49] hover:bg-[#9DB89D]/30">
+                  Older →
+                </Link>
+              )}
+            </nav>
           )}
         </div>
       </section>
 
-      {/* Newsletter Signup */}
-      <section
-        className="py-16 px-6"
-        style={{ background: 'linear-gradient(135deg, #36596A 0%, #82A6B1 100%)' }}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-serif font-semibold text-white mb-4">
-            Stay Updated with ParentSimple Insights
-          </h2>
-          <p className="text-xl text-white mb-8 opacity-90">
-            Get the latest ParentSimple research and expert advice delivered to your inbox.
+      {/* By topic — crawlable text links into every cluster */}
+      {topics.length > 0 && (
+        <section className="py-14 px-6 bg-white" aria-labelledby="topics-heading">
+          <div className="max-w-6xl mx-auto">
+            <h2 id="topics-heading" className="text-3xl font-serif font-bold text-[#1A2B49] mb-8">Articles by Topic</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {topics.map((t) => (
+                <div key={t.key} id={`topic-${t.key}`} className="scroll-mt-24">
+                  <h3 className="text-xl font-serif font-bold text-[#1A2B49] mb-3 border-b border-[#9DB89D] pb-2">
+                    {t.name} <span className="text-sm font-normal text-gray-500">· {t.articles.length} guides</span>
+                  </h3>
+                  <ul className="space-y-2">
+                    {t.articles.slice(0, TOPIC_PREVIEW).map((a) => (
+                      <li key={a.slug}>
+                        <Link href={`/articles/${a.slug}`} className="text-gray-700 hover:text-[#1A2B49] hover:underline">
+                          {a.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Hubs + money action */}
+      <section className="py-14 px-6 bg-gradient-to-br from-[#1A2B49] to-[#152238]">
+        <div className="max-w-5xl mx-auto text-center text-white">
+          <h2 className="text-3xl font-serif font-bold mb-4">Not sure where to start?</h2>
+          <p className="text-lg opacity-90 mb-8">
+            Our free college planning guide walks you through every step, from first savings to acceptance letters.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg border-0 text-gray-900"
-            />
-            <button className="bg-white text-[#36596A] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
-              Subscribe
-            </button>
+          <Link href={SITE.primaryCta.href} className="inline-block bg-[#9DB89D] text-[#1A2B49] px-8 py-3 rounded-lg font-semibold hover:bg-[#8BA68B] transition-colors">
+            {SITE.primaryCta.label}
+          </Link>
+          <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+            {HUBS.map((h) => (
+              <Link key={h.key} href={h.href} className="underline-offset-4 hover:underline opacity-90">{h.name}</Link>
+            ))}
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-12 px-6 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold text-[#36596A] mb-4">Get in Touch</h3>
-              <div className="space-y-2 text-gray-600">
-                <p>Contact Us</p>
-                <p>Phone: 800-555-2040</p>
-                <p>Email: support@parentsimple.org</p>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-[#36596A] mb-4">Resources</h3>
-              <div className="space-y-2 text-gray-600">
-                <p>College Planning</p>
-                <p>Financial Planning</p>
-                <p>High School Success</p>
-                <p>Early Years</p>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-[#36596A] mb-4">About</h3>
-              <div className="space-y-2 text-gray-600">
-                <p>Mission</p>
-                <p>Team</p>
-                <p>Press</p>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-[#36596A] mb-4">Legal</h3>
-              <div className="space-y-2 text-gray-600">
-                <p>Privacy Policy</p>
-                <p>Terms of Service</p>
-                <p>Disclaimers</p>
-              </div>
-            </div>
-          </div>
-          <div className="text-center mt-8 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-500">© {new Date().getFullYear()} ParentSimple. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

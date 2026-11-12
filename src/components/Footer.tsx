@@ -87,6 +87,10 @@ const Footer = () => {
                   </Link>
                 </>
               )}
+              {/* WO-1516 chassis: article directory entry point */}
+              <Link href="/articles" className="block font-semibold text-[#F9F6EF] hover:text-[#9DB89D] transition-colors">
+                All Articles →
+              </Link>
             </div>
           </div>
 
