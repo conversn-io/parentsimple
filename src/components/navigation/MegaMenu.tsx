@@ -145,6 +145,15 @@ export function MegaMenu() {
               </NavigationMenuTrigger>
             </NavigationMenuItem>
           ))}
+          {/* WO-1516: keep the directory link in the SSR/loading render so crawlers see it */}
+          <NavigationMenuItem>
+            <Link
+              href="/articles"
+              className="h-9 px-4 py-2 inline-flex items-center text-sm font-semibold text-[#1A2B49] hover:text-[#152238] transition-colors"
+            >
+              All Articles
+            </Link>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     )
