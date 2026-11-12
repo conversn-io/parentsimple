@@ -3,6 +3,7 @@
 import { CheckCircle } from "lucide-react";
 import { useEffect } from "react";
 import { FAQ } from "./FAQ";
+import { ASSIGNED_AGENT } from "@/lib/assigned-agent";
 
 interface AgentAssignmentPageProps {
   answers: Record<string, any>;
@@ -119,16 +120,18 @@ export const AgentAssignmentPage = ({ answers, onRestart, funnelType }: AgentAss
           <div className="bg-slate-50 rounded-2xl p-8 mb-8">
             {/* Agent Photo + identity */}
             <img
-              src="/images/team/maureen-donoghue.webp"
-              alt="Maureen Donoghue, Licensed Insurance Specialist (Transamerica)"
+              src={ASSIGNED_AGENT.headshot}
+              alt={ASSIGNED_AGENT.headshotAlt}
               className="w-56 h-56 mx-auto mb-3 object-cover rounded-full"
             />
             <div className="text-center mb-6">
-              <p className="text-lg font-semibold text-slate-800">Maureen Donoghue, Transamerica</p>
+              <p className="text-lg font-semibold text-slate-800">
+                {ASSIGNED_AGENT.name}, {ASSIGNED_AGENT.title}
+              </p>
               <p className="text-slate-600">
                 Mobile:{' '}
-                <a href="tel:+17146256732" className="text-[#36596A] hover:underline">
-                  714-625-6732
+                <a href={`tel:${ASSIGNED_AGENT.phoneE164}`} className="text-[#36596A] hover:underline">
+                  {ASSIGNED_AGENT.phoneDisplay}
                 </a>
               </p>
             </div>
